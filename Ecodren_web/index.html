@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECODREN | Maquinaria & Refacciones para Desazolvadores</title>
+    <link rel="icon" type="image/jpeg" href="Assets/logo_web_ecodren.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <nav id="mainNav">
+        <a href="#" class="nav-logo">
+            <img src="Assets/logo-ecodren.png" alt="Ecodren Logo" class="web-logo">
+        </a>
+
+        <ul class="nav-center" id="navCenter">
+            <li><a href="#categorias">Ficha Técnica</a></li>
+            <li><a href="tienda.html">Tienda</a></li>
+            <li><a href="maquinaria.html">Equipos</a></li>
+            <li><a href="recursos.html">Recursos</a></li>
+            <li><a href="index.html#por-que">Nosotros</a></li>
+        </ul>
+
+        <div class="nav-right">
+            <a href="#contacto" class="nav-cta" id="navCta">Cotizar</a>
+
+            <button class="cart-nav-btn" id="cartNavBtn" aria-label="Carrito">
+                🛒
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
+
+            <div class="profile-wrap" id="profileWrap">
+                <button class="profile-btn" id="profileBtn" aria-label="Perfil de usuario">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                    </svg>
+                </button>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div id="guestState">
+                        <div style="padding:1.25rem 1.25rem 0.5rem">
+                            <p style="font-size:0.9rem;font-weight:600;margin-bottom:0.25rem">Bienvenido a Ecodren</p>
+                            <p style="font-size:0.8rem;color:var(--eco-gray)">Inicia sesión para ver tus pedidos</p>
+                        </div>
+                        <div class="profile-menu">
+                            <button class="profile-item" onclick="openModal('login')">
+                                <svg viewBox="0 0 24 24"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>
+                                Iniciar sesión
+                            </button>
+                            <button class="profile-item" onclick="openModal('register')">
+                                <svg viewBox="0 0 24 24"><path d="M15 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/></svg>
+                                Crear cuenta
+                            </button>
+                        </div>
+                    </div>
+                    <div id="userState" style="display:none">
+                        <div class="profile-header">
+                            <div class="profile-avatar" id="userAvatar">JD</div>
+                            <div>
+                                <div class="profile-name" id="userName">Juan Díaz</div>
+                                <div class="profile-email" id="userEmail">juan@empresa.com</div>
+                            </div>
+                        </div>
+                        <div class="profile-menu">
+                            <a href="perfil.html" class="profile-item">
+                                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.9 0 3.5 1.6 3.5 3.5S13.9 13 12 13s-3.5-1.6-3.5-3.5S10.1 6 12 6zm7 13H5v-.6c0-2 4-3.1 7-3.1s7 1.1 7 3.1V19z"/></svg>
+                                Mi perfil
+                            </a>
+                            <a href="perfil.html" class="profile-item">
+                                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.4-1.4L12 14.2l7.6-7.6L21 8l-9 9z"/></svg>
+                                Mis pedidos
+                                <span class="profile-badge">3</span>
+                            </a>
+                            <a href="perfil.html" class="profile-item">
+                                <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                                Cotizaciones guardadas
+                            </a>
+                            <a href="#" class="profile-item">
+                                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                                Configuración
+                            </a>
+                            <div class="profile-divider"></div>
+                            <button class="profile-item danger" onclick="logOut()">
+                                <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                                Cerrar sesión
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="hamburger" id="hamburger" aria-label="Menú">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#categorias" class="mobile-link">Ficha Técnica</a>
+        <a href="tienda.html" class="mobile-link">Tienda</a>
+        <a href="maquinaria.html" class="mobile-link">Equipos</a>
+        <a href="recursos.html" class="mobile-link">Recursos</a>
+        <a href="#por-que" class="mobile-link">Nosotros</a>
+        <a href="#contacto" class="mobile-link" style="color:var(--eco-green);font-weight:600">Cotizar →</a>
+    </div>
+
+    <div class="hero-3d" id="hero3d">
+        <video autoplay loop muted playsinline class="hero-bg-video"
+                poster="#"> 
+            <source src="Assets/ecodren-video.mp4" type="video/mp4">
+        </video>
+
+        <canvas id="hero-canvas"></canvas>
+        <div class="hero-overlay"></div>
+        <div class="hero-overlay-bottom"></div>
+
+        <div class="hero-content">
+            <div class="hero-tag">Lanzamiento 2025</div>
+            <h1>Equipo hidroneumático<br><em>para limpieza y desazolve</em><br>de drenajes de acción simultanea succión-presión.</h1>
+            <p class="hero-sub">Refacciones y equipos especializados para trabajo profesional en drenaje y sistemas hidráulicos. Calidad certificada, entrega inmediata.</p>
+            <div class="hero-btns">
+                <a href="#tienda" class="btn-primary">Comprar ahora</a>
+                <a href="#contacto" class="btn-ghost">Solicitar cotización</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-num">+32 años</div>
+                    <div class="stat-label">Respaldando proyectos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">100% </div>
+                    <div class="stat-label">Fabricación Mexicana</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">Calidad</div>
+                    <div class="stat-label">Industrial Certficada</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-product-wrap">
+            <img src="Assets/ecodren17.webp" alt="Equipo Ecodren" 
+             fetchpriority="high"  width="630" height="420" decoding="async" class="hero-product-img">
+        </div>
+        
+        <div class="machine-label">ECODREN ED-17</div>
+
+        <div class="hero-scroll-hint">
+            <div class="scroll-line"></div>
+            <span>Scroll</span>
+        </div>
+    </div>
+
+    <section class="categories" id="categorias">
+        <div class="section-header">
+            <span class="section-tag">Ficha Técnica</span>
+            <h2 class="section-title">ECODREN es un sistema Hidroneumático diseñado para la limpieza y desazolve de drenajes<br>Ecodren ED-17</h2>
+            <p class="section-sub">Acción simultanea de succión y presión con tecnología avanzada para operaciones mas rápidas, seguras y con un menos consumo de agua y combustible.</p>
+        </div>
+        
+        <div class="truck-specs-grid">
+            <div class="spec-box-card">
+                <div class="spec-card-header">
+                    <img src="Assets/icons/icon-bomba.webp" alt="icon-bomba" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon">
+                    <h3>Bomba ECOJET exclusiva</h3>
+                </div>
+                <ul class="spec-list">
+                    <li><strong>Aplicación: </strong>Diseñado para alcantarillado </li>
+                    <li><strong>Operación </strong>Opera bajo desgaste</li>
+                    <li><strong>Rendimiento: </strong>Presiones de hasta 3,000 PSI</li>
+                </ul>
+            </div>
+
+            <div class="spec-box-card">
+                <div class="spec-card-header">
+                    <img src="Assets/icons/icon-tanque.png" alt="icon-tanque" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon"> 
+                    <h3>Tanque de desechos reforzado</h3>
+                </div>
+                <ul class="spec-list">
+                    <li><strong>Material: </strong>Tanque fabricado en acero de alta resistencia</li>
+                    <li><strong>Versatilidad: </strong>Capacidades de 3 yd a 17 yd</li>
+                </ul>
+            </div>
+
+            <div class="spec-box-card">
+                <div class="spec-card-header">
+                    <img src="Assets/icons/icon-manguera.png" alt="icon-maguera" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon">
+                    <h3>Carrete y manguera frontal</h3>
+                </div>
+                <ul class="spec-list">
+                    <li><strong>Mecanismo: </strong>Movimiento telescópico</li>
+                    <li><strong>Cobertura: </strong>Rotacion hasta 270° para maxima accesibilidad</li>
+                </ul>
+            </div>
+            <div class="spec-box-card">
+                <div class="spec-card-header">
+                    <img src="Assets/icons/icon-seguridad.png" alt="icon-seguridad" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon">
+                    <h3>Seguridad y ergonomía</h3>
+                </div>
+                <ul class="spec-list">
+                    <li><strong>Distribución: </strong>Controles frontales</li>
+                    <li><strong>Protección: </strong>Paros de emergencia</li>
+                    <li><strong>Enfoque: </strong>Diseño orientado al operador</li>
+                </ul>
+            </div>
+            <div class="spec-box-card">
+                <div class="spec-card-header">
+                    <img src="Assets/icons/icon-vacio.png" alt="icon-vacio" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon"> 
+                    <h3>Sistema de vacío avanzado</h3>
+                </div>
+                <ul class="spec-list">
+                    <li><strong>Potencia: </strong>Compresor centrífugo o soplador PD</li>
+                    <li><strong>Higiene: </strong>Filtrado multietapa profesional</li>
+                </ul>
+            </div>
+            <div class="spec-box-card">
+                <div class="spec-card-header">
+                    <img src="Assets/icons/icon-tecno.png" alt="icon-tecno" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon">
+                    <h3>Tecnología inteligente</h3>
+                </div>
+                <ul class="spec-list">
+                    <li><strong>Monitoreo: </strong>Panel electrónico de diagnostico</li>
+                    <li><strong>Control: </strong>Seguridad y monitoreo de operation</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="truck-fleet" id="maquinaria">
+        <div class="section-header">
+            <span class="section-tag">Gama de equipos</span>
+            <h2 class="section-title">Modelos configurables Ecodren</h2>
+            <p class="section-sub">Diseñamos y ensamblamos el equipo Ecojet o succión adecuado para las dimensiones de su proyecto municipal o insdustrial.</p>
+        </div>
+        
+        <div class="truck-fleet-grid reveal">
+            <div class="fleet-card reveal reveal-delay-1">
+                <div class="fleet-img-wrap">
+                    <img src="Assets/ecodren-5/Ecodren ED-5 v2.webp" alt="Ecodren ED-5" loading="lazy" width="630" height="420" decoding="async" class="fleet-img active">
+                    <img src="Assets/ecodren-5/Ecodren ED-5 v3.webp" alt="Ecodren ED-5 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="Assets/ecodren-5/Ecodren ED-5.webp" alt="Ecodren ED-5 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                </div>
+                <div class="fleet-info">
+                    <h3>Ecodren ED-3</h3>
+                    <span class="fleet-badge">Modelo 03</span>
+                    <p>Modelo ideal para proyectos donde el acceso es limitado</p>
+                    <ul class="fleet-quick-specs">
+                        <li><strong>Tanque: </strong>Capacidad de 3 yd (2.74 m³)</li>
+                        <li><strong>Bomba: </strong>2,500 PSI a 65 GPM</li>
+                        <li><strong>Succión: </strong>Soplador de 4,500 cfm</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="fleet-card reveal reveal-delay-1">
+                <div class="fleet-img-wrap">
+                    <img src="Assets/ecodren-5/Ecodren ED-5.webp" alt="Ecodren ED-5" loading="lazy" width="630" height="420" decoding="async" class="fleet-img active">
+                    <img src="Assets/ecodren-5/Ecodren ED-5 v2.webp" alt="Ecodren ED-5 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="Assets/ecodren-5/Ecodren ED-5 v3.webp" alt="Ecodren ED-5 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                </div>
+                <div class="fleet-info">
+                    <h3>Ecodren ED-5</h3>
+                    <span class="fleet-badge">Modelo 05</span>
+                    <p>Modelo ideal para proyectos donde el acceso es limitado</p>
+                    <ul class="fleet-quick-specs">
+                        <li><strong>Tanque: </strong>Capacidad de 5 yd (3.82m³)</li>
+                        <li><strong>Bomba: </strong>2,500 PSI a 65 GPM</li>
+                        <li><strong>Succión: </strong>Soplador de 4,500 cfm</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="fleet-card reveal reveal-delay-2">
+                <div class="fleet-img-wrap">
+                    <img src="Assets/ecodren-13/Ecodren-ED-13-v3.webp" alt="Ecodren ED-10" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="Assets/ecodren-13/Ecodren ED-13 v2.webp" alt="Ecodren ED-10 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="Assets/ecodren-13/Ecodren ED-13.webp" alt="Ecodren ED-10 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                </div>
+                <div class="fleet-info">
+                    <h3>Ecodren ED-10</h3>
+                    <span class="fleet-badge">Modelo 10</span>
+                    <p>Versatilidad para operaciones de capacidad intermedia</p>
+                    <ul class="fleet-quick-specs">
+                        <li><strong>Tanque: </strong>Capacidad de 10 yd (7.64 m³)</li>
+                        <li><strong>Bomba: </strong>2,500 PSI a 65 GPM</li>
+                        <li><strong>Capacidad: </strong>7645 litros de agua (2019 galones)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="fleet-card reveal reveal-delay-3">
+                <div class="fleet-img-wrap">
+                    <img src="Assets/ecodren-13/Ecodren ED-13.webp" alt="Ecodren ED-13" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="Assets/ecodren-13/Ecodren ED-13 v2.webp" alt="Ecodren ED-13 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="Assets/ecodren-13/Ecodren-ED-13-v3.webp" alt="Ecodren ED-13 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                </div>
+                <div class="fleet-info">
+                    <h3>Ecodren ED-13</h3>
+                    <span class="fleet-badge">Modelo 13</span>
+                    <p>Capacidad ampliada para incrementar la productividad</p>
+                    <ul class="fleet-quick-specs">
+                        <li><strong>Tanque: </strong>Capacidad de 13 yd (9.93 m³)</li>
+                        <li><strong>Bomba: </strong>2,500 PSI a 65 GPM</li>
+                        <li><strong>Ciclones: </strong>Ayuda en procesos de separacion de material</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="fleet-card reveal reveal-delay-3">
+                <div class="fleet-img-wrap">
+                    <img src="Assets/ecodren-15/Ecodren ED-15.webp" alt="Ecodren ED-15" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="Assets/ecodren-15/Ecodren ED-15 v2.webp" alt="Ecodren ED-15 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="Assets/ecodren-15/Ecodren ED-15 v3.webp" alt ="Ecodren ED-15 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                </div>
+                <div class="fleet-info">
+                    <h3>Ecodren ED-15</h3>
+                    <span class="fleet-badge">Modelo 15</span>
+                    <p>Configuracion orientada a operaciones intensivas</p>
+                    <ul class="fleet-quick-specs">
+                        <li><strong>Tanque: </strong>Capacidad de 15 yd (11.46 m³)</li>
+                        <li><strong>Bomba: </strong>3,000 PSI a 85 GPM</li>
+                        <li><strong>Seguridad: </strong>Cuenta con doble silenciador a la salida de aire para reduccion de ruidos.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="fleet-card reveal reveal-delay-3">
+                <div class="fleet-img-wrap">
+                    <img src="Assets/ecodren-17/Ecodren ED-17.webp" alt="Ecodren ED-17" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="Assets/ecodren-17/Ecodren ED-17 v2.webp" alt="Ecodren ED-17 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="Assets/ecodren-17/Ecodren ED-17 v3.webp" alt ="Ecodren ED-17 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="Assets/ecodren-17/Ecodren ED-17 v4.webp" alt="Ecodren ED-17 v4" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                </div>
+                <div class="fleet-info">
+                    <h3>Ecodren ED-17</h3>
+                    <span class="fleet-badge">Modelo 17</span>
+                    <p>Capacidad aumentada para la optimizacion del rendimiento operativo</p>
+                    <ul class="fleet-quick-specs">
+                        <li><strong>Tanque: </strong>Capacidad de hasta 17 yd (12.99 m³)</li>
+                        <li><strong>Bomba: </strong>3,000 PSI a 85 GPM</li>
+                        <li><strong>Soplador: </strong>Soplador para volumenes superiores de 4,050 CFM</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="shop" id="tienda">
+        <div class="section-header reveal">
+            <span class="section-tag">Catalogo Profesional</span>
+            <h2 class="section-title">Producto Destacado</h2>
+            <p class="section-sub">Equipos de alta presion, refacciones originales y accesorios especializados para sistemas de desazolve.</p>
+        </div>
+
+        <div class="shop-grid">
+            <div class="shop-card">
+                <div class="shop-img">
+                    <span class="shop-badge badge-nuevo">Nuevo</span>
+                        <img src="Assets/catalogo/boquillas/btp-3.webp" alt="boquillas">
+                </div>
+                <div class="shop-info">
+                    <span class="shop-cat-tag">Boquillas</span>
+                    <h3>Modelo BPT-3</h3>
+                    <p>Acero inoxidable endurecido.</p>
+                    <div class="shop-footer">
+                        <div class="shop-price">
+                            <span>$1,350 MXN</span>
+                        </div>
+                        <a href="tienda.html?producto=tobera-3d" class="add-cart-btn-link">
+                            Ver detalles <i class="fas fa-arrow-right" style="font-size: 0.8rem; margin-left: 5px;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="shop-card">
+                <div class="shop-img">
+                    <span class="shop-badge badge-oferta">Oferta </span>
+                        <img src="Assets/catalogo/boquillas/Imagen2.png" alt="boquillas">
+                </div>
+                <div class="shop-info">
+                    <span class="shop-cat-tag">Boquillas</span>
+                    <h3>Modelo BPL-6</h3>
+                    <p>Rotores fuera del eje para vibracion/martilleo.</p>
+                    <div class="shop-footer">
+                        <div class="shop-price">
+                            <span class="shop-price-old">$2,300 MXN</span>
+                            <span>$1,700 MXN</span>
+                        </div>
+                        <a href="tienda.html?producto=mangera-hidrojet" class="add-cart-btn-link">
+                            Ver Detalles <i class="fas fa-arrow-right" style="font-size: 0.8rem; margin-left: 5px;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="shop-card">
+                <div class="shop-img">
+                    <span class="shop-badge badge-stock"> Popular</span>
+                    <img src="Assets/catalogo/boquillas/Imagen3.png" alt="boquillas"> 
+                </div>
+                <div class="shop-info">
+                    <span class="shop-cat-tag">Mangueras</span>
+                    <h3>Manguera Hidrojet 3/4"</h3>
+                    <p>Alta resistencia con trenzado de seguridad reforzado</p>
+                    <div class="shop-footer">
+                        <div class="shop-price">
+                            <span>$4,800 MXN</span>
+                        </div>
+                        <a href="tienda.html?producto=manguera-34" class="add-cart-btn-link">
+                            Ver detalles <i class="fas fa-arrow-right" style="font-size: 0.8rem; margin-left: 5px;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="shop-card">
+                <div class="shop-img">
+                    <span class="shop-badge badge-nuevo">Premium</span>
+                    <img src="Assets/catalogo/boquillas/Imagen4.png" alt="bombas">
+                </div>
+                <div class="shop-info">
+                    <span class="shop-cat-tag">Bombas</span>
+                    <h3>Bomba Ecojet Industrial</h3>
+                    <p>Alto rendimiento garantizado para flujo continuos</p>
+                    <div class="shop-footer">
+                        <div class="shop-price">
+                            <span>$12,000 MXN</span>
+                        </div>
+                        <a href="tienda.html?producto=bomba-ecojet" class="add-cart-btn-link">
+                            Ver detalles <i class="fas fa-arrow-right" style="font-size: 0.8rem; margin-left: 5px;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 3.5rem;">
+            <a href="tienda.html" class="btn-primary" style="display: inline-block; text-align: center;">
+                Ir a la tienda completa <i class="fas fa-shopping-bag" style="margin-left: 8px;"></i>
+            </a>
+        </div>
+    </section>
+
+    <section class="why" id="por-que">
+        <div class="section-header reveal">
+            <span class="section-tag">Ventajas</span>
+            <h2 class="section-title">Por qué elegir Ecodren</h2>
+            <p class="section-sub">Más que un proveedor, somos el socio técnico que tu operación necesita para crecer.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feat-card reveal reveal-delay-1">
+                <img src="Assets/icons/icon-copa.webp" alt="icon-copa" loading="lazy" width="630" height="420" decoding="async">
+                <h3>Nuestra esencia</h3>
+                <p>ECODREN es una marca de <strong>GrupoMC</strong> empresa 100% méxicana con más de <strong>3 decadas</strong> a la vanguardia diseñando y fabricando equipos hidraulico especializado.</p>
+            </div>
+            <div class="feat-card reveal reveal-delay-2">
+                <img src="Assets/icons/icon-rayo.webp" alt="icon-rayo" loading="lazy" width="630" height="420" decoding="async">
+                <h3>Entrega rápida</h3>
+                <p>Atendemos proyectos y clientes en todo el país con soluciones hidráulicas confiables y soporte especializado.</p>
+            </div>
+            <div class="feat-card reveal reveal-delay-3">
+                <img src="Assets/icons/icon-escudo.webp" alt="icon-escudo" loading="lazy" width="630" height="420" decoding="async">
+                <h3>Garantía extendida</h3>
+                <p>Cada producto pasa por procesos de control y verificación para ofrecer un desempeño confiable en cada aplicación.</p>
+            </div>
+            <div class="feat-card reveal">
+                <img src="Assets/icons/icon-persona.webp" alt="icon-persona" loading="lazy" width="630" height="420" decoding="async">
+                <h3>Asesoría especializada</h3>
+                <p>Nuestro equipo de ingenieros te asesora para elegir el equipo exacto que tu proyecto requiere.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="contacto">
+        <div class="contact-grid">
+            <div class="contact-info reveal">
+                <span class="section-tag">Contacto</span>
+                <h2>Solicita una cotización<br>sin compromiso</h2>
+                <p>Cuéntanos lo que necesitas y nuestro equipo te responderá en menos de 24 horas.</p>
+                <div class="contact-detail">
+                    <img src="Assets/icons/icon-pin.png" alt="ubicacion" class="contact-icon-img">
+                    <div><strong>Dirección</strong><span> Planta Torres - Manzana 004, Jardines de Morelos 5ta, 55075 Ecatepec de Morelos, Méx.</span></div>
+                </div>
+                <div class="contact-detail">
+                    <img src="Assets/icons/icon-telefono.png" alt="telefono" class="contact-icon-img">
+                    <div><strong>Teléfono</strong><span>+52 (55) XXX-XXXX</span></div>
+                </div>
+                <div class="contact-detail">
+                    <img src="Assets/icons/icon-email.png" alt="mail" class="contact-icon-img">
+                    <div><strong>Email</strong><span>ventas@ecodren.com</span></div>
+                </div>
+            </div>
+            <div class="form-card reveal reveal-delay-1">
+                <form onsubmit="handleSubmit(event)">
+                    <div class="form-row">
+                        <div class="form-group"><label>Nombre</label><input type="text" placeholder="Tu nombre" required></div>
+                        <div class="form-group"><label>Empresa</label><input type="text" placeholder="Nombre de empresa"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Teléfono</label><input type="tel" placeholder="+52 (55) XXXX-XXXX"></div>
+                        <div class="form-group"><label>Email</label><input type="email" placeholder="correo@empresa.com" required></div>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Qué necesitas?</label>
+                        <select>
+                            <option value="">Selecciona una categoría</option>
+                            <option>Maquinaria completa</option>
+                            <option>Refacciones específicas</option>
+                            <option>Servicio técnico</option>
+                            <option>Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Detalles adicionales</label><textarea placeholder="Describe el equipo o refacción que necesitas..."></textarea></div>
+                    <button type="submit" class="form-submit">Enviar cotización →</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+   <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="#" class="nav-logo" style="margin-bottom: 0.75rem;">
+                    <img src="Assets/logo-ecodren.png" alt="Ecodren Logo" class="web-logo">
+                </a>
+                <p>Maquinaria y refacciones especializadas para desazolvadores. Soluciones confiables para profesionales del drenaje.</p>
+            </div>
+            <div><h4>Tienda</h4><ul><li><a href="#tienda">Maquinaria</a></li><li><a href="#tienda">Refacciones</a></li><li><a href="#contacto">Servicio técnico</a></li></ul></div>
+            <div><h4>Empresa</h4><ul><li><a href="#por-que">Quiénes somos</a></li><li><a href="#por-que">Ventajas</a></li><li><a href="#contacto">Trabaja con nosotros</a></li></ul></div>
+            <div><h4>Contacto</h4><ul><li><a href="#contacto">Solicitar cotización</a></li><li><a href="#">+52 (55) XXX-XXXX</a></li><li><a href="#">ventas@ecodren.com</a></li></ul></div>
+        </div>
+
+        <div class="footer-corporate-brands">
+            <span class="corporate-title">Una empresa de Equipos Hidromecánicos MC</span>
+            <div class="brand-grid">
+                <img src="Assets/afilial1_ecovac.webp" alt="Ecovac" class="corp-logo">
+                <img src="Assets/afilial2_ecojet.webp" alt="Ecojet" class="corp-logo">
+                <img src="Assets/afilial3_ecoclean.webp" alt="Ecoclean" class="corp-logo">
+            </div>
+        </div>
+        
+        <div class="social-pills-container">
+            <a href="https://www.facebook.com/people/Equipos-MC/100054393135080/" target="_blank" class="social-pill facebook">
+                <div class="icon-circle"><i class="fab fa-facebook-f"></i></div>
+                <span class="social-text">Ecodren Oficial</span>
+            </a>
+             <a href="https://x.com/equipos_mc" target="_blank" class="social-pill instagram">
+                <div class="icon-circle"><i class="fab fa-instagram"></i></div>
+                <span class="social-text">@ecodren</span>
+             </a>
+             <a href="https://www.linkedin.com/in/equipos-mc-770731114/?trk=nav_responsive_tab_profile" target="_blank" class="social-pill linkedin">
+                <div class="icon-circle"><i class="fab fa-linkedin-in"></i></div>
+                <span class="social-text">Ecodren México</span>
+             </a>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2026 Ecodren. Todos los derechos reservados.</span>
+            <div class="footer-signature-wrap">
+                <span class="signature-tag">Una marca de</span>
+                <img src="Assets/grupo-mc.webp" alt="GrupoMC" class="signature-logo">
+                <span class="signature-text">Diseñado para profesionales del desazolve</span>
+            </div>
+        </div>
+    </footer>
+
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-head">
+            <h3>🛒 Tu carrito</h3>
+            <button class="cart-close" id="cartClose">×</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty">
+                <span class="cart-empty-icon">🛒</span>
+                <p style="font-weight:600;margin-bottom:0.5rem">Tu carrito está vacío</p>
+                <p style="font-size:0.85rem;color:var(--eco-gray)">Agrega productos desde la tienda</p>
+            </div>
+        </div>
+        <div class="cart-footer" id="cartFooter" style="display:none">
+            <div class="cart-total-row">
+                <span>Total</span>
+                <strong id="cartTotal">$0</strong>
+            </div>
+            <button class="checkout-btn" onclick="handleCheckout()">Proceder al pago →</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box" style="max-width: 420px; width: 90%;">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            
+            <div class="modal-tabs">
+                <button class="modal-tab active" onclick="switchTab('login')">Iniciar sesión</button>
+                <button class="modal-tab" onclick="switchTab('register')">Crear cuenta</button>
+            </div>
+            
+            <div class="modal-panel active" id="panel-login">
+                <h3>Bienvenido de vuelta</h3>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="mform-group">
+                        <label>Correo electrónico</label>
+                        <input type="email" id="loginEmail" placeholder="correo@empresa.com" required style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div class="mform-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" class="mform-submit">Iniciar sesión</button>
+                    <p style="text-align:center; margin-top:0.8rem; margin-bottom:0; font-size:0.8rem;">
+                        <a href="#" onclick="event.preventDefault(); openForgetPanel();" style="color:var(--eco-green); text-decoration:none;">¿Olvidaste tu contraseña?</a>
+                    </p>                    
+                </form>
+            </div>
+
+            <div class="modal-panel" id="panel-forget">
+                <h3>¿Olvidaste tu contraseña?</h3>
+                <p style="font-size:.88rem; color:var(--eco-gray); margin-bottom: 1.5rem; line-height: 1.4;">
+                    Ingresa tu correo electrónico registrado y te enviaremos las instrucciones para restablecerla.
+                </p>
+                <form id="forgetForm" onsubmit="handleForgetPassword(event)">
+                    <div class="mform-group">
+                        <label>Correo electrónico corporativo</label>
+                        <input type="email" id="forgetEmail" placeholder="correo@empresa.com" required style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" class="mform-submit">Enviar enlace de recuperación</button>
+                    <p style="text-align:center; margin-top:.8rem; margin-bottom:0; font-size:.8rem">
+                        <a href="#" onclick="event.preventDefault(); switchTab('login');" style="color:var(--eco-green); text-decoration: none; font-weight: 600;">
+                            ← Volver al inicio de sesión
+                        </a>
+                    </p>
+                </form>
+            </div>
+
+            <div class="modal-panel" id="panel-register">
+                <h3>Crea tu cuenta</h3>
+                <form id="registerForm" onsubmit="handleRegister(event)">
+                    <div class="mform-group">
+                        <label>Nombre completo *</label>
+                        <input type="text" id="regName" placeholder="Juan Díaz" required style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div class="mform-group">
+                        <label>Empresa</label>
+                        <input type="text" id="regCompany" placeholder="Nombre de empresa" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div class="mform-group">
+                        <label>Correo electrónico *</label>
+                        <input type="email" id="regEmail" placeholder="correo@empresa.com" required style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div class="mform-group">
+                        <label>Contraseña *</label>
+                        <input type="password" id="regPassword" placeholder="Mínimo 8 caracteres" required style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div class="mform-group">
+                        <label>Confirmar contraseña *</label>
+                        <input type="password" id="regConfirmPassword" placeholder="Repite tu contraseña" required style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div style="display: flex; gap: 0.4rem; align-items: flex-start; margin: 0.6rem 0;">
+                        <input type="checkbox" id="regTerms" required style="cursor: pointer; margin-top:2px;">
+                        <label for="regTerms" style="font-size: 0.75rem; color: var(--eco-gray); line-height: 1.2; cursor: pointer;">
+                            Acepto los <a href="#" style="color: var(--eco-green); text-decoration: none; font-weight: 600;">Términos y Privacidad</a>.
+                        </label>
+                    </div>
+                    <div id="registerErrorMsg" style="color: #c0392b; font-size: 0.78rem; margin-bottom: 0.5rem; display: none; font-weight: 500;"></div>
+                    <button type="submit" class="mform-submit" id="regSubmitBtn">Crear cuenta</button>
+                </form>
+            </div>
+
+            <div class="modal-panel" id="panel-checkout">
+                <div style="text-align:center; margin-bottom: 1rem;">
+                    <h3 style="margin-bottom:0.2rem; font-size: 1.3rem;">Finalizar Compra</h3>
+                    <p style="font-size:0.8rem; color:var(--eco-gray); margin-bottom: 0;">Elige un método de pago corporativo seguro</p>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.03); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); padding: 0.8rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+                        <span style="font-size:0.85rem; color:var(--eco-gray);">Total a pagar:</span>
+                        <strong style="font-size:1.05rem; color:var(--eco-green);" id="checkoutTotalDisplay">$0 MXN</strong>
+                    </div>
+                    <div style="font-size:0.7rem; color:var(--eco-gray);"><i class="fas fa-shield-alt"></i> Transacción cifrada SSL (256-bit)</div>
+                </div>
+
+                <form id="checkoutForm" onsubmit="processSimulatedPayment(event)">
+                    <div style="display:flex; gap:0.5rem; margin-bottom: 1rem;" id="paymentMethodSelectors">
+                        <label class="payment-method-option active-method" style="flex:1; text-align:center; padding:0.6rem; border:1.5px solid var(--eco-green); background: rgba(191, 253, 0, 0.05); border-radius:8px; cursor:pointer; transition:all 0.3s;">
+                            <input type="radio" name="payMethod" value="card" checked style="display:none;">
+                            <i class="fas fa-credit-card" style="font-size:1.2rem; margin-bottom:0.3rem; display:block;"></i>
+                            <span style="font-size:0.75rem; font-weight:600;">Tarjeta</span>
+                        </label>
+                        <label class="payment-method-option" style="flex:1; text-align:center; padding:0.6rem; border:1px solid #ddd; border-radius:8px; cursor:pointer; transition:all 0.3s;">
+                            <input type="radio" name="payMethod" value="transfer" style="display:none;">
+                            <i class="fas fa-university" style="font-size:1.2rem; margin-bottom:0.3rem; display:block; color:var(--eco-gray);"></i>
+                            <span style="font-size:0.75rem; font-weight:600; color:var(--eco-gray);">SPEI</span>
+                        </label>
+                    </div>
+
+                    <div id="cardDetailsForm">
+                        <div class="mform-group" style="margin-bottom: 0.8rem;">
+                            <label style="font-size: 0.8rem; margin-bottom: 0.2rem;">Titular de la tarjeta</label>
+                            <input type="text" placeholder="Nombre como aparece en la tarjeta" required style="width: 100%; box-sizing: border-box; padding: 0.55rem; font-size: 0.85rem;">
+                        </div>
+                        <div class="mform-group" style="margin-bottom: 0.8rem;">
+                            <label style="font-size: 0.8rem; margin-bottom: 0.2rem;">Número de tarjeta</label>
+                            <input type="text" placeholder="0000 0000 0000 0000" maxlength="19" required style="width: 100%; box-sizing: border-box; padding: 0.55rem; font-size: 0.85rem;">
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                            <div class="mform-group" style="margin-bottom: 0;">
+                                <label style="font-size: 0.8rem; margin-bottom: 0.2rem;">Vencimiento</label>
+                                <input type="text" placeholder="MM/AA" maxlength="5" required style="width: 100%; box-sizing: border-box; padding: 0.55rem; font-size: 0.85rem;">
+                            </div>
+                            <div class="mform-group" style="margin-bottom: 0;">
+                                <label style="font-size: 0.8rem; margin-bottom: 0.2rem;">CVC / CVV</label>
+                                <input type="password" placeholder="123" maxlength="4" required style="width: 100%; box-sizing: border-box; padding: 0.55rem; font-size: 0.85rem;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="mform-submit" style="margin-top:1rem; padding: 0.6rem; font-size: 0.9rem; width: 100%;">
+                        <i class="fas fa-lock"></i> Confirmar y Pagar
+                    </button>
+                    <p style="text-align:center; margin-top:0.8rem; margin-bottom:0; font-size:0.75rem">
+                        <a href="#" onclick="event.preventDefault(); closeModal();" style="color:var(--eco-gray); text-decoration: none; font-weight: 600;">
+                            Cancelar y seguir comprando
+                        </a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    
+    <script src="js/main.js"></script>
+    <script src="js/shop.js"></script>
+    <script src="js/three-hero.js"></script>
+</body>
+</html>
