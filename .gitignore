@@ -1,0 +1,14 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
+# Entornos virtuales de Python
+venv/
+**/venv/
+
+# Cache y temporales de Python
+*.pyc
+__pycache__/
+*.sqlite3
+
+# Variables de entorno y configuración local
+.env
+.vscode/
+.idea/
