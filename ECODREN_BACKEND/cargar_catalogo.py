@@ -7,6 +7,12 @@ django.setup()
 from core.models import Categoria, Producto
 
 DATOS_CATALOGO = {
+    "Boquillas": [
+        "Modelo BPT-3 Penetrante", "Modelo BPT-4 Penetrante", "Modelo BSN-15 Sanitaria",
+        "Modelo BSN-1530 Sanitaria", "Modelo BPL-6 Pulidora", "Modelo BPL-8 Pulidora",
+        "Modelo BPGP-3.4 Rompedora", "Modelo BPGP-1 Rompedora", "Modelo BPG-3.4 Rompedora",
+        "Modelo BTOR-15 Limpia Pisos", "Modelo BTER-1 Corta Raíces"
+    ],
     "Eléctrico": [
         "Switch de cola de rata", "Switch de vacio", "Switch con seguro",
         "Joystick", "Joystick dual", "Switch de 3 posiciones",
