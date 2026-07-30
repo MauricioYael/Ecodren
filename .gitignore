@@ -1,14 +1,16 @@
-# Created by venv; see https://docs.python.org/3/library/venv.html
-# Entornos virtuales de Python
+# Entorno Virtual
 venv/
-**/venv/
+env/
+.venv/
 
-# Cache y temporales de Python
-*.pyc
-__pycache__/
+# Caché de Python
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Base de datos local
 *.sqlite3
 
-# Variables de entorno y configuración local
-.env
+# IDEs
 .vscode/
 .idea/

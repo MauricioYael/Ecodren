@@ -149,7 +149,7 @@
             <label class="filter-label">Buscar</label>
             <div class="search-input-wrap">
                 <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Nombre o código...">
+                <input type="text" id="searchInput" value="{{busqueda}}" placeholder="Nombre o código..." onkeypress="if(event.key === 'Enter') aplicarFiltros()">
             </div>
         </div>
         <div class="filter-group">
@@ -211,7 +211,17 @@
         <div class="shop-grid" id="shopGrid">
             {% for producto in productos %}
             <div class="product-card" data-category="{{ producto.categoria.id }}">
-                <div class="product-card-img">
+                <div class="product-card-img" style="cursor: pointer;" 
+                     data-id="{{ producto.id }}"
+                     data-nombre="{{ producto.nombre }}"
+                     data-cat="{{ producto.categoria.nombre }}"
+                     data-precio="{{ producto.precio_base|stringformat:'s' }}"
+                     data-stock="{{ producto.stock }}"
+                     data-desc="{{ producto.descripcion|default:'' }}"
+                     data-img="{% if producto.imagen %}{{ producto.imagen.url }}{% endif %}"
+                     data-sku="{{ producto.codigo_sku }}"
+                     data-specs="{{ producto.especificaciones|default:'' }}"
+                     onclick="triggerModalDetalle(this)">
                     <span class="badge-sku">{{ producto.codigo_sku }}</span>
                     {% if producto.imagen %}
                         <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" loading="lazy">
@@ -225,7 +235,19 @@
 
                 <div class="product-card-body">
                     <span class="product-cat-name">{{ producto.categoria.nombre }}</span>
-                    <h3 class="product-title">{{ producto.nombre }}</h3>
+                    <h3 class="product-title" style="cursor: pointer;"
+                        data-id="{{ producto.id }}"
+                        data-nombre="{{ producto.nombre }}"
+                        data-cat="{{ producto.categoria.nombre }}"
+                        data-precio="{{ producto.precio_base|stringformat:'s' }}"
+                        data-stock="{{ producto.stock }}"
+                        data-desc="{{ producto.descripcion|default:'' }}"
+                        data-img="{% if producto.imagen %}{{ producto.imagen.url }}{% endif %}"
+                        data-sku="{{ producto.codigo_sku }}"
+                        data-specs="{{ producto.especificaciones|default:'' }}"
+                        onclick="triggerModalDetalle(this)">
+                        {{ producto.nombre }}
+                    </h3>
                     <p class="product-desc">
                         {{ producto.descripcion|default:producto.especificaciones|truncatewords:10|default:"Refacción original de alto desempeño para equipos desazolvadores." }}
                     </p>
@@ -243,7 +265,12 @@
                         </span>
                     </div>
 
-                    <button class="btn-add-cart" data-sku="{{ producto.codigo_sku }}">
+                    <button type="button" class="btn-add-cart" 
+                            data-id="{{ producto.id }}"
+                            data-nombre="{{ producto.nombre }}"
+                            data-precio="{{ producto.precio_base|stringformat:'s' }}"
+                            data-img="{% if producto.imagen %}{{ producto.imagen.url }}{% endif %}"
+                            onclick="triggerAgregarAlCarrito(this)">
                         <i class="fas fa-shopping-cart"></i> Agregar
                     </button>
                 </div>
@@ -517,8 +544,33 @@
     </div>
 </footer>
 
+<script>
+    function triggerModalDetalle(el) {
+        window.abrirModalDetalle(
+            el.dataset.id,
+            el.dataset.nombre,
+            el.dataset.cat,
+            el.dataset.precio,
+            el.dataset.stock,
+            el.dataset.desc,
+            el.dataset.img,
+            el.dataset.sku,
+            el.dataset.specs
+        );
+    }
+
+    function triggerAgregarAlCarrito(el) {
+        window.agregarAlCarrito(
+            el.dataset.id,
+            el.dataset.nombre,
+            el.dataset.precio,
+            el.dataset.img
+        );
+    }
+</script>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="{% static 'js/main.js' %}"></script>
-<script src="{% static 'js/shop.js' %}?v=3.0"></script>
+<script src="{% static 'js/shop.js' %}?v=6.0"></script>
 </body>
 </html>

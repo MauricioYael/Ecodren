@@ -335,15 +335,259 @@
 .skeleton-desc { width: 100%; height: 14px; margin-bottom: 0.5rem; }
 
 /* ── MODAL PRODUCTO & DETALLES ── */
-.product-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10, 26, 15, 0.65); backdrop-filter: blur(6px); z-index: 600; align-items: center; justify-content: center; padding: 1rem; }
+.product-modal-overlay { 
+    display: none; 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(10, 26, 15, 0.65); 
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px); 
+    z-index: 1000; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 1.5rem; 
+}
 .product-modal-overlay.open { display: flex; }
-.product-modal { background: #fff; border-radius: 20px; width: min(900px, 100%); max-height: 90svh; overflow-y: auto; position: relative; animation: modalIn .3s ease; }
+.product-modal { 
+    background: #ffffff; 
+    border-radius: 20px; 
+    width: min(850px, 95%); 
+    max-height: 90vh; 
+    overflow-y: auto; 
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.2); 
+    animation: modalSlideUp 0.3s cubic-bezier(0.16,1,0.3,1); 
+}
 @keyframes modalIn { from { opacity: 0; transform: scale(.96) } to { opacity: 1; transform: scale(1) } }
 .product-modal-close { position: absolute; top: 1rem; right: 1.25rem; background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--eco-gray); line-height: 1; z-index: 1; padding: 4px; }
 .product-modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
 .product-modal-img { background: var(--eco-light, #e8f5ed); border-radius: 20px 0 0 20px; display: flex; align-items: center; justify-content: center; position: relative; min-height: 320px; overflow: hidden; }
 .product-modal-img img { max-width: 85%; max-height: 85%; object-fit: contain; }
 .product-modal-info { padding: 2.5rem; overflow-y: auto; }
+
+#ecoToast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--eco-green, #1a6b3c);
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: 50px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    font-size: 0.88rem;
+    font-weight: 600;
+    z-index: 10000;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+#ecoToast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+#ecoToast i {
+    color: var(--eco-lime, #bffd00);
+}
+
+.modal-cat {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--eco-green, #1a6b3c);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.product-modal-info h2 {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--eco-dark, #0a1a0f);
+    margin-bottom: 0.5rem;
+    line-height: 1.25;
+}
+
+.modal-desc {
+    font-size: 0.88rem;
+    color: var(--eco-gray, #6b7280);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+/* AQUI ESTABA EL ERROR: DEBE SER .modal-specs */
+.modal-specs {
+    background: #f8fafc;
+    border-left: 3px solid var(--eco-green, #1a6b3c);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+    font-size: 0.82rem;
+    color: var(--eco-dark, #0a1a0f);
+}
+
+.modal-specs .spec-row {
+    margin-bottom: 0.3rem;
+}
+
+.modal-specs .spec-row:last-child {
+    margin-bottom: 0;
+}
+
+.modal-specs strong {
+    color: var(--eco-dark, #0a1a0f);
+    font-weight: 600;
+}
+
+.modal-specs p {
+    margin: 0.25rem 0 0 0;
+    color: var(--eco-gray, #6b7280);
+    line-height: 1.4;
+}
+
+.modal-price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.modal-price {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--eco-dark, #0a1a0f);
+}
+
+.modal-stock-badge {
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 50px;
+}
+
+.modal-stock-badge.in-stock {
+    background: #e8f5ed;
+    color: var(--eco-green, #1a6b3c);
+}
+
+.modal-stock-badge.out-stock {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+.modal-qty-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.modal-qty-row label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--eco-dark, #0a1a0f);
+}
+
+.modal-qty-ctrl {
+    display: inline-flex;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 50px;
+    padding: 3px 10px;
+    gap: 12px;
+}
+
+.modal-qty-ctrl button {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--eco-dark, #0a1a0f);
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    transition: color 0.15s;
+}
+
+.modal-qty-ctrl button:hover {
+    color: var(--eco-green, #1a6b3c);
+}
+
+.modal-qty-ctrl span {
+    font-weight: 700;
+    font-size: 0.9rem;
+    min-width: 16px;
+    text-align: center;
+}
+
+.modal-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.modal-add-cart {
+    flex: 1;
+    background: var(--eco-green, #1a6b3c);
+    color: #ffffff;
+    border: none;
+    padding: 0.8rem 1.4rem;
+    border-radius: 50px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s, transform 0.15s;
+    box-shadow: 0 4px 14px rgba(26, 107, 60, 0.25);
+}
+
+.modal-add-cart:hover {
+    background: #144f2d;
+    transform: translateY(-2px);
+}
+
+.modal-quote-btn {
+    color: var(--eco-green, #1a6b3c);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.modal-quote-btn:hover {
+    text-decoration: underline;
+    opacity: 0.85;
+}
+
+.modal-shipping {
+    font-size: 0.78rem;
+    color: var(--eco-gray, #6b7280);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.modal-shipping i {
+    color: var(--eco-green, #1a6b3c);
+}
+
+
 
 /* ── RESPONSIVE & MOBILE CONTROL ── */
 .close-sidebar-btn { display: none; }
