@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil | ECODREN — Equipos MC</title>
+    <link rel="icon" type="image/jpeg" href="Assets/logo_web_ecodren.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/tienda.css">
+    <link rel="stylesheet" href="css/perfil.css">
+</head>
+<body class="profile-body">
+
+    <!-- NAV CORREGIDO -->
+    <nav id="mainNav" class="light scrolled profile-nav">
+        <a href="index.html" class="nav-logo">
+            <img src="Assets/logo-ecodren.png" alt="Ecodren Logo" class="web-logo">
+        </a>
+
+        <ul class="nav-center">
+            <li><a href="index.html#categorias">Ficha Técnica</a></li>
+            <li><a href="tienda.html">Tienda</a></li>
+            <li><a href="maquinaria.html">Equipos</a></li>
+            <li><a href="recursos.html">Recursos</a></li>
+            <li><a href="index.html#por-que">Nosotros</a></li>
+        </ul>
+
+        <div class="nav-right">
+            <a href="index.html#contacto" class="nav-cta">Cotizar</a>
+            <button class="cart-nav-btn" id="cartNavBtn">🛒</button>
+            
+            <div class="profile-wrap">
+                <button class="profile-btn active">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="width:18px; height:18px;">
+                        <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <button class="hamburger" id="hamburger" aria-label="Menú">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html#categorias">Ficha Técnica</a>
+        <a href="tienda.html">Tienda</a>
+        <a href="maquinaria.html">Equipos</a>
+        <a href="recursos.html">Recursos</a>
+        <a href="index.html#por-que">Nosotros</a>
+        <a href="index.html#contacto" style="color:var(--eco-green);font-weight:600">Cotizar →</a>
+    </div>
+
+    <main class="profile-page-wrapper">
+        <div class="profile-dashboard-grid">
+            
+            <aside class="profile-sidebar">
+                <div class="profile-user-card">
+                    <div class="profile-avatar-wrapper">
+                        <div class="profile-avatar-letters profile-avatar" id="userAvatar"></div>
+                        <button class="avatar-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                    </div>
+                    <h2 class="profile-user-name" id="userName"></h2>
+                    <p class="profile-user-role">Cliente industrial Certificado</p>
+                    <div class="profile-badge-status">
+                        <span class="status-dot"></span> CUENTA ACTIVA
+                    </div>
+                </div>
+
+                <button class="mobile-menu-trigger" id="mobileMenuTrigger">
+                    <span><i class="fa-solid fa-building"></i>Datos de la Empresa</span>
+                    <i class="fa-solid fa-chevron-down arrow-toogle"></i>
+                </button>
+
+                <div class="profile-sidebar-menu" id="accordionMenu">
+                    <button class="sidebar-menu-item active" data-pane="datos">
+                        <i class="fa-solid fa-building"></i> Datos de la Empresa
+                    </button>
+                    <button class="sidebar-menu-item" data-pane="pedidos">
+                        <i class="fas fa-address-card"></i> Historial de pedidos
+                    </button>
+                    <button class="sidebar-menu-item" data-pane="cotizaciones">
+                        <i class="fa-solid fa-file-invoice-dollar"></i> Cotizaciones
+                    </button>
+                    <button class="sidebar-menu-item" data-pane="pagos">
+                        <i class="fa fa-credit-card-alt"></i> Métodos de pago
+                    </button>
+                    <button class="sidebar-menu-item" data-pane="direcciones">
+                        <i class="fa fa-map-marker" aria-hidden="true"></i> Dírecciones Guardadas
+                    </button>
+                    <button class="sidebar-menu-item" data-pane="configuracion">
+                        <i class="fa-solid fa-sliders"></i> Preferencias
+                    </button>
+                </div>
+
+                <div class="sidebar-support-wrapper">
+                    <button class="sibedar-support-card" id="btn-support-trigger" onclick="toggleSupportMenu(event)">
+                        <div class="support-icon-box"><i class="fas fa-headset"></i></div>
+                        <div class="support-text-box">
+                            <h3>¿Necesitas ayuda?</h3>
+                            <p>Nuestro equipo está listo para ayudarte <i class="fa-solid fa-chevron-up support-arrow"></i></p>
+                        </div>
+                    </button>
+
+                    <div class="support-floating-menu" id="supportFloatingMenu">
+                        <a href="https://w.me/5255XXXXXXXXX?text=Hola,%20necesito%20soporte%20técnico%20con%20un%20equipo%20Ecodren" target="_blank" class="support-menu-item">
+                            <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i>
+                            <div>
+                                <strong>Soporte por WhatsApp</strong>
+                                <span>Contacto directo inmediato</span>
+                            </div>
+                        </a>
+                        <a href="mailto:soport@equipomc.com?subject=Soporte%20técnico%20plataforma%20Ecodren" class="support-menu-item">
+                            <i class="fa-solid fa-envelope" style="color: #3b82f6;"></i>
+                            <div>
+                                <strong>Enviar ticket por correo</strong>
+                                <span>Respuesta en menos de 2 horas</span>
+                            </div>
+                        </a>
+                        <button onclick="mostrarManualTecnico()" class="support-menu-item btn-inline-support">
+                            <i class="fa-solif fa-book" style="color: #bffd00;"></i>
+                            <div>
+                                <strong>Manuales Técnicos</strong>
+                                <span>Descargar guias de desazolve</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="profile-content-area">
+
+                <!-- 🟢 PANEL 1: DATOS GENERALES -->
+                <div class="profile-pane active" id="pane-datos">
+                    <div class="welcome-operational-header">
+                        <div class="welcome-text-side">
+                            <span class="welcome-tagline">Bienvenido, Mauricio</span>
+                            <h1>Información Operativa Corporativa</h1>
+                            <p>Administra la informacion de tu empresa y manten tus datos actualizados para una mejor experiencia</p>
+                        </div>
+                        <div class="welcome-illustration-side">
+                           <img src="Assets/granjero.svg" alt="Ilustracion Operativa" class="welcome-svg-vector">
+                        </div>
+                    </div>
+
+                    <div class="operational-horizontal-row">
+                        <div class="operational-col-item">
+                            <div class="col-item-icon"><i class="fa-solid fa-user"></i></div>
+                            <h4>Nombre Completo</h4>
+                            <p class="profile-name">&nbsp;</p>
+                        </div>
+                        <div class="operational-col-item">
+                            <div class="col-item-icon"><i class="fa-solid fa-building"></i></div>
+                            <h4>Razón Social</h4>
+                            <p>Servicios Hidráulicos del centro</p>
+                        </div>
+                        <div class="operational-col-item">
+                            <div class="col-item-icon"><i class="fa-solid fa-envelope"></i></div>
+                            <h4>Correo Electrónico</h4>
+                            <p class="highlight-green profile-email" id="userEmail">&nbsp;</p>
+                        </div>
+                        <div class="operational-col-item">
+                            <div class="col-item-icon"><i class="fa-solid fa-phone"></i></div>
+                            <h4>Teléfono Operativo</h4>
+                            <p class="highlight-green ">+52 55 XXXX XXXX</p>
+                        </div>
+                    </div>
+
+                    <div class="operational-address-block">
+                        <div class="address-icon-box"><i class="fa-solid fa-location-dot"></i></div>
+                        <div class="address-text-box">
+                            <h4>Dirección de Entrega Principal</h4>
+                            <p>Av.Central #123, Col.Industrial, C.P. 12345 <br>Ciudad de México, México</p>
+                        </div>
+                        <div class="address-action-box">
+                            <button class="btn-address-edit-inline"><i class="fa-solid fa-pen"></i> Editar</button>
+                        </div>
+                    </div>
+
+                    <div class="operational-security-banner">
+                        <div class="security-shield-icon"><i class="fa-solid fa-shield"></i></div>
+                        <div class="security-banner-text">
+                            <h4>Tu información está protegida</h4>
+                            <p>Utilizamos los más altos estándares de seguridad para proteger tus datos y garantizar privacidad</p>
+                        </div>
+                        <div class="security-lock-watermark"><i class="fa-solid fa-lock"></i></div>
+                    </div>
+
+                    <div class="operational-submit-container">
+                        <button class="btn-save-operational-changes"><i class="fa-solid fa-floppy-disk"></i>Guardar Cambios</button>
+                    </div>
+                </div>
+
+                <!-- 📦 PANEL 2: HISTORIAL DE PEDIDOS -->
+                <div class="profile-pane" id="pane-pedidos">
+                    <div class="pane-header">
+                        <h3>Historial de Pedidos y Logística</h3>
+                        <p>Monitorea el estatus en tiempo real de tus envíos técnicos, refacciones y órdenes previas.</p>
+                    </div>
+                    <div class="profile-table-responsive">
+                        <table class="profile-data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID Pedido</th>
+                                    <th>Fecha Operación</th>
+                                    <th>Equipo / Insumo</th>
+                                    <th>Costo Total</th>
+                                    <th>Estatus de Despacho</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>#EC-2026-9821</strong></td>
+                                    <td>12 Jun 2026</td>
+                                    <td>Tobera Industrial 3D Premium × 1</td>
+                                    <td>$4,500 MXN</td>
+                                    <td><span class="badge-table status-envio">En Aduana / Puerto</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#EC-2026-9745</strong></td>
+                                    <td>28 May 2026</td>
+                                    <td>Manguera Hidrojet Reforzada 3/4" × 1</td>
+                                    <td>$7,500 MXN</td>
+                                    <td><span class="badge-table status-entregado">Liberado / Entregado</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 📑 PANEL 3: COTIZACIONES -->
+                <div class="profile-pane" id="pane-cotizaciones">
+                    <div class="pane-header">
+                        <h3>Cotizaciones y Pedimentos Guardados</h3>
+                        <p>Consulta las configuraciones de equipos de alta presión y presupuestos aprobados para tu comercio.</p>
+                    </div>
+                    <div class="company-data-grid">
+                        <div class="company-card">
+                            <div class="company-card-icon"><i class="fa-solid fa-file-contract"></i></div>
+                            <div class="company-card-info">
+                                <label>No. Cotización / Vigencia</label>
+                                <p>COT-2026-042 (Vence: 30 Jul 2026)</p>
+                                <label style="margin-top: 8px !important;">Equipo Solicitado</label>
+                                <p style="font-size: 0.9rem; color: #475569;">Sistema Hidrojet Ecodren Industrial</p>
+                            </div>
+                        </div>
+                        <div class="company-card">
+                            <div class="company-card-icon"><i class="fa-solid fa-headset"></i></div>
+                            <div class="company-card-info">
+                                <label>Asesor Técnico Asignado</label>
+                                <p>Ing. Roberto Martínez</p>
+                                <label style="margin-top: 8px !important;">Tipo de Operación</label>
+                                <p style="font-size: 0.9rem; color: #475569;">Soporte Comercial Directo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 💳 PANEL 4: MÉTODOS DE PAGO (Nuevo) -->
+                <div class="profile-pane" id="pane-pagos">
+                    <div class="pane-header payment-pane-header">
+                        <div class="header-text-side">
+                            <h3>Métodos de Pago</h3>
+                            <p>Administra las tarjetas de crédito, débito o cuentas bancarias ligadas a cuenta comercial.</p>
+                        </div>
+                        <button class="btn-add-payment-method" id="btn-add-payment"><i class="fa-solid fa-plus"></i> Agregar Método</button>
+                    </div>
+
+                    <div class="company-data-grid text-left">
+                        <div class="swipe-container-wrapper">
+                            <div class="company-card payment-swiper-card" data-card-id="1">
+                                <div class="company-card-icon" style="color: #0a3d2f;"><i class="fa-solid fa-credit-card"></i></div>
+                                <div class="company-card-info">
+                                    <label>Tarjeta de Crédito Principal</label>
+                                    <p>•••• •••• •••• 4321</p>
+                                    <label style="margin-top: 4px; color: #10b981; font-weight: 700;">Vence: 12/29</label>
+                                </div>
+                                <div class="desktop-cart-actions">
+                                    <button class="btn-action-edit" title="Modificador"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn-action-delete" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="swipe-behind-actions">
+                                <button class="swipe-btn-edit"><i class="fa-solid fa-pen"></i></button>
+                                <button class="swipe-btn-delete"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="swipe-container-wrapper">
+                            <div class="company-card payment-swipe-card" data-card-id="2">
+                                <div class="company-card-icon" style="color: #0a3d2f;"><i class="fa-solid fa-wallet"></i></div>
+                                <div class="company-card-info">
+                                    <label>Método Alternativo</label>
+                                    <p>Transferencia Interbancaria (SPEI)</p>
+                                    <label style="margin-top: 4px;">Clabel Registrada</label>
+                                </div>
+                                <div class="desktop-card-actions">
+                                    <button class="btn-action-edit" title="Modificador"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn-action-delete" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="swipe-behind-actions">
+                                <button class="swipe-btn-edit"><i class="fa-solid fa-pen"></i></button>
+                                <button class="swipe-btn-delete"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <!-- 📍 PANEL 5: DIRECCIONES GUARDADAS (Nuevo) -->
+                <div class="profile-pane" id="pane-direcciones">
+                    <div class="pane-header address-header-flex">
+                        <div class="header-text">
+                            <h3>Catálogo de Direcciones de Despacho</h3>
+                            <p>Administra los diferentes destinos, almacenes o aduanas para la entrega de tus equipos técnicos.</p>
+                        </div>
+                        <button class="btn-add-new-address" id="btn-toggle-address-form">
+                            <i class="fa-solid fa-plus"></i> Agregar dirección
+                        </button>
+                    </div>
+
+                    <div class="address-form-box" id="address-form-container">
+                        <h4 id="address-form-title"><i class="fa-solid fa-map-location-dot"></i> Agregar Nueva Dirección</h4>
+                        <form id="form-manage-address">
+                            <input type="hidden" id="address-id-field">
+                            <div class="profile-form-group">
+                                <label for="address-name">Nombre de la Ubicación / Sucursal </label>
+                                <input type="text" id="address-name" placeholder="Ej. Almacén Central - Planta Norte" required>
+                            </div>
+                            <div class="address-form-grid-row">
+                                <div class="profile-form-group">
+                                    <label for="address-street">Calle y Número</label>
+                                    <input type="text" id="address-street" placeholder="Ej. Av. Central #123" required>
+                                </div>
+                                <div class="profile-form-group">
+                                    <label for="address-colony"> Colonia</label>
+                                    <input type="text" id="address-colony" placeholder="Ej.Industrial" required> 
+                                </div>
+                            </div>
+                            <div class="address-form-grid-row">
+                                <div class="profile-form-group">
+                                    <label for="address-cp">Código Postal</label>
+                                    <input type="text" id="address-cp" placeholder="Ej.12345" required>
+                                </div>
+                                <div class="profile-form-group">
+                                    <label for="address-city">Ciudad y Estado</label>
+                                    <input type="text" id="address-city" placeholder="Ej.Ciudad de México" required>
+                                </div>
+                            </div>
+
+                            <div class="address-form-buttons">
+                                <button type="button" class="btn-address-cancel" id="btn-cancel-address"> Cancelar</button>
+                                <button type="submit" class="profile-submit-btn" style="margin-top: 0;"> Guardar Ubicación</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="address-cards-list">
+                        <div class="operational-address-block" data-id="1">
+                            <div class="address-icon-box"><i class="fa-solid fa-location-dot"></i></div>
+                            <div class="address-text-box">
+                                <h4 class="card-title-data">Sucursal Norte - Almacén Principal</h4>
+                                <p class="card-desc-data">Av. Central #123, Col. Industrial, C.P. 12345<br>Ciudad de México, México</p>
+                            </div>
+                            <div class="address-action-box">
+                                <button class="btn-address-edit-inline" title="Editar dirección"><i class="fa-solid fa-pen"></i> Editar</button>
+                                <button class="btn-address-delete-inline" title="Eliminar dirección"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="operational-address-block" data-id="2">
+                            <div class="address-icon-box"><i class="fa-solid fa-location-dot"></i></div>
+                            <div class="address-text-box">
+                                <h4 class="card-title-data">Planta Alterna - Logística</h4>
+                                <p class="card-desc-data">Vía Adolfo López Mateos S/N, Industrial Tlalnepantla, C.P. 54000<br>Estado de México, México</p>
+                            </div>
+                            <div class="address-action-box">
+                                <button class="btn-address-edit-inline" title="Editar dirección"><i class="fa-solid fa-pen"></i> Editar</button>
+                                <button class="btn-address-delete-inline" title="Eliminar dirección"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ⚙️ PANEL 6: PREFERENCIAS / CONFIGURACIÓN -->
+                <div class="profile-pane" id="pane-configuracion">
+                    <div class="pane-header">
+                        <h3>Preferencias y Seguridad del Perfil</h3>
+                        <p>Administra las credenciales de acceso de tu cuenta, configuraciones de visualización y preferencias.</p>
+                    </div>
+
+                    <div class="config-section">
+                        <h4><i class="fa-solid fa-circle-half-stroke"></i>Personalización de la interfaz</h4>
+                        <p style="font-size: 0.85rem; color: #64749b; margin-bottom: 1.25rem;">Cambiar el aspecto visual de la plataforma para adaptarlo a tus necesidades o iluminacion ambiental</p>
+
+                        <div class="profile-form-group" style="margin-bottom: 1.5rem;">
+                            <label style="margin-bottom: 0.5rem;">Tema del sistema</label>
+                            <div class="theme-switch-wrapper">
+                                <label class="theme-switch-container" for="theme-toggle-checkbox">
+                                    <input type="checkbox" id="theme-toggle-checkbox" onchange="typeof toggleThemeSelector === 'function' ? toggleThemeSelector() : console.log('Cambio de tema visualizado')">
+
+                                    <div class="theme-switch-slider">
+                                        <span class="switch-text-mode text-day"> Día</span>
+                                        <span class="switch-text-mode text-night"> Noche</span>
+
+                                        <div class="theme-switch-ball">
+                                            <i class="fa-solid fa-sun icon-sun"></i>
+                                            <i class="fa-solid fa-moon icon-moon"></i>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="profile-form-group">
+                            <label for="pref-density">Densidad de las tablas de historial</label>
+                            <select id="pref-density" class="profile-select-field font-density-select">
+                                <option value="default" selected>Estandar (Recomendado)</option>
+                                <option value="compact">Compacta (Más datos, menos espacio)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="config-section">
+                        <h4><i class="fa-solid fa-key"></i>Seguridad y Acceso</h4>
+                        <form id="form-password">
+                            <div class="profile-form-group">
+                                <label  for="current-password">Contraseña actual</label>
+                                <input type="password"  id="current-password" placeholder="••••••••" required>
+                            </div>
+                            <div class="profile-form-row">
+                                <div class="profile-form-group">
+                                    <label for="new-password">Nueva Contraseña</label>
+                                    <input type="password" id="new-password" placeholder="Minimo 8 Caracteres" required>
+                                </div>
+                                <div class="profile-form-group">
+                                    <label for="confirm-password">Confirmar nueva Contraseña</label>
+                                    <input type="password" id="confirm-password" placeholder="Repite tu contraseña" required> 
+                                </div>
+                            </div>
+                            <button type="submit" class="profile-submit-btn" style="margin-top: 1rem !important;">Actualizar Credenciales</button>
+                        </form>
+                    </div>
+
+                    <div class="config-section">
+                        <h4><i class="fa-solid fa-bell"></i>Preferencias de alertas Comerciales</h4>
+                        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Seleciona los canales y tipos de notificaciones operativas que deseas recibir.</p>
+
+                        <div class="toggle-group">
+                            <label class="switch-container">
+                                <span>Notificarme sobre actualizaciones de envios.</span>
+                                <div class="switch-wrapper">
+                                    <input type="checkbox" id="notify-customs" checked>
+                                    <span class="switch-slider"></span>
+                                </div>
+                            </label>
+
+                            <label class="switch-container">
+                                <span>Recibir alertas automaticas cuando una cotizacion esté por vencer (7 días antes)</span>
+                                <div class="switch-wrapper">
+                                    <input type="checkbox"  id="notify-quotes" checked>
+                                    <span class="switch-slider"></span>
+                                </div>
+                            </label>
+
+                            <label class="switch-container">
+                                <span>Recibir confirmaciones de despacho y liberacion de guias de entrega en mi correo.</span>
+                                <div class="switch-wrapper">
+                                    <input type="checkbox" id="notify-delivery" checked>
+                                    <span class="switch-slider"></span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="config-section">
+                        <h4><i class="fa-solid fa-earth-americas"></i> Localizacion e Idiomas del sistema</h4>
+                        <div class="profile-form-row">
+                            <div class="profile-form-group">
+                                <label for="pref-currency">Moneda de facturacion por defecto</label>
+                                <select id="pref-currency" style="padding: 0.75rem 1rem; border: 1px solid rgba(26,34,38,0.15); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; background: #fdfdfd; outline: none;">
+                                    <option value="MXN" selected>MXN - Peso Mexicano</option>
+                                    <option value="USD" selected>USD - Dólar Americano</option>
+                                </select>
+                            </div>
+                            <div class="profile-form-group">
+                                <label for="pref-lang">Idioma del Panel Técnico</label>
+                                <select id="pref-lang"  style="padding: 0.75rem 1rem; border: 1px solid rgba(26,34,38,0.15); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; background: #fdfdfd; outline: none;">
+                                    <option value="es" selected>Español (América Latina)</option>
+                                    <option value="en">English (International)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="config-section" style="border-bottom: none; padding-bottom: 0;">
+                        <h4 style="color: #dc2626;"><i class="fa-solid fa-triangle-exclamation" style="color: #dc2626;"></i>Zona de peligro</h4>
+                        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem;">Al eliminar tu cuenta perderas de forma permanente el acceso al historial de pedidos, cotizaciones guardadas y catálogos logisticos.</p>
+
+                        <button type="button" class="delete-account-btn" onclick="confirmDeleteAccount()">
+                            <i class="fa-solid fa-trash-can"></i> Eliminar cuenta
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="#" class="nav-logo" style="margin-bottom: 0.75rem;">
+                    <img src="Assets/logo-ecodren.png" alt="Ecodren Logo" class="web-logo">
+                </a>
+                <p>Maquinaria y refacciones especializadas para desazolvadores. Soluciones confiables para profesionales del drenaje.</p>
+            </div>
+            <div><h4>Tienda</h4><ul><li><a href="#tienda">Maquinaria</a></li><li><a href="#tienda">Refacciones</a></li><li><a href="#contacto">Servicio técnico</a></li></ul></div>
+            <div><h4>Empresa</h4><ul><li><a href="#por-que">Quiénes somos</a></li><li><a href="#por-que">Ventajas</a></li><li><a href="#contacto">Trabaja con nosotros</a></li></ul></div>
+            <div><h4>Contacto</h4><ul><li><a href="#contacto">Solicitar cotización</a></li><li><a href="#">+52 (55) XXX-XXXX</a></li><li><a href="#">ventas@ecodren.com</a></li></ul></div>
+        </div>
+
+        <div class="footer-corporate-brands">
+            <span class="corporate-title">Una empresa de Equipos Hidromecánicos MC</span>
+            <div class="brand-grid">
+                <img src="Assets/afilial1_ecovac.webp" alt="Ecovac" class="corp-logo">
+                <img src="Assets/afilial2_ecojet.webp" alt="Ecojet" class="corp-logo">
+                <img src="Assets/afilial3_ecoclean.webp" alt="Ecoclean" class="corp-logo">
+            </div>
+        </div>
+        
+        <div class="social-pills-container">
+            <a href="https://www.facebook.com/people/Equipos-MC/100054393135080/" target="_blank" class="social-pill facebook">
+                <div class="icon-circle"><i class="fab fa-facebook-f"></i></div>
+                <span class="social-text">Ecodren Oficial</span>
+            </a>
+             <a href="https://x.com/equipos_mc" target="_blank" class="social-pill instagram">
+                <div class="icon-circle"><i class="fab fa-instagram"></i></div>
+                <span class="social-text">@ecodren</span>
+             </a>
+             <a href="https://www.linkedin.com/in/equipos-mc-770731114/?trk=nav_responsive_tab_profile" target="_blank" class="social-pill linkedin">
+                <div class="icon-circle"><i class="fab fa-linkedin-in"></i></div>
+                <span class="social-text">Ecodren México</span>
+             </a>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2026 Ecodren. Todos los derechos reservados.</span>
+            <div class="footer-signature-wrap">
+                <span class="signature-tag">Una marca de</span>
+                <img src="Assets/grupo-mc.webp" alt="GrupoMC" class="signature-logo">
+                <span class="signature-text">Diseñado para profesionales del desazolve</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/perfil.js"></script>
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maquinaria | ECODREN — Configurador Industrial</title>
+    <link rel="icon" type="image/jpeg" href="Assets/logo_web_ecodren.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/tienda.css">
+    <link rel="stylesheet" href="css/maquinaria.css">
+</head>
+<body>
+
+<nav id="mainNav">
+    <a href="index.html" class="nav-logo">
+        <img src="Assets/logo-ecodren.png" alt="Ecodren Logo" class="web-logo">
+    </a>
+    <ul class="nav-center">
+        <li><a href="index.html#categorias">Ficha Técnica</a></li>
+        <li><a href="tienda.html">Tienda</a></li>
+        <li><a href="maquinaria.html" class="nav-active">Equipos</a></li>
+        <li><a href="recursos.html">Recursos</a></li>
+        <li><a href="index.html#por-que">Nosotros</a></li>
+    </ul>
+
+    <div class="nav-right">
+        <a href="index.html#contacto" class="nav-cta">Cotizar</a>
+        <button class="cart-nav-btn" id="cartNavBtn">🛒</button>
+
+        <div class="profile-wrap">
+            <button class="profile-btn" id="profileBtn">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+            </button>
+            
+            <div class="profile-dropdown" id="profileDropdown">
+                <div id="userState" style="display: none;">
+                    <div class="dropdown-user-header">
+                        <div class="user-avatar-circle profile-avatar">MY</div>
+                        <div class="user-info-text">
+                            <strong class="profile-name">Usuario</strong>
+                            <span class="profile-email">correo@empresa.com</span>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu-list">
+                        <li><a href="perfil.html"><i class="far fa-user"></i> Mi perfil</a></li>
+                        <li>
+                            <a href="perfil.html?tab=pedidos">
+                                <i class="far fa-check-square"></i> Mis pedidos
+                                <span class="badge-pedidos-count">3</span>
+                            </a>
+                        </li>
+                        <li><a href="perfil.html?tab=cotizaciones"><i class="far fa-comment-alt"></i> Cotizaciones guardadas</a></li>
+                        <li><a href="perfil.html?tab=configuracion"><i class="fas fa-cog"></i> Configuración</a></li>
+                        <li class="dropdown-divider"></li>
+                        <li><a href="#" onclick="logOut()" class="logout-link"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
+                    </ul>
+                </div>
+
+                <div id="guestState">
+                    <ul class="dropdown-menu-list">
+                        <li><a href="#" onclick="openModal('login')"><i class="fas fa-sign-in-alt"></i> Iniciar sesión</a></li>
+                        <li><a href="#" onclick="openModal('register')"><i class="fas fa-user-plus"></i> Crear cuenta</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <button class="hamburger" id="hamburger" aria-label="Menú">
+                <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+    <a href="index.html#categorias" class="mobile-link">Ficha Técnica</a>
+    <a href="tienda.html" class="mobile-link">Tienda</a>
+    <a href="#" class="mobile-link">Equipos</a>
+    <a href="recursos.html" class="mobile-link">Recursos</a>
+    <a href="index.html#por-que" class="mobile-link">Nosotros</a>
+    <a href="index.html#contacto" class="mobile-link" style="color:var(--eco-green);font-weight:600">Cotizar →</a>
+</div>
+
+<main class="configurator-page-radical">
+    <div class="radical-dashboard-layout">
+
+        <div class="radical-viewer-header">
+            <span class="machine-category-radical">Serie Industrial</span>
+            <h1 id="current-machine-name">Ecodren 17</h1>
+            <p class="machine-tagline-radical">Equipos de alto rendimiento diseñado para trabajos de limpieza y succión industrial en cualquier condición.</p>
+        </div>
+
+        <div class="radical-viewer-column">
+            <div class="radical-machine-display-box">
+                <div class="radical-specs-bullets-panel">
+                    <div class="radical-bullet-item">
+                        <div class="bullet-icon-circle"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="bullet-text-box">
+                            <h3>Alto rendimiento</h3>
+                            <p>Tecnologia avanzada para máxima eficiencia</p>
+                        </div>
+                    </div>
+                    <div class="radical-bullet-item">
+                        <div class="bullet-icon-circle"><i class="fa-solid fa-droplet"></i></div>
+                        <div class="bullet-text-box">
+                            <h3>Limpiza profunda</h3>
+                            <p>Sistema de succión y presion que garantiza resultados superiores</p>
+                        </div>
+                    </div>
+                    <div class="radical-bullet-item">
+                        <div class="bullet-icon-circle"><i class="fa-solid fa-gear"></i></div>
+                        <div class="bullet-text-box">
+                            <h3>Construccion robusta</h3>
+                            <p>Materiales de alta calidad para mayor durabilidad.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="radical-image-carousel-wrapper">
+                    <img id="mainMachineImage" src="Assets/ecodren-17/Ecodren ED-17.webp" alt="ecodren 17">
+                </div>
+
+                <div class="radical-slider-controls-row">
+                    <button class="carousel-photo-arrow-inline" onclick="cambiarFotoInterna(-1); event.preventDefault();" aria-label="Foto Anterior">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="radical-slider-indicators">
+                        <span class="indicator-bar active" onclick="irAFotoInterna(0)" style="cursor: pointer;"></span>
+                        <span class="indicator-bar" onclick="irAFotoInterna(1)" style="cursor: pointer;"></span>
+                        <span class="indicator-bar" onclick="irAFotoInterna(2)" style="cursor: pointer;"></span>
+                    </div>
+                    <button class="carousel-photo-arrow-inline" onclick="cambiarFotoInterna(1); event.preventDefault();" aria-label="Siguiente Foto">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>    
+        </div>
+
+        <div class="radical-control-column">
+            <div class="radical-floating-variant-arrows">
+                <button onclick="prevVariant()" aria-label="Anterior"><i class="fas fa-chevron-left"></i></button>
+                <button onclick="nextVariant()" aria-label="Siguiente"><i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <div class="radical-customization-card">
+                <div class="radical-tabs-pill" id="tabsPill">
+                    <button class="radical-tab-btn active" data-tab="accesorios" onclick="cambiarTab(this)">Equipamento</button>
+                    <button class="radical-tab-btn" data-tab="componentes" onclick="cambiarTab(this)">Chasis</button>
+                    <button class="radical-tab-btn" data-tab="opciones" onclick="cambiarTab(this)">Accesorios</button>
+                </div>
+
+                <div class="radical-tab-content-wrapper" id="tabContentWrapper">
+                    <div class="radical-tab-pane active" id="tab-accesorios">
+
+                        <div class="radical-dropdown-selector-group">
+                            <label class="radical-selector-label">Selección de boquillas</label>
+                            <div class="custom-premium-dropdown-wrapper">
+                                <div class="custom-dropdown-trigger" id="trigger-boquillas" onclick="toggleCustomDropdown('dropdown-boquillas', 'trigger-boquillas')">
+                                    <span id="label-boquillas">Selecciona una opción...</span>
+                                    <i class="fa-solid fa-chevron-down custom-arrow"></i>
+                                </div>
+                                <div class="custom-dropdown-options-list" id="dropdown-boquillas">
+                                    <div class="custom-dropdown-option" onclick="selectCustomOption('boquilla-estandar', 'Modelo BPT-1 (Estándar)', 'boquillas', 'trigger-boquillas')">
+                                        Modelo BPT-1 (Estándar)
+                                    </div>
+                                    <div class="custom-dropdown-option" onclick="selectCustomOption('boquilla-premium', 'Modelo BPT-3 (Premium)', 'boquillas', 'trigger-boquillas')">
+                                        Modelo BPT-3 (Premium)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="radical-selector-desc-card hidden-card" id="card-desc-boquillas">
+                                <div class="desc-card-icon"><i class="fa-solid fa-satellite-dish" id="icon-boquillas"></i></div>
+                                <div class="desc-card-text">
+                                    <strong id="title-desc-boquillas"></strong>
+                                    <p id="text-desc-boquillas"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="radical-dropdown-selector-group">
+                            <label class="radical-selector-label">Selección de mangueras</label>
+                            <div class="custom-premium-dropdown-wrapper">
+                                <div class="custom-dropdown-trigger" id="trigger-mangueras" onclick="toggleCustomDropdown('dropdown-mangueras', 'trigger-mangueras')">
+                                    <span id="label-mangueras">Selecciona una opción...</span>
+                                    <i class="fa-solid fa-chevron-down custom-arrow"></i>
+                                </div>
+                                <div class="custom-dropdown-options-list" id="dropdown-mangueras">
+                                    <div class="custom-dropdown-option" onclick="selectCustomOption('manguera-34', 'Manguera Hidrojet 3/4', 'mangueras', 'trigger-mangueras')">
+                                        Manguera Hidrojet 3/4"
+                                    </div>
+                                    <div class="custom-dropdown-option" onclick="selectCustomOption('manguera-1', 'Manguera Hidrojet 1', 'mangueras', 'trigger-mangueras')">
+                                        Manguera Hidrojet 1"
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="radical-selector-desc-card hidden-card" id="card-desc-mangueras">
+                                <div class="desc-card-icon"><i class="fa-solid fa-gear"></i></div>
+                                <div class="desc-card-text">
+                                    <strong id="title-desc-mangueras"></strong>
+                                    <p id="text-desc-mangueras"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="radical-tab-pane" id="tab-componentes">
+                        <div id="componentesContent"></div>
+                    </div>
+
+                    <div class="radical-tab-pane" id="tab-opciones">
+                        <div id="opcionesContent"></div>
+                    </div>
+                </div>
+                
+                <div class="radical-actions-footer-group">
+                    <button onclick="solicitarCotizacion()" class="btn-radical-submit-quote">
+                        <i class="fa-solid fa-file-invoice"></i> Solicitar Cotización
+                    </button>
+                    <a href="#" class="btn-radical-download-pdf">
+                        <i class="fa-solid fa-download"></i> Descargar ficha técnica
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="radical-spec-strip-container">
+            <div class="strip-spec-item">
+                <div class="strip-icon-box"><i class="fa-solid fa-cube"></i></div>
+                <div class="strip-text-box">
+                    <span class="strip-label">Capacidad</span>
+                    <strong class="strip-value">17 m³</strong>
+                </div>
+            </div>
+            <div class="strip-divider"></div>
+            <div class="strip-spec-item">
+                <div class="strip-icon-box"><i class="fa-solid fa-gauge-high"></i></div>
+                <div class="strip-text-box">
+                    <span class="strip-label">Presión Máxima</span>
+                    <strong class="strip-value">3000 PSI</strong>
+                </div>
+            </div>
+            <div class="strip-divider"></div>
+            <div class="strip-spec-item">
+                <div class="strip-icon-box"><i class="fa-solid fa-filter"></i></div>
+                <div class="strip-text-box">
+                    <span class="strip-label">Sistema de succión</span>
+                    <strong class="strip-value">Alto vacío</strong>
+                </div>
+            </div>
+            <div class="strip-divider"></div>
+            <div class="strip-spec-item">
+                <div class="strip-icon-box"><i class="fa-solid fa-truck-ramp-box"></i></div>
+                <div class="strip-text-box">
+                    <span class="strip-label">Peso Operativo</span>
+                    <strong class="strip-value">19,500 Kg</strong>
+                </div>
+            </div>
+            <div class="strip-divider"></div>
+            <div class="strip-spec-item">
+                <div class="strip-icon-box"><i class="fa-solid fa-briefcase"></i></div>
+                <div class="strip-text-box">
+                    <span class="strip-label">Tipo de trabajo</span>
+                    <strong class="strip-value">Industrial</strong>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<footer>
+    <div class="footer-container">
+        <div class="footer-brand">
+            <a href="index.html" class="nav-logo" style="margin-bottom:0.75rem">
+                <img src="Assets/logo-ecodren.png" alt="Ecodren Logo" class="web-logo">
+            </a>
+            <p>Maquinaria y refacciones especializadas para desazolvadores. Soluciones confiables para profesionales del drenaje.</p>
+        </div>
+        <div><h4>Tienda</h4><ul>
+            <li><a href="tienda.html">Todas las refacciones</a></li>
+            <li><a href="tienda.html?cat=boquillas">Boquillas y Toberas</a></li>
+            <li><a href="tienda.html?cat=mangueras">Mangueras</a></li>
+            <li><a href="tienda.html?cat=bombas">Bombas</a></li>
+        </ul></div>
+        <div><h4>Empresa</h4><ul>
+            <li><a href="index.html#por-que">Quiénes somos</a></li>
+            <li><a href="index.html#por-que">Ventajas</a></li>
+            <li><a href="index.html#contacto">Trabaja con nosotros</a></li>
+        </ul></div>
+        <div><h4>Contacto</h4><ul>
+            <li><a href="index.html#contacto">Solicitar cotización</a></li>
+            <li><a href="#">+52 (55) XXX-XXXX</a></li>
+            <li><a href="#">ventas@ecodren.com</a></li>
+        </ul></div>
+    </div>
+
+    <div class="footer-corporate-brands">
+        <span class="corporate-title">Una empresa de Equipos Hidromecánicos MC</span>
+        <div class="brand-grid">
+            <img src="Assets/afilial1_ecovac.webp" alt="Ecovac" class="corp-logo">
+            <img src="Assets/afilial2_ecojet.webp" alt="Ecojet" class="corp-logo">
+            <img src="Assets/afilial3_ecoclean.webp" alt="Ecoclean" class="corp-logo">
+        </div>
+    </div>
+
+    <div class="social-pills-container">
+        <a href="https://www.facebook.com/people/Equipos-MC/100054393135080/" target="_blank" class="social-pill facebook">
+            <div class="icon-circle"><i class="fab fa-facebook-f"></i></div>
+            <span class="social-text">Ecodren Oficial</span>
+        </a>
+        <a href="https://x.com/equipos_mc" target="_blank" class="social-pill instagram">
+            <div class="icon-circle"><i class="fab fa-instagram"></i></div>
+            <span class="social-text">@ecodren</span>
+        </a>
+        <a href="https://www.linkedin.com/in/equipos-mc-770731114/" target="_blank" class="social-pill linkedin">
+            <div class="icon-circle"><i class="fab fa-linkedin-in"></i></div>
+            <span class="social-text">Ecodren México</span>
+        </a>
+    </div>
+
+    <div class="footer-bottom">
+        <span>© 2026 Ecodren. Todos los derechos reservados.</span>
+        <div class="footer-signature-wrap">
+            <span class="signature-tag">Una marca de</span>
+            <img src="Assets/grupo-mc.webp" alt="GrupoMC" class="signature-logo">
+            <span class="signature-text">Diseñado para profesionales del desazolve</span>
+        </div>
+    </div>
+</footer>
+
+<div class="custom-modal-overlay" id="cotizacionModal">
+    <div class="custom-modal-box">
+        <div class="modal-icon-success">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h3>¡Solicitud Recibida!</h3>
+        <div id="modal-message">Tu configuración se ha registrado con éxito.</div>
+        <div class="modal-divider"></div>
+        <button onclick="cerrarModal()" class="btn-modal-close">Entendido</button>
+    </div>
+</div>
+
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eaeaea; padding-bottom: 1rem; margin-bottom: 1rem;">
+        <h2 style="font-size: 1.2rem; margin: 0; color: #333; display: flex; align-items: center; gap: 0.5rem;">🛒 Tu carrito</h2>
+        <button class="cart-close" id="cartClose" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #666; padding: 0; line-height: 1;">×</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer" id="cartFooter" style="display: none;">
+        <div class="cart-total-row">
+            <span>Total</span>
+            <strong id="cartTotal">$0 MXN</strong>
+        </div>
+        <button class="checkout-btn" onclick="handleCheckout()">Proceder al pago →</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box" style="max-width: 420px; width: 90%;">
+        <button class="modal-close" onclick="closeModal()">×</button>
+        
+        <div class="modal-tabs">
+            <button class="modal-tab active" onclick="switchTab('login')">Iniciar sesión</button>
+            <button class="modal-tab" onclick="switchTab('register')">Crear cuenta</button>
+        </div>
+        
+        <div class="modal-panel active" id="panel-login">
+            <h3>Bienvenido de vuelta</h3>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="mform-group">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="loginEmail" placeholder="correo@empresa.com" required style="width: 100%; box-sizing: border-box;">
+                </div>
+                <div class="mform-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required style="width: 100%; box-sizing: border-box;">
+                </div>
+                <button type="submit" class="mform-submit">Iniciar sesión</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="js/main.js"></script>
+<script src="js/maquinaria.js"></script>
+</body>
+</html>
