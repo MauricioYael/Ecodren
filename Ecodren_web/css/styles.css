@@ -769,6 +769,126 @@ footer ul li a:hover { color: var(--eco-lime); }
         opacity: 0;
     }
 }
+.mega-dropdown {
+  position: relative;
+}
+
+/* Puente invisible: evita que el menú se cierre al mover el mouse por el espacio vacío */
+.mega-dropdown::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  display: block;
+}
+
+/* Submenú Flotante Premium */
+.mega-menu {
+  display: block;
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  top: calc(100% + 18px); /* Separación exacta para evitar colisión */
+  left: 50%;
+  
+  /* ESTADO INICIAL (Oculto): Comprimido arriba como una gota */
+  opacity: 0;
+  transform: translateX(-50%) scale(0.88) translateY(-12px);
+  transform-origin: top center; /* La animación nace desde la barra */
+  
+  width: 85vw;
+  max-width: 1000px;
+  
+  /* Fondo idéntico al Nav con efecto cristal mate */
+  background: var(--eco-dark); 
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  
+  /* Borde elegante con acento verde Ecodren en la parte superior */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 2px solid var(--eco-dark, #bffd00); 
+  border-radius: 16px;
+  padding: 24px;
+  
+  /* Sombras ambientales multicapa con destello verde muy sutil */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85), 
+              0 0 30px rgba(191, 253, 0, 0.06);
+  
+  z-index: 1000;
+  
+  /* CURVA DE ANIMACIÓN PREMIUM (Muelle/Elastic) */
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.38s cubic-bezier(0.34, 1.4, 0.64, 1),
+              visibility 0.35s;
+}
+
+/* ESTADO ACTIVO (:hover): Expansión fluido tipo gota */
+.mega-dropdown:hover .mega-menu {
+  visibility: visible;
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateX(-50%) scale(1) translateY(0);
+}
+
+/* Grilla de 4 Columnas */
+.mega-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  text-align: center;
+  align-items: center;
+}
+
+/* Tarjetas */
+.machine-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.machine-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(191, 253, 0, 0.25);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Imágenes */
+.machine-card img {
+  width: auto;
+  max-width: 130px;
+  max-height: 48px;
+  object-fit: contain;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
+  transition: transform 0.25s ease;
+}
+
+.machine-card:hover img {
+  transform: scale(1.08); /* Zoom ligero en el logo al pasar el mouse */
+}
+
+/* Textos */
+.machine-card span {
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: color 0.25s ease;
+}
+
+.machine-card:hover span {
+  color: var(--eco-lime, #bffd00);
+}
 
 
 /* ── RESPONSIVE ──────────────────────────────────────────── */
