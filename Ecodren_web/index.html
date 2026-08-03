@@ -1,52 +1,53 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ECODREN | Maquinaria & Refacciones para Desazolvadores</title>
-    <link rel="icon" type="image/jpeg" href="Assets/logo_web_ecodren.png">
+    <link rel="icon" type="image/jpeg" href="{% static 'Assets/logo_web_ecodren.png' %}">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
 
     <nav id="mainNav">
-        <a href="#" class="nav-logo">
-            <img src="Assets/logo-ecodren.png" alt="Ecodren Logo" class="web-logo">
+        <a href="{% url 'home' %}" class="nav-logo">
+            <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren Logo" class="web-logo">
         </a>
 
         <ul class="nav-center" id="navCenter">
             <li><a href="#categorias">Ficha Técnica</a></li>
-            <li><a href="tienda.html">Tienda</a></li>
+            <li><a href="{% url 'tienda' %}">Tienda</a></li>
             <li class="mega-dropdown">
-                <a href="maquinaria.html">Equipos</a>
+                <a href="#maquinaria">Equipos</a>
                 <div class="mega-menu">
                     <div class="mega-menu-grid">
-                        <a href="maquinaria.html" class="machine-card">
-                            <img src="Assets/afilial2_ecojet.webp" alt="Ecojet">
+                        <a href="#maquinaria" class="machine-card">
+                            <img src="{% static 'Assets/afilial2_ecojet.webp' %}" alt="Ecojet">
                             <span>Equipos de Presión</span>
                         </a>
-                        <a href="maquinaria.html" class="machine-card">
-                            <img src="Assets/afilial1_ecovac.webp" alt="Ecovac">
+                        <a href="#maquinaria" class="machine-card">
+                            <img src="{% static 'Assets/afilial1_ecovac.webp' %}" alt="Ecovac">
                             <span>Equipos de Vacio</span>
                         </a>
-                        <a href="maquinaria.html" class="machine-card">
-                            <img src="Assets/logo-ecodren.png" alt="Ecodren">
+                        <a href="#maquinaria" class="machine-card">
+                            <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren">
                             <span>Equipos Mixtos</span>
                         </a>
-                        <a href="maquinaria.html" class="machine-card">
-                            <img src="Assets/afilial3_ecoclean.webp" alt="Ecoclean">
+                        <a href="#maquinaria" class="machine-card">
+                            <img src="{% static 'Assets/afilial3_ecoclean.webp' %}" alt="Ecoclean">
                             <span>Equipos de Vacio Seco</span>
                         </a>
                     </div>
                 </div>
             </li>
-            <li><a href="recursos.html">Recursos</a></li>
-            <li><a href="index.html#por-que">Nosotros</a></li>
+            <li><a href="#contacto">Recursos</a></li>
+            <li><a href="#por-que">Nosotros</a></li>
         </ul>
 
         <div class="nav-right">
@@ -89,22 +90,18 @@
                             </div>
                         </div>
                         <div class="profile-menu">
-                            <a href="perfil.html" class="profile-item">
+                            <a href="#" class="profile-item">
                                 <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.9 0 3.5 1.6 3.5 3.5S13.9 13 12 13s-3.5-1.6-3.5-3.5S10.1 6 12 6zm7 13H5v-.6c0-2 4-3.1 7-3.1s7 1.1 7 3.1V19z"/></svg>
                                 Mi perfil
                             </a>
-                            <a href="perfil.html" class="profile-item">
+                            <a href="#" class="profile-item">
                                 <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.4-1.4L12 14.2l7.6-7.6L21 8l-9 9z"/></svg>
                                 Mis pedidos
                                 <span class="profile-badge">3</span>
                             </a>
-                            <a href="perfil.html" class="profile-item">
+                            <a href="#" class="profile-item">
                                 <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                                 Cotizaciones guardadas
-                            </a>
-                            <a href="#" class="profile-item">
-                                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-                                Configuración
                             </a>
                             <div class="profile-divider"></div>
                             <button class="profile-item danger" onclick="logOut()">
@@ -124,20 +121,18 @@
 
     <div class="mobile-menu" id="mobileMenu">
         <a href="#categorias" class="mobile-link">Ficha Técnica</a>
-        <a href="tienda.html" class="mobile-link">Tienda</a>
-        <a href="maquinaria.html" class="mobile-link">Equipos</a>
-        <a href="recursos.html" class="mobile-link">Recursos</a>
+        <a href="{% url 'tienda' %}" class="mobile-link">Tienda</a>
+        <a href="#maquinaria" class="mobile-link">Equipos</a>
         <a href="#por-que" class="mobile-link">Nosotros</a>
         <a href="#contacto" class="mobile-link" style="color:var(--eco-green);font-weight:600">Cotizar →</a>
     </div>
 
     <div class="hero-3d" id="hero3d">
-        <video autoplay loop muted playsinline class="hero-bg-video"
-                poster="#"> 
-            <source src="Assets/ecodren-video.mp4" type="video/mp4">
+        <video autoplay loop muted playsinline class="hero-bg-video" poster="#"> 
+            <source src="{% static 'Assets/ecodren-video.mp4' %}" type="video/mp4">
         </video>
 
-        <canvas id="hero-canvas"></canvas>
+        <canvas id="hero-canvas" data-model="{% static 'Assets/models/ecodren.glb' %}"></canvas>
         <div class="hero-overlay"></div>
         <div class="hero-overlay-bottom"></div>
 
@@ -146,7 +141,7 @@
             <h1>Equipo hidroneumático<br><em>para limpieza y desazolve</em><br>de drenajes de acción simultanea succión-presión.</h1>
             <p class="hero-sub">Refacciones y equipos especializados para trabajo profesional en drenaje y sistemas hidráulicos. Calidad certificada, entrega inmediata.</p>
             <div class="hero-btns">
-                <a href="#tienda" class="btn-primary">Comprar ahora</a>
+                <a href="{% url 'tienda' %}" class="btn-primary">Comprar ahora</a>
                 <a href="#contacto" class="btn-ghost">Solicitar cotización</a>
             </div>
             <div class="hero-stats">
@@ -166,8 +161,7 @@
         </div>
         
         <div class="hero-product-wrap">
-            <img src="Assets/ecodren17.webp" alt="Equipo Ecodren" 
-             fetchpriority="high"  width="630" height="420" decoding="async" class="hero-product-img">
+            <img src="{% static 'Assets/ecodren17.webp' %}" alt="Equipo Ecodren" fetchpriority="high" width="630" height="420" decoding="async" class="hero-product-img">
         </div>
         
         <div class="machine-label">ECODREN ED-17</div>
@@ -188,7 +182,7 @@
         <div class="truck-specs-grid">
             <div class="spec-box-card">
                 <div class="spec-card-header">
-                    <img src="Assets/icons/icon-bomba.webp" alt="icon-bomba" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon">
+                    <img src="{% static 'Assets/icons/icon-bomba.webp' %}" alt="icon-bomba" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon">
                     <h3>Bomba ECOJET exclusiva</h3>
                 </div>
                 <ul class="spec-list">
@@ -200,7 +194,7 @@
 
             <div class="spec-box-card">
                 <div class="spec-card-header">
-                    <img src="Assets/icons/icon-tanque.png" alt="icon-tanque" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon"> 
+                    <img src="{% static 'Assets/icons/icon-tanque.png' %}" alt="icon-tanque" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon"> 
                     <h3>Tanque de desechos reforzado</h3>
                 </div>
                 <ul class="spec-list">
@@ -211,7 +205,7 @@
 
             <div class="spec-box-card">
                 <div class="spec-card-header">
-                    <img src="Assets/icons/icon-manguera.png" alt="icon-maguera" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon">
+                    <img src="{% static 'Assets/icons/icon-manguera.png' %}" alt="icon-maguera" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon">
                     <h3>Carrete y manguera frontal</h3>
                 </div>
                 <ul class="spec-list">
@@ -221,7 +215,7 @@
             </div>
             <div class="spec-box-card">
                 <div class="spec-card-header">
-                    <img src="Assets/icons/icon-seguridad.png" alt="icon-seguridad" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon">
+                    <img src="{% static 'Assets/icons/icon-seguridad.png' %}" alt="icon-seguridad" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon">
                     <h3>Seguridad y ergonomía</h3>
                 </div>
                 <ul class="spec-list">
@@ -232,7 +226,7 @@
             </div>
             <div class="spec-box-card">
                 <div class="spec-card-header">
-                    <img src="Assets/icons/icon-vacio.png" alt="icon-vacio" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon"> 
+                    <img src="{% static 'Assets/icons/icon-vacio.png' %}" alt="icon-vacio" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon"> 
                     <h3>Sistema de vacío avanzado</h3>
                 </div>
                 <ul class="spec-list">
@@ -242,7 +236,7 @@
             </div>
             <div class="spec-box-card">
                 <div class="spec-card-header">
-                    <img src="Assets/icons/icon-tecno.png" alt="icon-tecno" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon">
+                    <img src="{% static 'Assets/icons/icon-tecno.png' %}" alt="icon-tecno" loading="lazy" width="630" height="420" decoding="async" class="spec-card-img-icon">
                     <h3>Tecnología inteligente</h3>
                 </div>
                 <ul class="spec-list">
@@ -263,9 +257,9 @@
         <div class="truck-fleet-grid reveal">
             <div class="fleet-card reveal reveal-delay-1">
                 <div class="fleet-img-wrap">
-                    <img src="Assets/ecodren-5/Ecodren ED-5 v2.webp" alt="Ecodren ED-5" loading="lazy" width="630" height="420" decoding="async" class="fleet-img active">
-                    <img src="Assets/ecodren-5/Ecodren ED-5 v3.webp" alt="Ecodren ED-5 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
-                    <img src="Assets/ecodren-5/Ecodren ED-5.webp" alt="Ecodren ED-5 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-5/Ecodren ED-5 v2.webp' %}" alt="Ecodren ED-5" loading="lazy" width="630" height="420" decoding="async" class="fleet-img active">
+                    <img src="{% static 'Assets/ecodren-5/Ecodren ED-5 v3.webp' %}" alt="Ecodren ED-5 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-5/Ecodren ED-5.webp' %}" alt="Ecodren ED-5 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
                 </div>
                 <div class="fleet-info">
                     <h3>Ecodren ED-3</h3>
@@ -281,9 +275,9 @@
             
             <div class="fleet-card reveal reveal-delay-1">
                 <div class="fleet-img-wrap">
-                    <img src="Assets/ecodren-5/Ecodren ED-5.webp" alt="Ecodren ED-5" loading="lazy" width="630" height="420" decoding="async" class="fleet-img active">
-                    <img src="Assets/ecodren-5/Ecodren ED-5 v2.webp" alt="Ecodren ED-5 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
-                    <img src="Assets/ecodren-5/Ecodren ED-5 v3.webp" alt="Ecodren ED-5 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-5/Ecodren ED-5.webp' %}" alt="Ecodren ED-5" loading="lazy" width="630" height="420" decoding="async" class="fleet-img active">
+                    <img src="{% static 'Assets/ecodren-5/Ecodren ED-5 v2.webp' %}" alt="Ecodren ED-5 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-5/Ecodren ED-5 v3.webp' %}" alt="Ecodren ED-5 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
                 </div>
                 <div class="fleet-info">
                     <h3>Ecodren ED-5</h3>
@@ -299,9 +293,9 @@
 
             <div class="fleet-card reveal reveal-delay-2">
                 <div class="fleet-img-wrap">
-                    <img src="Assets/ecodren-13/Ecodren-ED-13-v3.webp" alt="Ecodren ED-10" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
-                    <img src="Assets/ecodren-13/Ecodren ED-13 v2.webp" alt="Ecodren ED-10 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
-                    <img src="Assets/ecodren-13/Ecodren ED-13.webp" alt="Ecodren ED-10 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-13/Ecodren-ED-13-v3.webp' %}" alt="Ecodren ED-10" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-13/Ecodren ED-13 v2.webp' %}" alt="Ecodren ED-10 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-13/Ecodren ED-13.webp' %}" alt="Ecodren ED-10 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
                 </div>
                 <div class="fleet-info">
                     <h3>Ecodren ED-10</h3>
@@ -317,9 +311,9 @@
             
             <div class="fleet-card reveal reveal-delay-3">
                 <div class="fleet-img-wrap">
-                    <img src="Assets/ecodren-13/Ecodren ED-13.webp" alt="Ecodren ED-13" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
-                    <img src="Assets/ecodren-13/Ecodren ED-13 v2.webp" alt="Ecodren ED-13 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
-                    <img src="Assets/ecodren-13/Ecodren-ED-13-v3.webp" alt="Ecodren ED-13 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-13/Ecodren ED-13.webp' %}" alt="Ecodren ED-13" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-13/Ecodren ED-13 v2.webp' %}" alt="Ecodren ED-13 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-13/Ecodren-ED-13-v3.webp' %}" alt="Ecodren ED-13 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
                 </div>
                 <div class="fleet-info">
                     <h3>Ecodren ED-13</h3>
@@ -335,9 +329,9 @@
 
             <div class="fleet-card reveal reveal-delay-3">
                 <div class="fleet-img-wrap">
-                    <img src="Assets/ecodren-15/Ecodren ED-15.webp" alt="Ecodren ED-15" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
-                    <img src="Assets/ecodren-15/Ecodren ED-15 v2.webp" alt="Ecodren ED-15 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
-                    <img src="Assets/ecodren-15/Ecodren ED-15 v3.webp" alt ="Ecodren ED-15 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-15/Ecodren ED-15.webp' %}" alt="Ecodren ED-15" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-15/Ecodren ED-15 v2.webp' %}" alt="Ecodren ED-15 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-15/Ecodren ED-15 v3.webp' %}" alt="Ecodren ED-15 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
                 </div>
                 <div class="fleet-info">
                     <h3>Ecodren ED-15</h3>
@@ -353,10 +347,10 @@
 
             <div class="fleet-card reveal reveal-delay-3">
                 <div class="fleet-img-wrap">
-                    <img src="Assets/ecodren-17/Ecodren ED-17.webp" alt="Ecodren ED-17" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
-                    <img src="Assets/ecodren-17/Ecodren ED-17 v2.webp" alt="Ecodren ED-17 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
-                    <img src="Assets/ecodren-17/Ecodren ED-17 v3.webp" alt ="Ecodren ED-17 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
-                    <img src="Assets/ecodren-17/Ecodren ED-17 v4.webp" alt="Ecodren ED-17 v4" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-17/Ecodren ED-17.webp' %}" alt="Ecodren ED-17" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-17/Ecodren ED-17 v2.webp' %}" alt="Ecodren ED-17 v2" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-17/Ecodren ED-17 v3.webp' %}" alt="Ecodren ED-17 v3" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
+                    <img src="{% static 'Assets/ecodren-17/Ecodren ED-17 v4.webp' %}" alt="Ecodren ED-17 v4" loading="lazy" width="630" height="420" decoding="async" class="fleet-img">
                 </div>
                 <div class="fleet-info">
                     <h3>Ecodren ED-17</h3>
@@ -383,7 +377,7 @@
             <div class="shop-card">
                 <div class="shop-img">
                     <span class="shop-badge badge-nuevo">Nuevo</span>
-                        <img src="Assets/catalogo/boquillas/btp-3.webp" alt="boquillas">
+                    <img src="{% static 'Assets/catalogo/boquillas/btp-3.webp' %}" alt="boquillas">
                 </div>
                 <div class="shop-info">
                     <span class="shop-cat-tag">Boquillas</span>
@@ -393,7 +387,7 @@
                         <div class="shop-price">
                             <span>$1,350 MXN</span>
                         </div>
-                        <a href="tienda.html?producto=tobera-3d" class="add-cart-btn-link">
+                        <a href="{% url 'tienda' %}" class="add-cart-btn-link">
                             Ver detalles <i class="fas fa-arrow-right" style="font-size: 0.8rem; margin-left: 5px;"></i>
                         </a>
                     </div>
@@ -402,7 +396,7 @@
             <div class="shop-card">
                 <div class="shop-img">
                     <span class="shop-badge badge-oferta">Oferta </span>
-                        <img src="Assets/catalogo/boquillas/Imagen2.png" alt="boquillas">
+                    <img src="{% static 'Assets/catalogo/boquillas/Imagen2.png' %}" alt="boquillas">
                 </div>
                 <div class="shop-info">
                     <span class="shop-cat-tag">Boquillas</span>
@@ -413,7 +407,7 @@
                             <span class="shop-price-old">$2,300 MXN</span>
                             <span>$1,700 MXN</span>
                         </div>
-                        <a href="tienda.html?producto=mangera-hidrojet" class="add-cart-btn-link">
+                        <a href="{% url 'tienda' %}" class="add-cart-btn-link">
                             Ver Detalles <i class="fas fa-arrow-right" style="font-size: 0.8rem; margin-left: 5px;"></i>
                         </a>
                     </div>
@@ -422,17 +416,17 @@
             <div class="shop-card">
                 <div class="shop-img">
                     <span class="shop-badge badge-stock"> Popular</span>
-                    <img src="Assets/catalogo/boquillas/Imagen3.png" alt="boquillas"> 
+                    <img src="{% static 'Assets/catalogo/boquillas/Imagen3.png' %}" alt="boquillas"> 
                 </div>
                 <div class="shop-info">
                     <span class="shop-cat-tag">Mangueras</span>
                     <h3>Manguera Hidrojet 3/4"</h3>
-                    <p>Alta resistencia con trenzado de seguridad reforzado</p>
+                    <p>Alta resistencia con trenzado de seguridad reinforced</p>
                     <div class="shop-footer">
                         <div class="shop-price">
                             <span>$4,800 MXN</span>
                         </div>
-                        <a href="tienda.html?producto=manguera-34" class="add-cart-btn-link">
+                        <a href="{% url 'tienda' %}" class="add-cart-btn-link">
                             Ver detalles <i class="fas fa-arrow-right" style="font-size: 0.8rem; margin-left: 5px;"></i>
                         </a>
                     </div>
@@ -441,7 +435,7 @@
             <div class="shop-card">
                 <div class="shop-img">
                     <span class="shop-badge badge-nuevo">Premium</span>
-                    <img src="Assets/catalogo/boquillas/Imagen4.png" alt="bombas">
+                    <img src="{% static 'Assets/catalogo/boquillas/btp-4.webp' %}" alt="bombas">
                 </div>
                 <div class="shop-info">
                     <span class="shop-cat-tag">Bombas</span>
@@ -451,7 +445,7 @@
                         <div class="shop-price">
                             <span>$12,000 MXN</span>
                         </div>
-                        <a href="tienda.html?producto=bomba-ecojet" class="add-cart-btn-link">
+                        <a href="{% url 'tienda' %}" class="add-cart-btn-link">
                             Ver detalles <i class="fas fa-arrow-right" style="font-size: 0.8rem; margin-left: 5px;"></i>
                         </a>
                     </div>
@@ -459,7 +453,7 @@
             </div>
         </div>
         <div style="text-align: center; margin-top: 3.5rem;">
-            <a href="tienda.html" class="btn-primary" style="display: inline-block; text-align: center;">
+            <a href="{% url 'tienda' %}" class="btn-primary" style="display: inline-block; text-align: center;">
                 Ir a la tienda completa <i class="fas fa-shopping-bag" style="margin-left: 8px;"></i>
             </a>
         </div>
@@ -473,22 +467,22 @@
         </div>
         <div class="features-grid">
             <div class="feat-card reveal reveal-delay-1">
-                <img src="Assets/icons/icon-copa.webp" alt="icon-copa" loading="lazy" width="630" height="420" decoding="async">
+                <img src="{% static 'Assets/icons/icon-copa.webp' %}" alt="icon-copa" loading="lazy" width="630" height="420" decoding="async">
                 <h3>Nuestra esencia</h3>
                 <p>ECODREN es una marca de <strong>GrupoMC</strong> empresa 100% méxicana con más de <strong>3 decadas</strong> a la vanguardia diseñando y fabricando equipos hidraulico especializado.</p>
             </div>
             <div class="feat-card reveal reveal-delay-2">
-                <img src="Assets/icons/icon-rayo.webp" alt="icon-rayo" loading="lazy" width="630" height="420" decoding="async">
+                <img src="{% static 'Assets/icons/icon-rayo.webp' %}" alt="icon-rayo" loading="lazy" width="630" height="420" decoding="async">
                 <h3>Entrega rápida</h3>
                 <p>Atendemos proyectos y clientes en todo el país con soluciones hidráulicas confiables y soporte especializado.</p>
             </div>
             <div class="feat-card reveal reveal-delay-3">
-                <img src="Assets/icons/icon-escudo.webp" alt="icon-escudo" loading="lazy" width="630" height="420" decoding="async">
+                <img src="{% static 'Assets/icons/icon-escudo.webp' %}" alt="icon-escudo" loading="lazy" width="630" height="420" decoding="async">
                 <h3>Garantía extendida</h3>
                 <p>Cada producto pasa por procesos de control y verificación para ofrecer un desempeño confiable en cada aplicación.</p>
             </div>
             <div class="feat-card reveal">
-                <img src="Assets/icons/icon-persona.webp" alt="icon-persona" loading="lazy" width="630" height="420" decoding="async">
+                <img src="{% static 'Assets/icons/icon-persona.webp' %}" alt="icon-persona" loading="lazy" width="630" height="420" decoding="async">
                 <h3>Asesoría especializada</h3>
                 <p>Nuestro equipo de ingenieros te asesora para elegir el equipo exacto que tu proyecto requiere.</p>
             </div>
@@ -502,15 +496,15 @@
                 <h2>Solicita una cotización<br>sin compromiso</h2>
                 <p>Cuéntanos lo que necesitas y nuestro equipo te responderá en menos de 24 horas.</p>
                 <div class="contact-detail">
-                    <img src="Assets/icons/icon-pin.png" alt="ubicacion" class="contact-icon-img">
+                    <img src="{% static 'Assets/icons/icon-pin.png' %}" alt="ubicacion" class="contact-icon-img">
                     <div><strong>Dirección</strong><span> Planta Torres - Manzana 004, Jardines de Morelos 5ta, 55075 Ecatepec de Morelos, Méx.</span></div>
                 </div>
                 <div class="contact-detail">
-                    <img src="Assets/icons/icon-telefono.png" alt="telefono" class="contact-icon-img">
+                    <img src="{% static 'Assets/icons/icon-telefono.png' %}" alt="telefono" class="contact-icon-img">
                     <div><strong>Teléfono</strong><span>+52 (55) XXX-XXXX</span></div>
                 </div>
                 <div class="contact-detail">
-                    <img src="Assets/icons/icon-email.png" alt="mail" class="contact-icon-img">
+                    <img src="{% static 'Assets/icons/icon-email.png' %}" alt="mail" class="contact-icon-img">
                     <div><strong>Email</strong><span>ventas@ecodren.com</span></div>
                 </div>
             </div>
@@ -544,12 +538,12 @@
    <footer>
         <div class="footer-container">
             <div class="footer-brand">
-                <a href="#" class="nav-logo" style="margin-bottom: 0.75rem;">
-                    <img src="Assets/logo-ecodren.png" alt="Ecodren Logo" class="web-logo">
+                <a href="{% url 'home' %}" class="nav-logo" style="margin-bottom: 0.75rem;">
+                    <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren Logo" class="web-logo">
                 </a>
                 <p>Maquinaria y refacciones especializadas para desazolvadores. Soluciones confiables para profesionales del drenaje.</p>
             </div>
-            <div><h4>Tienda</h4><ul><li><a href="#tienda">Maquinaria</a></li><li><a href="#tienda">Refacciones</a></li><li><a href="#contacto">Servicio técnico</a></li></ul></div>
+            <div><h4>Tienda</h4><ul><li><a href="{% url 'tienda' %}">Maquinaria</a></li><li><a href="{% url 'tienda' %}">Refacciones</a></li><li><a href="#contacto">Servicio técnico</a></li></ul></div>
             <div><h4>Empresa</h4><ul><li><a href="#por-que">Quiénes somos</a></li><li><a href="#por-que">Ventajas</a></li><li><a href="#contacto">Trabaja con nosotros</a></li></ul></div>
             <div><h4>Contacto</h4><ul><li><a href="#contacto">Solicitar cotización</a></li><li><a href="#">+52 (55) XXX-XXXX</a></li><li><a href="#">ventas@ecodren.com</a></li></ul></div>
         </div>
@@ -557,9 +551,9 @@
         <div class="footer-corporate-brands">
             <span class="corporate-title">Una empresa de Equipos Hidromecánicos MC</span>
             <div class="brand-grid">
-                <img src="Assets/afilial1_ecovac.webp" alt="Ecovac" class="corp-logo">
-                <img src="Assets/afilial2_ecojet.webp" alt="Ecojet" class="corp-logo">
-                <img src="Assets/afilial3_ecoclean.webp" alt="Ecoclean" class="corp-logo">
+                <img src="{% static 'Assets/afilial1_ecovac.webp' %}" alt="Ecovac" class="corp-logo">
+                <img src="{% static 'Assets/afilial2_ecojet.webp' %}" alt="Ecojet" class="corp-logo">
+                <img src="{% static 'Assets/afilial3_ecoclean.webp' %}" alt="Ecoclean" class="corp-logo">
             </div>
         </div>
         
@@ -582,7 +576,7 @@
             <span>© 2026 Ecodren. Todos los derechos reservados.</span>
             <div class="footer-signature-wrap">
                 <span class="signature-tag">Una marca de</span>
-                <img src="Assets/grupo-mc.webp" alt="GrupoMC" class="signature-logo">
+                <img src="{% static 'Assets/grupo-mc.webp' %}" alt="GrupoMC" class="signature-logo">
                 <span class="signature-text">Diseñado para profesionales del desazolve</span>
             </div>
         </div>
@@ -757,8 +751,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     
-    <script src="js/main.js"></script>
-    <script src="js/shop.js"></script>
-    <script src="js/three-hero.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/shop.js' %}"></script>
+    <script src="{% static 'js/three-hero.js' %}"></script>
 </body>
 </html>
