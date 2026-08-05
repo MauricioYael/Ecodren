@@ -3,7 +3,10 @@ from django.db.models import Q
 from .models import Producto, Categoria
 
 def index(request):
-    return render(request, 'index.html')
+    productos_destacados = Producto.objects.filter(disponible=True).order_by('?')[:4]
+    return render(request, 'index.html', {
+        'productos_destacados': productos_destacados
+    })
 
 def tienda(request):
     categorias = Categoria.objects.all()
@@ -46,3 +49,6 @@ def tienda(request):
         'busqueda': busqueda or '',
     }
     return render(request, 'tienda.html', context)
+
+def maquinaria(request):
+    return render(request, 'maquinaria.html')

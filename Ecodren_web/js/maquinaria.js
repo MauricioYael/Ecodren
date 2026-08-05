@@ -3,50 +3,82 @@ const MAQUINARIA = [
         id: "Ecodren-17",
         nombre: "Ecodren 17",
         tagline: "Equipos de alto rendimiento diseñado para trabajos de limpieza y succión industrial en cualquier condición.",
-        precioBase: 2450000,
+        capacidad: "17 m³",
+        presion: "3000 PSI",
+        recomendado: true,
         imagenes: [
-            "Assets/ecodren-17/Ecodren ED-17.webp",
-            "Assets/ecodren-17/Ecodren ED-17 v2.webp",
-            "Assets/ecodren-17/Ecodren ED-17 v3.webp"
+            "/static/Assets/ecodren-17/Ecodren ED-17.webp",
+            "/static/Assets/ecodren-17/Ecodren ED-17 v2.webp",
+            "/static/Assets/ecodren-17/Ecodren ED-17 v3.webp"
         ]
     },
     {
         id: "Ecodren-15",
         nombre: "Ecodren 15",
         tagline: "Configuración robusta optimizada para operaciones intensivas y alta productividad municipal.",
-        precioBase: 2100000,
+        capacidad: "15 m³",
+        presion: "2500 PSI",
+        recomendado: false,
         imagenes: [
-            "Assets/ecodren-15/Ecodren ED-15.webp",
-            "Assets/ecodren-15/Ecodren ED-15 v2.webp",
-            "Assets/ecodren-15/Ecodren ED-15 v3.webp"
+            "/static/Assets/ecodren-15/Ecodren ED-15.webp",
+            "/static/Assets/ecodren-15/Ecodren ED-15 v2.webp",
+            "/static/Assets/ecodren-15/Ecodren ED-15 v3.webp"
+        ]
+    },
+    {
+        id: "Ecodren-13",
+        nombre: "Ecodren 13",
+        tagline: "Configuracion semirobusta para operaciones intensas y de una alta productividad",
+        capacidad: "13 m³",
+        presion: "2500 PSI",
+        recomendado: false,
+        imagenes: [
+            "/static/Assets/ecodren-13/Ecodren ED-13.webp",
+            "/static/Assets/ecodren-13/Ecodren ED-13 v2.webp",
+            "/static/Assets/ecodren-13/Ecodren ED-13 v3.webp"
+        ]
+    },
+    {
+        id: "Ecodren-10",
+        nombre: "Ecodren 10",
+        tagline: "Configuracion semirobusta para operaciones intensas y de una productividad para viajes poco prolongados",
+        capacidad: "10 m³",
+        presion: "2000 PSI",
+        recomendado: true,
+        imagenes: [
+            "/static/Assets/ecodren-13/Ecodren ED-13.webp",
+            "/static/Assets/ecodren-13/Ecodren ED-13 v2.webp",
+            "/static/Assets/ecodren-13/Ecodren ED-13 v3.webp"
+        ]
+    },
+    {
+        id: "Ecodren-5",
+        nombre: "Ecodren 5",
+        tagline: "Maquinaria para operaciones en espacios poco reducidos y poco pesados",
+        capacidad: "5 m³",
+        presion: "1500 PSI",
+        recomendado: false,
+        imagenes: [
+            "/static/Assets/ecodren-5/Ecodren ED-5.webp",
+            "/static/Assets/ecodren-5/Ecodren ED-5 v2.webp",
+            "/static/Assets/ecodren-5/Ecodren ED-5 v3.webp"
+        ]
+    },
+    {
+        id: "Ecodren-3",
+        nombre: "Ecodren 3",
+        tagline: "Maquinaria para operaciones poco pesados y en espacios reducidos y angostos de poco acceso.",
+        capacidad: "3 m³",
+        presion: "1500 PSI",
+        recomendado: true,
+        imagenes: [
+            "/static/Assets/ecodren-5/Ecodren ED-5.webp",
+            "/static/Assets/ecodren-5/Ecodren ED-5 v2.webp",
+            "/static/Assets/ecodren-5/Ecodren ED-5 v3.webp"
         ]
     }
+    
 ];
-
-const PRECIOS_OPCIONES = {
-    accesorios: {
-        "boquilla-estandar": 15000,
-        "boquilla-premium": 45000
-    },
-    mangueras: {
-        "manguera-34": 12000,
-        "manguera-1": 28000
-    },
-    bombas: {
-        "bomba-estandar": 0,
-        "bomba-industrial": 75000
-    },
-    chasis: {
-        "chasis-4x2": -50000,
-        "chasis-6x4": 0,
-        "chasis-hd": 85000
-    },
-    extras: {
-        "led": 12000,
-        "gps": 8500,
-        "camara": 18000
-    }
-};
 
 let configActual = {
     maquinaIndex: 0,
@@ -56,18 +88,6 @@ let configActual = {
     manguera: "",
     bomba: "",
     extras: []
-};
-
-window.nextVariant = function() {
-    configActual.maquinaIndex = (configActual.maquinaIndex + 1) % MAQUINARIA.length;
-    configActual.fotoIndex = 0;
-    renderMaquina();
-};
-
-window.prevVariant = function() {
-    configActual.maquinaIndex = (configActual.maquinaIndex - 1 + MAQUINARIA.length) % MAQUINARIA.length;
-    configActual.fotoIndex = 0;
-    renderMaquina();
 };
 
 window.cambiarFotoInterna = function(direccion) {
@@ -90,7 +110,6 @@ window.renderMaquina = function() {
     if (taglineParagraph && maquina.tagline) taglineParagraph.innerText = maquina.tagline;
 
     actualizarSoloFotoYIndicadores();
-    actualizarPrecioDinamico();
     
     const activeTabBtn = document.querySelector('.radical-tab-btn.active');
     if (activeTabBtn) {
@@ -111,32 +130,6 @@ function actualizarSoloFotoYIndicadores() {
     });
 }
 
-function actualizarPrecioDinamico() {
-    const maquina = MAQUINARIA[configActual.maquinaIndex];
-    let total = maquina.precioBase;
-
-    if (configActual.accesorio) {
-        total += PRECIOS_OPCIONES.accesorios[configActual.accesorio] || 0;
-    }
-    if (configActual.manguera) {
-        total += PRECIOS_OPCIONES.mangueras[configActual.manguera] || 0;
-    }
-    if (configActual.bomba) {
-        total += PRECIOS_OPCIONES.bombas[configActual.bomba] || 0;
-    }
-    
-    total += PRECIOS_OPCIONES.chasis[configActual.chasis] || 0;
-
-    configActual.extras.forEach(extra => {
-        total += PRECIOS_OPCIONES.extras[extra] || 0;
-    });
-
-    const priceDisplay = document.getElementById('dynamicMachinePrice');
-    if (priceDisplay) {
-        priceDisplay.innerText = `$${total.toLocaleString('es-MX')} MXN`;
-    }
-}
-
 function renderAccesorios() {
     const container = document.getElementById('tab-accesorios');
     if (!container) return;
@@ -150,7 +143,7 @@ function renderAccesorios() {
     const textoManguera = configActual.manguera === 'manguera-1' ? 'Manguera Hidrojet 1"' : 'Manguera Hidrojet 3/4"';
     const descManguera = configActual.manguera === 'manguera-1'
         ? 'Máximo flujo volumétrico para arrastre pesado de lodos densos.'
-        : 'Alta resistencia con trenzado de seguridad reforzado para alta presión.';
+        : 'Alta resistencia con trenzado de seguridad reinforced para alta presión.';
 
     const textoBomba = configActual.bomba === 'bomba-industrial' ? 'Bomba Industrial 80 GPM' : 'Bomba Estándar 50 GPM';
     const descBomba = configActual.bomba === 'bomba-industrial' ? 'Alta presión para desazolve pesado.' : 'Flujo óptimo municipal.';
@@ -265,7 +258,7 @@ window.selectCustomOption = function(valor, texto, tipo, triggerId) {
         
         if (valor === 'boquilla-premium') {
             if (descTitle) descTitle.innerText = 'Modelo BPT-3 (Premium)';
-            if (descText) descText.innerText = 'Diseño advanced con chorros de penetración frontal para desobstrucción severa.';
+            if (descText) descText.innerText = 'Diseño avanzado con chorros de penetración frontal para desobstrucción severa.';
             if (descIcon) descIcon.className = 'fa-solid fa-bolt';
         } else {
             if (descTitle) descTitle.innerText = 'Modelo BPT-1 (Estándar)';
@@ -310,8 +303,6 @@ window.selectCustomOption = function(valor, texto, tipo, triggerId) {
         }
     }
     
-    actualizarPrecioDinamico();
-    
     const menu = document.getElementById(triggerId.replace('trigger-', 'dropdown-'));
     const trigger = document.getElementById(triggerId);
     if (menu) menu.classList.remove('open');
@@ -321,13 +312,10 @@ window.selectCustomOption = function(valor, texto, tipo, triggerId) {
 window.cambiarTabChasis = function(radioBtn) {
     configActual.chasis = radioBtn.value;
     
-    // Remueve el brillo de todas las tarjetas y se lo agrega únicamente a la seleccionada
     document.querySelectorAll('.radical-chasis-selectable-card').forEach(card => {
         card.classList.remove('active-chasis-card');
     });
     radioBtn.closest('.radical-chasis-selectable-card').classList.add('active-chasis-card');
-    
-    actualizarPrecioDinamico();
 };
 
 window.cambiarTabExtra = function(checkboxBtn, extraName) {
@@ -338,7 +326,6 @@ window.cambiarTabExtra = function(checkboxBtn, extraName) {
         configActual.extras = configActual.extras.filter(e => e !== extraName);
         checkboxBtn.closest('.radical-option-selectable-card').classList.remove('active-option-card');
     }
-    actualizarPrecioDinamico();
 };
 
 function renderComponentes() {
@@ -399,6 +386,40 @@ function renderOpciones() {
     container.innerHTML = html;
 }
 
+function renderModelos() {
+    const container = document.getElementById('tab-modelos');
+    if (!container) return;
+
+    let html = `<h3 class="tab-models-title">Modelos disponibles</h3>`;
+
+    MAQUINARIA.forEach((maq, index) => {
+        const isActive = (configActual.maquinaIndex === index) ? 'active-model-card' : '';
+        
+        html += `
+            <div class="radical-model-selectable-card ${isActive}" onclick="seleccionarModelo(${index})">
+                <div class="model-card-main-info">
+                    <div class="model-card-header-row">
+                        <strong>${maq.nombre}</strong>
+                        ${maq.recomendado ? '<span class="model-badge-recommended">Recomendado</span>' : ''}
+                    </div>
+                    <p>Capacidad: ${maq.capacidad} &nbsp;|&nbsp; Presión: ${maq.presion}</p>
+                </div>
+                <div class="model-card-indicator-circle">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+window.seleccionarModelo = function(index) {
+    configActual.maquinaIndex = index;
+    configActual.fotoIndex = 0;
+    renderMaquina();
+};
+
 window.cambiarTab = function(btn) {
     const tabName = btn.dataset.tab;
     
@@ -415,6 +436,8 @@ window.cambiarTab = function(btn) {
         renderComponentes();
     } else if (tabName === 'opciones') {
         renderOpciones();
+    } else if (tabName === 'modelos') {
+        renderModelos();
     }
 };
 
@@ -428,5 +451,4 @@ document.addEventListener('click', function(e) {
 document.addEventListener('DOMContentLoaded', () => {
     renderAccesorios();
     actualizarSoloFotoYIndicadores();
-    actualizarPrecioDinamico();
 });

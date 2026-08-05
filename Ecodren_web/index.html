@@ -24,22 +24,22 @@
             <li><a href="#categorias">Ficha Técnica</a></li>
             <li><a href="{% url 'tienda' %}">Tienda</a></li>
             <li class="mega-dropdown">
-                <a href="#maquinaria">Equipos</a>
+                <a href="{% url 'maquinaria' %}">Equipos</a>
                 <div class="mega-menu">
                     <div class="mega-menu-grid">
-                        <a href="#maquinaria" class="machine-card">
+                        <a href="{% url 'maquinaria' %}" class="machine-card">
                             <img src="{% static 'Assets/afilial2_ecojet.webp' %}" alt="Ecojet">
                             <span>Equipos de Presión</span>
                         </a>
-                        <a href="#maquinaria" class="machine-card">
+                        <a href="{% url 'maquinaria' %}" class="machine-card">
                             <img src="{% static 'Assets/afilial1_ecovac.webp' %}" alt="Ecovac">
                             <span>Equipos de Vacio</span>
                         </a>
-                        <a href="#maquinaria" class="machine-card">
+                        <a href="{% url 'maquinaria' %}" class="machine-card">
                             <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren">
                             <span>Equipos Mixtos</span>
                         </a>
-                        <a href="#maquinaria" class="machine-card">
+                        <a href="{% url 'maquinaria' %}" class="machine-card">
                             <img src="{% static 'Assets/afilial3_ecoclean.webp' %}" alt="Ecoclean">
                             <span>Equipos de Vacio Seco</span>
                         </a>
@@ -368,90 +368,61 @@
 
     <section class="shop" id="tienda">
         <div class="section-header reveal">
-            <span class="section-tag">Catalogo Profesional</span>
+            <span class="section-tag">Catálogo Profesional</span>
             <h2 class="section-title">Producto Destacado</h2>
-            <p class="section-sub">Equipos de alta presion, refacciones originales y accesorios especializados para sistemas de desazolve.</p>
+            <p class="section-sub">Equipos de alta presión, refacciones originales y accesorios especializados para sistemas de desazolve.</p>
         </div>
 
         <div class="shop-grid">
-            <div class="shop-card">
-                <div class="shop-img">
-                    <span class="shop-badge badge-nuevo">Nuevo</span>
-                    <img src="{% static 'Assets/catalogo/boquillas/btp-3.webp' %}" alt="boquillas">
+            {% for producto in productos_destacados %}
+            <div class="shop-card" 
+                 data-id="{{ producto.id }}"
+                 data-nombre="{{ producto.nombre }}"
+                 data-cat="{{ producto.categoria.nombre }}"
+                 data-precio="{{ producto.precio_base|stringformat:'s' }}"
+                 data-stock="{{ producto.stock }}"
+                 data-desc="{{ producto.descripcion|default:'' }}"
+                 data-img="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'Assets/catalogo/boquillas/btp-3.webp' %}{% endif %}"
+                 data-sku="{{ producto.codigo_sku }}"
+                 data-specs="{{ producto.especificaciones|default:'' }}">
+                
+                <div class="shop-img" style="cursor: pointer;">
+                    <span class="shop-badge {% if producto.stock > 0 %}badge-nuevo{% else %}badge-oferta{% endif %}">
+                        {% if producto.stock > 0 %}Disponible{% else %}Bajo Pedido{% endif %}
+                    </span>
+                    {% if producto.imagen %}
+                        <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+                    {% else %}
+                        <img src="{% static 'Assets/catalogo/boquillas/btp-3.webp' %}" alt="{{ producto.nombre }}">
+                    {% endif %}
                 </div>
+
                 <div class="shop-info">
-                    <span class="shop-cat-tag">Boquillas</span>
-                    <h3>Modelo BPT-3</h3>
-                    <p>Acero inoxidable endurecido.</p>
+                    <span class="shop-cat-tag">{{ producto.categoria.nombre }}</span>
+                    <h3 style="cursor: pointer;">{{ producto.nombre }}</h3>
+                    <p>{{ producto.descripcion|truncatewords:8|default:"Refacción original de alto desempeño." }}</p>
                     <div class="shop-footer">
                         <div class="shop-price">
-                            <span>$1,350 MXN</span>
+                            {% if producto.precio_base > 0 %}
+                                <span>${{ producto.precio_base }} MXN</span>
+                            {% else %}
+                                <span style="font-size:0.88rem; color:var(--eco-green); font-weight:600;">Cotizar precio</span>
+                            {% endif %}
                         </div>
-                        <a href="{% url 'tienda' %}" class="add-cart-btn-link">
+                        <button type="button" class="add-cart-btn-link btn-ver-detalle" 
+                                style="background-color: #00a859; color: #ffffff; border: none !important; box-shadow: none !important; outline: none !important; transition: filter 0.2s ease;">
                             Ver detalles <i class="fas fa-arrow-right" style="font-size: 0.8rem; margin-left: 5px;"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
             </div>
-            <div class="shop-card">
-                <div class="shop-img">
-                    <span class="shop-badge badge-oferta">Oferta </span>
-                    <img src="{% static 'Assets/catalogo/boquillas/Imagen2.png' %}" alt="boquillas">
-                </div>
-                <div class="shop-info">
-                    <span class="shop-cat-tag">Boquillas</span>
-                    <h3>Modelo BPL-6</h3>
-                    <p>Rotores fuera del eje para vibracion/martilleo.</p>
-                    <div class="shop-footer">
-                        <div class="shop-price">
-                            <span class="shop-price-old">$2,300 MXN</span>
-                            <span>$1,700 MXN</span>
-                        </div>
-                        <a href="{% url 'tienda' %}" class="add-cart-btn-link">
-                            Ver Detalles <i class="fas fa-arrow-right" style="font-size: 0.8rem; margin-left: 5px;"></i>
-                        </a>
-                    </div>
-                </div>
+            {% empty %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                <p style="color: var(--eco-gray);">No hay productos disponibles por el momento.</p>
             </div>
-            <div class="shop-card">
-                <div class="shop-img">
-                    <span class="shop-badge badge-stock"> Popular</span>
-                    <img src="{% static 'Assets/catalogo/boquillas/Imagen3.png' %}" alt="boquillas"> 
-                </div>
-                <div class="shop-info">
-                    <span class="shop-cat-tag">Mangueras</span>
-                    <h3>Manguera Hidrojet 3/4"</h3>
-                    <p>Alta resistencia con trenzado de seguridad reinforced</p>
-                    <div class="shop-footer">
-                        <div class="shop-price">
-                            <span>$4,800 MXN</span>
-                        </div>
-                        <a href="{% url 'tienda' %}" class="add-cart-btn-link">
-                            Ver detalles <i class="fas fa-arrow-right" style="font-size: 0.8rem; margin-left: 5px;"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="shop-card">
-                <div class="shop-img">
-                    <span class="shop-badge badge-nuevo">Premium</span>
-                    <img src="{% static 'Assets/catalogo/boquillas/btp-4.webp' %}" alt="bombas">
-                </div>
-                <div class="shop-info">
-                    <span class="shop-cat-tag">Bombas</span>
-                    <h3>Bomba Ecojet Industrial</h3>
-                    <p>Alto rendimiento garantizado para flujo continuos</p>
-                    <div class="shop-footer">
-                        <div class="shop-price">
-                            <span>$12,000 MXN</span>
-                        </div>
-                        <a href="{% url 'tienda' %}" class="add-cart-btn-link">
-                            Ver detalles <i class="fas fa-arrow-right" style="font-size: 0.8rem; margin-left: 5px;"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
+
         <div style="text-align: center; margin-top: 3.5rem;">
             <a href="{% url 'tienda' %}" class="btn-primary" style="display: inline-block; text-align: center;">
                 Ir a la tienda completa <i class="fas fa-shopping-bag" style="margin-left: 8px;"></i>

@@ -312,3 +312,16 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+document.addEventListener('click', function (e) {
+    const card = e.target.closest('.shop-card');
+    if (!card) return;
+
+    // Abrir modal si se hace clic en la imagen, título o botón "Ver detalles"
+    if (e.target.closest('.shop-img') || e.target.closest('h3') || e.target.closest('.btn-ver-detalle')) {
+        const d = card.dataset;
+        if (typeof window.abrirModalDetalle === 'function') {
+            window.abrirModalDetalle(d.id, d.nombre, d.cat, d.precio, d.stock, d.desc, d.img, d.sku, d.specs);
+        }
+    }
+});

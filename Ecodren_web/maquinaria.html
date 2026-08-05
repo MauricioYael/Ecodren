@@ -1,56 +1,59 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maquinaria | ECODREN — Configurador Industrial</title>
-    <link rel="icon" type="image/jpeg" href="Assets/logo_web_ecodren.png">
+    <link rel="icon" type="image/jpeg" href="{% static 'Assets/logo_web_ecodren.png' %}">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/tienda.css">
-    <link rel="stylesheet" href="css/maquinaria.css">
+    
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tienda.css' %}">
+    <link rel="stylesheet" href="{% static 'css/maquinaria.css' %}">
 </head>
 <body>
 
 <nav id="mainNav">
-    <a href="index.html" class="nav-logo">
-        <img src="Assets/logo-ecodren.png" alt="Ecodren Logo" class="web-logo">
+    <a href="{% url 'home' %}" class="nav-logo">
+        <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren Logo" class="web-logo">
     </a>
     <ul class="nav-center">
-        <li><a href="index.html#categorias">Ficha Técnica</a></li>
-        <li><a href="tienda.html">Tienda</a></li>
+        <li><a href="{% url 'home' %}#categorias">Ficha Técnica</a></li>
+        <li><a href="{% url 'tienda' %}">Tienda</a></li>
         <li class="mega-dropdown">
-            <a href="maquinaria.html" class="nav-active">Equipos</a>
+            <a href="{% url 'maquinaria' %}" class="nav-active">Equipos</a>
             <div class="mega-menu">
                 <div class="mega-menu-grid">
-                    <a href="maquinaria.html" class="machine-card">
-                        <img src="Assets/afilial2_ecojet.webp" alt="Ecojet">
+                    <a href="{% url 'maquinaria' %}" class="machine-card">
+                        <img src="{% static 'Assets/afilial2_ecojet.webp' %}" alt="Ecojet">
                         <span>Equipos de Presión</span>
                     </a>
-                    <a href="maquinaria.html" class="machine-card">
-                        <img src="Assets/afilial1_ecovac.webp" alt="Ecovac">
+                    <a href="{% url 'maquinaria' %}" class="machine-card">
+                        <img src="{% static 'Assets/afilial1_ecovac.webp' %}" alt="Ecovac">
                         <span>Equipos de Vacio</span>
                     </a>
-                    <a href="maquinaria.html" class="machine-card">
-                        <img src="Assets/logo-ecodren.png" alt="Ecodren">
+                    <a href="{% url 'maquinaria' %}" class="machine-card">
+                        <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren">
                         <span>Equipos Mixtos</span>
                     </a>
-                    <a href="maquinaria.html" class="machine-card">
-                        <img src="Assets/afilial3_ecoclean.webp" alt="Ecoclean">
+                    <a href="{% url 'maquinaria' %}" class="machine-card">
+                        <img src="{% static 'Assets/afilial3_ecoclean.webp' %}" alt="Ecoclean">
                         <span>Equipos de Vacio Seco</span>
                     </a>
                 </div>
             </div>
         </li>
-        <li><a href="recursos.html">Recursos</a></li>
-        <li><a href="index.html#por-que">Nosotros</a></li>
+        <li><a href="#contacto">Recursos</a></li>
+        <li><a href="{% url 'home' %}#por-que">Nosotros</a></li>
     </ul>
 
     <div class="nav-right">
-        <a href="index.html#contacto" class="nav-cta">Cotizar</a>
+        <a href="{% url 'home' %}#contacto" class="nav-cta">Cotizar</a>
         <button class="cart-nav-btn" id="cartNavBtn">🛒</button>
 
         <div class="profile-wrap">
@@ -68,15 +71,15 @@
                         </div>
                     </div>
                     <ul class="dropdown-menu-list">
-                        <li><a href="perfil.html"><i class="far fa-user"></i> Mi perfil</a></li>
+                        <li><a href="#"><i class="far fa-user"></i> Mi perfil</a></li>
                         <li>
-                            <a href="perfil.html?tab=pedidos">
+                            <a href="#">
                                 <i class="far fa-check-square"></i> Mis pedidos
                                 <span class="badge-pedidos-count">3</span>
                             </a>
                         </li>
-                        <li><a href="perfil.html?tab=cotizaciones"><i class="far fa-comment-alt"></i> Cotizaciones guardadas</a></li>
-                        <li><a href="perfil.html?tab=configuracion"><i class="fas fa-cog"></i> Configuración</a></li>
+                        <li><a href="#"><i class="far fa-comment-alt"></i> Cotizaciones guardadas</a></li>
+                        <li><a href="#"><i class="fas fa-cog"></i> Configuración</a></li>
                         <li class="dropdown-divider"></li>
                         <li><a href="#" onclick="logOut()" class="logout-link"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
                     </ul>
@@ -91,23 +94,71 @@
             </div>
         </div>
         <button class="hamburger" id="hamburger" aria-label="Menú">
-                <span></span><span></span><span></span>
+            <span></span><span></span><span></span>
         </button>
     </div>
 </nav>
 
 <div class="mobile-menu" id="mobileMenu">
-    <a href="index.html#categorias" class="mobile-link">Ficha Técnica</a>
-    <a href="tienda.html" class="mobile-link">Tienda</a>
-    <a href="#" class="mobile-link">Equipos</a>
-    <a href="recursos.html" class="mobile-link">Recursos</a>
-    <a href="index.html#por-que" class="mobile-link">Nosotros</a>
-    <a href="index.html#contacto" class="mobile-link" style="color:var(--eco-green);font-weight:600">Cotizar →</a>
+    <a href="{% url 'home' %}#categorias" class="mobile-link">Ficha Técnica</a>
+    <a href="{% url 'tienda' %}" class="mobile-link">Tienda</a>
+    <a href="{% url 'maquinaria' %}" class="mobile-link">Equipos</a>
+    <a href="{% url 'home' %}#por-que" class="mobile-link">Nosotros</a>
+    <a href="{% url 'home' %}#contacto" class="mobile-link" style="color:var(--eco-green);font-weight:600">Cotizar →</a>
 </div>
 
 <main class="configurator-page-radical">
     <div class="radical-dashboard-layout">
+        <div class="radical-top-categories-selector">
+            <div class="top-categories-grid">
 
+                <div class="top-category-card active" data-machine="ecojet">
+                    <div class="top-card-content">
+                        <h3>Ecojet</h3>
+                        <p>Equipos de limpieza a Presión</p>
+                        <span class="top-card-action">Ver modelos <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                    <div class="top-card-img-wrap">
+                        <img src="{% static 'Assets/afilial2_ecojet.webp'%}" alt="Ecojet">
+                    </div>
+                </div>
+
+                <div class="top-category-card" data-machine="ecovac">
+                    <div class="top-card-content">
+                        <h3>Ecovac</h3>
+                        <p>Equipos de limpieza de Vacio</p>
+                        <span class="top-card-action">Ver modelos <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                    <div class="top-card-img-wrap">
+                        <img src="{% static 'Assets/afilial1_ecovac.webp'%}" alt="Ecovac">
+                    </div>
+                </div>
+
+                <div class="top-category-card" data-machine="ecodren">
+                    <div class="top-card-content">
+                        <h3>Ecodren</h3>
+                        <p>Equipos de limpieza mixto</p>
+                        <span class="top-card-action">Ver modelos <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                    <div class="top-card-img-wrap">
+                        <img src="{% static 'Assets/logo-ecodren.png'%}" alt="Ecodren">
+                    </div>
+                </div>
+
+                <div class="top-category-card" data-machine="ecoclean">
+                    <div class="top-card-content">
+                        <h3>Ecoclean</h3>
+                        <p>Equipos de limpieza de Vacio Seco</p>
+                        <span class="top-card-action">Ver modelos <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                    <div class="top-card-img-wrap">
+                        <img src="{% static 'Assets/afilial3_ecoclean.webp'%}" alt="Ecoclean">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
         <div class="radical-viewer-header">
             <span class="machine-category-radical">Serie Industrial</span>
             <h1 id="current-machine-name">Ecodren 17</h1>
@@ -141,7 +192,7 @@
                 </div>
 
                 <div class="radical-image-carousel-wrapper">
-                    <img id="mainMachineImage" src="Assets/ecodren-17/Ecodren ED-17.webp" alt="ecodren 17">
+                    <img id="mainMachineImage" src="{% static 'Assets/ecodren-17/Ecodren_ED-17.webp' %}" alt="ecodren 17">
                 </div>
 
                 <div class="radical-slider-controls-row">
@@ -161,16 +212,14 @@
         </div>
 
         <div class="radical-control-column">
-            <div class="radical-floating-variant-arrows">
-                <button onclick="prevVariant()" aria-label="Anterior"><i class="fas fa-chevron-left"></i></button>
-                <button onclick="nextVariant()" aria-label="Siguiente"><i class="fas fa-chevron-right"></i></button>
-            </div>
+            
 
             <div class="radical-customization-card">
                 <div class="radical-tabs-pill" id="tabsPill">
                     <button class="radical-tab-btn active" data-tab="accesorios" onclick="cambiarTab(this)">Equipamento</button>
                     <button class="radical-tab-btn" data-tab="componentes" onclick="cambiarTab(this)">Chasis</button>
                     <button class="radical-tab-btn" data-tab="opciones" onclick="cambiarTab(this)">Accesorios</button>
+                    <button class="radical-tab-btn" data-tab="modelos" onclick="cambiarTab(this)">Modelos</button>
                 </div>
 
                 <div class="radical-tab-content-wrapper" id="tabContentWrapper">
@@ -235,6 +284,10 @@
                     <div class="radical-tab-pane" id="tab-opciones">
                         <div id="opcionesContent"></div>
                     </div>
+
+                    <div class="radical-tab-pane" id="tab-modelos">
+
+                    </div>
                 </div>
                 
                 <div class="radical-actions-footer-group">
@@ -296,24 +349,24 @@
 <footer>
     <div class="footer-container">
         <div class="footer-brand">
-            <a href="index.html" class="nav-logo" style="margin-bottom:0.75rem">
-                <img src="Assets/logo-ecodren.png" alt="Ecodren Logo" class="web-logo">
+            <a href="{% url 'home' %}" class="nav-logo" style="margin-bottom:0.75rem">
+                <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren Logo" class="web-logo">
             </a>
             <p>Maquinaria y refacciones especializadas para desazolvadores. Soluciones confiables para profesionales del drenaje.</p>
         </div>
         <div><h4>Tienda</h4><ul>
-            <li><a href="tienda.html">Todas las refacciones</a></li>
-            <li><a href="tienda.html?cat=boquillas">Boquillas y Toberas</a></li>
-            <li><a href="tienda.html?cat=mangueras">Mangueras</a></li>
-            <li><a href="tienda.html?cat=bombas">Bombas</a></li>
+            <li><a href="{% url 'tienda' %}">Todas las refacciones</a></li>
+            <li><a href="{% url 'tienda' %}?cat=boquillas">Boquillas y Toberas</a></li>
+            <li><a href="{% url 'tienda' %}?cat=mangueras">Mangueras</a></li>
+            <li><a href="{% url 'tienda' %}?cat=bombas">Bombas</a></li>
         </ul></div>
         <div><h4>Empresa</h4><ul>
-            <li><a href="index.html#por-que">Quiénes somos</a></li>
-            <li><a href="index.html#por-que">Ventajas</a></li>
-            <li><a href="index.html#contacto">Trabaja con nosotros</a></li>
+            <li><a href="{% url 'home' %}#por-que">Quiénes somos</a></li>
+            <li><a href="{% url 'home' %}#por-que">Ventajas</a></li>
+            <li><a href="{% url 'home' %}#contacto">Trabaja con nosotros</a></li>
         </ul></div>
         <div><h4>Contacto</h4><ul>
-            <li><a href="index.html#contacto">Solicitar cotización</a></li>
+            <li><a href="{% url 'home' %}#contacto">Solicitar cotización</a></li>
             <li><a href="#">+52 (55) XXX-XXXX</a></li>
             <li><a href="#">ventas@ecodren.com</a></li>
         </ul></div>
@@ -322,9 +375,9 @@
     <div class="footer-corporate-brands">
         <span class="corporate-title">Una empresa de Equipos Hidromecánicos MC</span>
         <div class="brand-grid">
-            <img src="Assets/afilial1_ecovac.webp" alt="Ecovac" class="corp-logo">
-            <img src="Assets/afilial2_ecojet.webp" alt="Ecojet" class="corp-logo">
-            <img src="Assets/afilial3_ecoclean.webp" alt="Ecoclean" class="corp-logo">
+            <img src="{% static 'Assets/afilial1_ecovac.webp' %}" alt="Ecovac" class="corp-logo">
+            <img src="{% static 'Assets/afilial2_ecojet.webp' %}" alt="Ecojet" class="corp-logo">
+            <img src="{% static 'Assets/afilial3_ecoclean.webp' %}" alt="Ecoclean" class="corp-logo">
         </div>
     </div>
 
@@ -347,67 +400,13 @@
         <span>© 2026 Ecodren. Todos los derechos reservados.</span>
         <div class="footer-signature-wrap">
             <span class="signature-tag">Una marca de</span>
-            <img src="Assets/grupo-mc.webp" alt="GrupoMC" class="signature-logo">
+            <img src="{% static 'Assets/grupo-mc.webp' %}" alt="GrupoMC" class="signature-logo">
             <span class="signature-text">Diseñado para profesionales del desazolve</span>
         </div>
     </div>
 </footer>
 
-<div class="custom-modal-overlay" id="cotizacionModal">
-    <div class="custom-modal-box">
-        <div class="modal-icon-success">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <h3>¡Solicitud Recibida!</h3>
-        <div id="modal-message">Tu configuración se ha registrado con éxito.</div>
-        <div class="modal-divider"></div>
-        <button onclick="cerrarModal()" class="btn-modal-close">Entendido</button>
-    </div>
-</div>
-
-<div class="cart-overlay" id="cartOverlay"></div>
-<div class="cart-sidebar" id="cartSidebar">
-    <div class="cart-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eaeaea; padding-bottom: 1rem; margin-bottom: 1rem;">
-        <h2 style="font-size: 1.2rem; margin: 0; color: #333; display: flex; align-items: center; gap: 0.5rem;">🛒 Tu carrito</h2>
-        <button class="cart-close" id="cartClose" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #666; padding: 0; line-height: 1;">×</button>
-    </div>
-    <div class="cart-items" id="cartItems"></div>
-    <div class="cart-footer" id="cartFooter" style="display: none;">
-        <div class="cart-total-row">
-            <span>Total</span>
-            <strong id="cartTotal">$0 MXN</strong>
-        </div>
-        <button class="checkout-btn" onclick="handleCheckout()">Proceder al pago →</button>
-    </div>
-</div>
-
-<div class="modal-overlay" id="modalOverlay">
-    <div class="modal-box" style="max-width: 420px; width: 90%;">
-        <button class="modal-close" onclick="closeModal()">×</button>
-        
-        <div class="modal-tabs">
-            <button class="modal-tab active" onclick="switchTab('login')">Iniciar sesión</button>
-            <button class="modal-tab" onclick="switchTab('register')">Crear cuenta</button>
-        </div>
-        
-        <div class="modal-panel active" id="panel-login">
-            <h3>Bienvenido de vuelta</h3>
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="mform-group">
-                    <label>Correo electrónico</label>
-                    <input type="email" id="loginEmail" placeholder="correo@empresa.com" required style="width: 100%; box-sizing: border-box;">
-                </div>
-                <div class="mform-group">
-                    <label>Contraseña</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••" required style="width: 100%; box-sizing: border-box;">
-                </div>
-                <button type="submit" class="mform-submit">Iniciar sesión</button>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script src="js/main.js"></script>
-<script src="js/maquinaria.js"></script>
+<script src="{% static 'js/main.js' %}"></script>
+<script src="{% static 'js/maquinaria.js' %}"></script>
 </body>
 </html>
