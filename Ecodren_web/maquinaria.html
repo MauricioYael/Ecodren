@@ -112,7 +112,7 @@
         <div class="radical-top-categories-selector">
             <div class="top-categories-grid">
 
-                <div class="top-category-card active" data-machine="ecojet">
+                <div class="top-category-card" data-machine="ecojet">
                     <div class="top-card-content">
                         <h3>Ecojet</h3>
                         <p>Equipos de limpieza a Presión</p>
@@ -134,7 +134,7 @@
                     </div>
                 </div>
 
-                <div class="top-category-card" data-machine="ecodren">
+                <div class="top-category-card active" data-machine="ecodren">
                     <div class="top-card-content">
                         <h3>Ecodren</h3>
                         <p>Equipos de limpieza mixto</p>
@@ -159,187 +159,202 @@
             </div>
         </div>
         
-        <div class="radical-viewer-header">
-            <span class="machine-category-radical">Serie Industrial</span>
-            <h1 id="current-machine-name">Ecodren 17</h1>
-            <p class="machine-tagline-radical">Equipos de alto rendimiento diseñado para trabajos de limpieza y succión industrial en cualquier condición.</p>
+        <!-- Vista principal del configurador -->
+        <div id="configurator-main-view">
+            <div class="radical-viewer-header">
+                <span class="machine-category-radical">Serie Industrial</span>
+                <h1 id="current-machine-name">Ecodren 17</h1>
+                <p class="machine-tagline-radical">Equipos de alto rendimiento diseñado para trabajos de limpieza y succión industrial en cualquier condición.</p>
+            </div>
+
+            <div class="radical-viewer-column">
+                <div class="radical-machine-display-box">
+                    <div class="radical-specs-bullets-panel">
+                        <div class="radical-bullet-item">
+                            <div class="bullet-icon-circle"><i class="fa-solid fa-shield-halved"></i></div>
+                            <div class="bullet-text-box">
+                                <h3>Alto rendimiento</h3>
+                                <p>Tecnologia avanzada para máxima eficiencia</p>
+                            </div>
+                        </div>
+                        <div class="radical-bullet-item">
+                            <div class="bullet-icon-circle"><i class="fa-solid fa-droplet"></i></div>
+                            <div class="bullet-text-box">
+                                <h3>Limpiza profunda</h3>
+                                <p>Sistema de succión y presion que garantiza resultados superiores</p>
+                            </div>
+                        </div>
+                        <div class="radical-bullet-item">
+                            <div class="bullet-icon-circle"><i class="fa-solid fa-gear"></i></div>
+                            <div class="bullet-text-box">
+                                <h3>Construccion robusta</h3>
+                                <p>Materiales de alta calidad para mayor durabilidad.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="radical-image-carousel-wrapper">
+                        <img id="mainMachineImage" src="{% static 'Assets/ecodren-17/Ecodren_ED-17.webp' %}" alt="ecodren 17">
+                    </div>
+
+                    <div class="radical-slider-controls-row">
+                        <button class="carousel-photo-arrow-inline" onclick="cambiarFotoInterna(-1); event.preventDefault();" aria-label="Foto Anterior">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="radical-slider-indicators">
+                            <span class="indicator-bar active" onclick="irAFotoInterna(0)" style="cursor: pointer;"></span>
+                            <span class="indicator-bar" onclick="irAFotoInterna(1)" style="cursor: pointer;"></span>
+                            <span class="indicator-bar" onclick="irAFotoInterna(2)" style="cursor: pointer;"></span>
+                        </div>
+                        <button class="carousel-photo-arrow-inline" onclick="cambiarFotoInterna(1); event.preventDefault();" aria-label="Siguiente Foto">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>    
+            </div>
+
+            <div class="radical-control-column">
+                <div class="radical-customization-card">
+                    <div class="radical-tabs-pill" id="tabsPill">
+                        <button class="radical-tab-btn active" data-tab="accesorios" onclick="cambiarTab(this)">Equipamento</button>
+                        <button class="radical-tab-btn" data-tab="componentes" onclick="cambiarTab(this)">Chasis</button>
+                        <button class="radical-tab-btn" data-tab="opciones" onclick="cambiarTab(this)">Accesorios</button>
+                        <button class="radical-tab-btn" data-tab="modelos" onclick="cambiarTab(this)">Modelos</button>
+                    </div>
+
+                    <div class="radical-tab-content-wrapper" id="tabContentWrapper">
+                        <div class="radical-tab-pane active" id="tab-accesorios">
+
+                            <div class="radical-dropdown-selector-group">
+                                <label class="radical-selector-label">Selección de boquillas</label>
+                                <div class="custom-premium-dropdown-wrapper">
+                                    <div class="custom-dropdown-trigger" id="trigger-boquillas" onclick="toggleCustomDropdown('dropdown-boquillas', 'trigger-boquillas')">
+                                        <span id="label-boquillas">Selecciona una opción...</span>
+                                        <i class="fa-solid fa-chevron-down custom-arrow"></i>
+                                    </div>
+                                    <div class="custom-dropdown-options-list" id="dropdown-boquillas">
+                                        <div class="custom-dropdown-option" onclick="selectCustomOption('boquilla-estandar', 'Modelo BPT-1 (Estándar)', 'boquillas', 'trigger-boquillas')">
+                                            Modelo BPT-1 (Estándar)
+                                        </div>
+                                        <div class="custom-dropdown-option" onclick="selectCustomOption('boquilla-premium', 'Modelo BPT-3 (Premium)', 'boquillas', 'trigger-boquillas')">
+                                            Modelo BPT-3 (Premium)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="radical-selector-desc-card hidden-card" id="card-desc-boquillas">
+                                    <div class="desc-card-icon"><i class="fa-solid fa-satellite-dish" id="icon-boquillas"></i></div>
+                                    <div class="desc-card-text">
+                                        <strong id="title-desc-boquillas"></strong>
+                                        <p id="text-desc-boquillas"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="radical-dropdown-selector-group">
+                                <label class="radical-selector-label">Selección de mangueras</label>
+                                <div class="custom-premium-dropdown-wrapper">
+                                    <div class="custom-dropdown-trigger" id="trigger-mangueras" onclick="toggleCustomDropdown('dropdown-mangueras', 'trigger-mangueras')">
+                                        <span id="label-mangueras">Selecciona una opción...</span>
+                                        <i class="fa-solid fa-chevron-down custom-arrow"></i>
+                                    </div>
+                                    <div class="custom-dropdown-options-list" id="dropdown-mangueras">
+                                        <div class="custom-dropdown-option" onclick="selectCustomOption('manguera-34', 'Manguera Hidrojet 3/4', 'mangueras', 'trigger-mangueras')">
+                                            Manguera Hidrojet 3/4"
+                                        </div>
+                                        <div class="custom-dropdown-option" onclick="selectCustomOption('manguera-1', 'Manguera Hidrojet 1', 'mangueras', 'trigger-mangueras')">
+                                            Manguera Hidrojet 1"
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="radical-selector-desc-card hidden-card" id="card-desc-mangueras">
+                                    <div class="desc-card-icon"><i class="fa-solid fa-gear"></i></div>
+                                    <div class="desc-card-text">
+                                        <strong id="title-desc-mangueras"></strong>
+                                        <p id="text-desc-mangueras"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="radical-tab-pane" id="tab-componentes">
+                            <div id="componentesContent"></div>
+                        </div>
+
+                        <div class="radical-tab-pane" id="tab-opciones">
+                            <div id="opcionesContent"></div>
+                        </div>
+
+                        <div class="radical-tab-pane" id="tab-modelos">
+
+                        </div>
+                    </div>
+                    
+                    <div class="radical-actions-footer-group">
+                        <button onclick="solicitarCotizacion()" class="btn-radical-submit-quote">
+                            <i class="fa-solid fa-file-invoice"></i> Solicitar Cotización
+                        </button>
+                        <a href="#" class="btn-radical-download-pdf">
+                            <i class="fa-solid fa-download"></i> Descargar ficha técnica
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="radical-spec-strip-container">
+                <div class="strip-spec-item">
+                    <div class="strip-icon-box"><i class="fa-solid fa-cube"></i></div>
+                    <div class="strip-text-box">
+                        <span class="strip-label">Capacidad</span>
+                        <strong class="strip-value">17 m³</strong>
+                    </div>
+                </div>
+                <div class="strip-divider"></div>
+                <div class="strip-spec-item">
+                    <div class="strip-icon-box"><i class="fa-solid fa-gauge-high"></i></div>
+                    <div class="strip-text-box">
+                        <span class="strip-label">Presión Máxima</span>
+                        <strong class="strip-value">3000 PSI</strong>
+                    </div>
+                </div>
+                <div class="strip-divider"></div>
+                <div class="strip-spec-item">
+                    <div class="strip-icon-box"><i class="fa-solid fa-filter"></i></div>
+                    <div class="strip-text-box">
+                        <span class="strip-label">Sistema de succión</span>
+                        <strong class="strip-value">Alto vacío</strong>
+                    </div>
+                </div>
+                <div class="strip-divider"></div>
+                <div class="strip-spec-item">
+                    <div class="strip-icon-box"><i class="fa-solid fa-truck-ramp-box"></i></div>
+                    <div class="strip-text-box">
+                        <span class="strip-label">Peso Operativo</span>
+                        <strong class="strip-value">19,500 Kg</strong>
+                    </div>
+                </div>
+                <div class="strip-divider"></div>
+                <div class="strip-spec-item">
+                    <div class="strip-icon-box"><i class="fa-solid fa-briefcase"></i></div>
+                    <div class="strip-text-box">
+                        <span class="strip-label">Tipo de trabajo</span>
+                        <strong class="strip-value">Industrial</strong>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="radical-viewer-column">
-            <div class="radical-machine-display-box">
-                <div class="radical-specs-bullets-panel">
-                    <div class="radical-bullet-item">
-                        <div class="bullet-icon-circle"><i class="fa-solid fa-shield-halved"></i></div>
-                        <div class="bullet-text-box">
-                            <h3>Alto rendimiento</h3>
-                            <p>Tecnologia avanzada para máxima eficiencia</p>
-                        </div>
-                    </div>
-                    <div class="radical-bullet-item">
-                        <div class="bullet-icon-circle"><i class="fa-solid fa-droplet"></i></div>
-                        <div class="bullet-text-box">
-                            <h3>Limpiza profunda</h3>
-                            <p>Sistema de succión y presion que garantiza resultados superiores</p>
-                        </div>
-                    </div>
-                    <div class="radical-bullet-item">
-                        <div class="bullet-icon-circle"><i class="fa-solid fa-gear"></i></div>
-                        <div class="bullet-text-box">
-                            <h3>Construccion robusta</h3>
-                            <p>Materiales de alta calidad para mayor durabilidad.</p>
-                        </div>
-                    </div>
+        <!-- Vista En Construcción -->
+        <div id="under-construction-view" class="under-construction-container" style="display: none;">
+            <div class="under-construction-content">
+                <div class="construction-icon-box">
+                    <i class="fa-solid fa-screwdriver-wrench"></i>
                 </div>
-
-                <div class="radical-image-carousel-wrapper">
-                    <img id="mainMachineImage" src="{% static 'Assets/ecodren-17/Ecodren_ED-17.webp' %}" alt="ecodren 17">
-                </div>
-
-                <div class="radical-slider-controls-row">
-                    <button class="carousel-photo-arrow-inline" onclick="cambiarFotoInterna(-1); event.preventDefault();" aria-label="Foto Anterior">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <div class="radical-slider-indicators">
-                        <span class="indicator-bar active" onclick="irAFotoInterna(0)" style="cursor: pointer;"></span>
-                        <span class="indicator-bar" onclick="irAFotoInterna(1)" style="cursor: pointer;"></span>
-                        <span class="indicator-bar" onclick="irAFotoInterna(2)" style="cursor: pointer;"></span>
-                    </div>
-                    <button class="carousel-photo-arrow-inline" onclick="cambiarFotoInterna(1); event.preventDefault();" aria-label="Siguiente Foto">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-            </div>    
-        </div>
-
-        <div class="radical-control-column">
-            
-
-            <div class="radical-customization-card">
-                <div class="radical-tabs-pill" id="tabsPill">
-                    <button class="radical-tab-btn active" data-tab="accesorios" onclick="cambiarTab(this)">Equipamento</button>
-                    <button class="radical-tab-btn" data-tab="componentes" onclick="cambiarTab(this)">Chasis</button>
-                    <button class="radical-tab-btn" data-tab="opciones" onclick="cambiarTab(this)">Accesorios</button>
-                    <button class="radical-tab-btn" data-tab="modelos" onclick="cambiarTab(this)">Modelos</button>
-                </div>
-
-                <div class="radical-tab-content-wrapper" id="tabContentWrapper">
-                    <div class="radical-tab-pane active" id="tab-accesorios">
-
-                        <div class="radical-dropdown-selector-group">
-                            <label class="radical-selector-label">Selección de boquillas</label>
-                            <div class="custom-premium-dropdown-wrapper">
-                                <div class="custom-dropdown-trigger" id="trigger-boquillas" onclick="toggleCustomDropdown('dropdown-boquillas', 'trigger-boquillas')">
-                                    <span id="label-boquillas">Selecciona una opción...</span>
-                                    <i class="fa-solid fa-chevron-down custom-arrow"></i>
-                                </div>
-                                <div class="custom-dropdown-options-list" id="dropdown-boquillas">
-                                    <div class="custom-dropdown-option" onclick="selectCustomOption('boquilla-estandar', 'Modelo BPT-1 (Estándar)', 'boquillas', 'trigger-boquillas')">
-                                        Modelo BPT-1 (Estándar)
-                                    </div>
-                                    <div class="custom-dropdown-option" onclick="selectCustomOption('boquilla-premium', 'Modelo BPT-3 (Premium)', 'boquillas', 'trigger-boquillas')">
-                                        Modelo BPT-3 (Premium)
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="radical-selector-desc-card hidden-card" id="card-desc-boquillas">
-                                <div class="desc-card-icon"><i class="fa-solid fa-satellite-dish" id="icon-boquillas"></i></div>
-                                <div class="desc-card-text">
-                                    <strong id="title-desc-boquillas"></strong>
-                                    <p id="text-desc-boquillas"></p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="radical-dropdown-selector-group">
-                            <label class="radical-selector-label">Selección de mangueras</label>
-                            <div class="custom-premium-dropdown-wrapper">
-                                <div class="custom-dropdown-trigger" id="trigger-mangueras" onclick="toggleCustomDropdown('dropdown-mangueras', 'trigger-mangueras')">
-                                    <span id="label-mangueras">Selecciona una opción...</span>
-                                    <i class="fa-solid fa-chevron-down custom-arrow"></i>
-                                </div>
-                                <div class="custom-dropdown-options-list" id="dropdown-mangueras">
-                                    <div class="custom-dropdown-option" onclick="selectCustomOption('manguera-34', 'Manguera Hidrojet 3/4', 'mangueras', 'trigger-mangueras')">
-                                        Manguera Hidrojet 3/4"
-                                    </div>
-                                    <div class="custom-dropdown-option" onclick="selectCustomOption('manguera-1', 'Manguera Hidrojet 1', 'mangueras', 'trigger-mangueras')">
-                                        Manguera Hidrojet 1"
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="radical-selector-desc-card hidden-card" id="card-desc-mangueras">
-                                <div class="desc-card-icon"><i class="fa-solid fa-gear"></i></div>
-                                <div class="desc-card-text">
-                                    <strong id="title-desc-mangueras"></strong>
-                                    <p id="text-desc-mangueras"></p>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="radical-tab-pane" id="tab-componentes">
-                        <div id="componentesContent"></div>
-                    </div>
-
-                    <div class="radical-tab-pane" id="tab-opciones">
-                        <div id="opcionesContent"></div>
-                    </div>
-
-                    <div class="radical-tab-pane" id="tab-modelos">
-
-                    </div>
-                </div>
-                
-                <div class="radical-actions-footer-group">
-                    <button onclick="solicitarCotizacion()" class="btn-radical-submit-quote">
-                        <i class="fa-solid fa-file-invoice"></i> Solicitar Cotización
-                    </button>
-                    <a href="#" class="btn-radical-download-pdf">
-                        <i class="fa-solid fa-download"></i> Descargar ficha técnica
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="radical-spec-strip-container">
-            <div class="strip-spec-item">
-                <div class="strip-icon-box"><i class="fa-solid fa-cube"></i></div>
-                <div class="strip-text-box">
-                    <span class="strip-label">Capacidad</span>
-                    <strong class="strip-value">17 m³</strong>
-                </div>
-            </div>
-            <div class="strip-divider"></div>
-            <div class="strip-spec-item">
-                <div class="strip-icon-box"><i class="fa-solid fa-gauge-high"></i></div>
-                <div class="strip-text-box">
-                    <span class="strip-label">Presión Máxima</span>
-                    <strong class="strip-value">3000 PSI</strong>
-                </div>
-            </div>
-            <div class="strip-divider"></div>
-            <div class="strip-spec-item">
-                <div class="strip-icon-box"><i class="fa-solid fa-filter"></i></div>
-                <div class="strip-text-box">
-                    <span class="strip-label">Sistema de succión</span>
-                    <strong class="strip-value">Alto vacío</strong>
-                </div>
-            </div>
-            <div class="strip-divider"></div>
-            <div class="strip-spec-item">
-                <div class="strip-icon-box"><i class="fa-solid fa-truck-ramp-box"></i></div>
-                <div class="strip-text-box">
-                    <span class="strip-label">Peso Operativo</span>
-                    <strong class="strip-value">19,500 Kg</strong>
-                </div>
-            </div>
-            <div class="strip-divider"></div>
-            <div class="strip-spec-item">
-                <div class="strip-icon-box"><i class="fa-solid fa-briefcase"></i></div>
-                <div class="strip-text-box">
-                    <span class="strip-label">Tipo de trabajo</span>
-                    <strong class="strip-value">Industrial</strong>
-                </div>
+                <h2 id="construction-category-title">Línea en Desarrollo</h2>
+                <p>Estamos catalogando y configurando los modelos de esta serie. Muy pronto estará disponible en la plataforma.</p>
+                <button class="btn-radical-submit-quote" onclick="activarEcodren()">
+                    <i class="fa-solid fa-arrow-left"></i> Volver a Equipos Ecodren
+                </button>
             </div>
         </div>
 
@@ -405,6 +420,10 @@
         </div>
     </div>
 </footer>
+
+<script>
+    const MAQUINARIA = JSON.parse('{{ maquinaria_json|escapejs }}');
+</script>
 
 <script src="{% static 'js/main.js' %}"></script>
 <script src="{% static 'js/maquinaria.js' %}"></script>

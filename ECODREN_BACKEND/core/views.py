@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.db.models import Q
 from .models import Producto, Categoria
+from .models import Maquinaria
+import json
+
 
 def index(request):
     productos_destacados = Producto.objects.filter(disponible=True).order_by('?')[:4]
@@ -51,4 +54,26 @@ def tienda(request):
     return render(request, 'tienda.html', context)
 
 def maquinaria(request):
-    return render(request, 'maquinaria.html')
+    maquinas_db = Maquinaria.objects.filter(activo=True).prefetch_related('imagenes')
+
+    maquinaria_list = []
+    for m in maquinas_db:
+        imgs = [img.imagen.url for img in m.imagenes.all()]
+
+        if not imgs:
+            imgs = ['/static/Assets/logo_web_ecodren.png']
+
+        maquinaria_list.append({
+            'id': m.slug,
+            'nombre': m.nombre,
+            'categoria': m.categoria_equipo,
+            'tagline': m.tagline,
+            'capacidad': m.capacidad,
+            'presion': m.presion,
+            'recomendado': m.recomendado,
+            'imagenes': imgs 
+        })
+    context = {
+        'maquinaria_json': json.dumps(maquinaria_list)
+    }
+    return render(request, 'maquinaria.html', context)

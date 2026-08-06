@@ -56,3 +56,41 @@ class Producto(models.Model):
 
     def __str__(self):
         return f"[{self.codigo_sku}] {self.nombre}"
+
+class Maquinaria(models.Model):
+    CATEGORIAS_EQUIPO = [
+        ('ecojet', 'Ecojet'),
+        ('ecovac', 'Ecovac'),
+        ('ecodren', 'Ecodren'),
+        ('ecoclean', 'Ecoclean'),
+    ]
+    slug = models.SlugField(unique=True, help_text="Identificador unico para JS, ej: 'Ecodren-17'")
+    nombre = models.CharField(max_length=100)
+    categoria_equipo = models.CharField(max_length=20, choices=CATEGORIAS_EQUIPO, default='ecodren')
+    tagline = models.TextField(help_text="Descripcion corta del equipo")
+    capacidad = models.CharField(max_length=50)
+    presion = models.CharField(max_length=50)
+    recomendado = models.BooleanField(default=False)
+    activo = models.BooleanField(default = True)
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Maquinaria'
+        verbose_name_plural= 'Maquinarias'
+        ordering = ['-recomendado', 'nombre']
+
+    def __str__(self):
+        return self.nombre
+
+class ImagenMaquinaria(models.Model):
+    maquinaria = models.ForeignKey(
+        Maquinaria, related_name='imagenes',
+        on_delete=models.CASCADE
+    )
+    imagen = models.ImageField(upload_to='maquinaria/')
+    orden = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['orden']
+        verbose_name = 'Imagen de Maquinaria'
+        verbose_name_plural = 'Imágenes de Maquinaria'

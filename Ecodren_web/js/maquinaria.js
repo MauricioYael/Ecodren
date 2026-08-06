@@ -1,85 +1,3 @@
-const MAQUINARIA = [
-    {
-        id: "Ecodren-17",
-        nombre: "Ecodren 17",
-        tagline: "Equipos de alto rendimiento diseñado para trabajos de limpieza y succión industrial en cualquier condición.",
-        capacidad: "17 m³",
-        presion: "3000 PSI",
-        recomendado: true,
-        imagenes: [
-            "/static/Assets/ecodren-17/Ecodren ED-17.webp",
-            "/static/Assets/ecodren-17/Ecodren ED-17 v2.webp",
-            "/static/Assets/ecodren-17/Ecodren ED-17 v3.webp"
-        ]
-    },
-    {
-        id: "Ecodren-15",
-        nombre: "Ecodren 15",
-        tagline: "Configuración robusta optimizada para operaciones intensivas y alta productividad municipal.",
-        capacidad: "15 m³",
-        presion: "2500 PSI",
-        recomendado: false,
-        imagenes: [
-            "/static/Assets/ecodren-15/Ecodren ED-15.webp",
-            "/static/Assets/ecodren-15/Ecodren ED-15 v2.webp",
-            "/static/Assets/ecodren-15/Ecodren ED-15 v3.webp"
-        ]
-    },
-    {
-        id: "Ecodren-13",
-        nombre: "Ecodren 13",
-        tagline: "Configuracion semirobusta para operaciones intensas y de una alta productividad",
-        capacidad: "13 m³",
-        presion: "2500 PSI",
-        recomendado: false,
-        imagenes: [
-            "/static/Assets/ecodren-13/Ecodren ED-13.webp",
-            "/static/Assets/ecodren-13/Ecodren ED-13 v2.webp",
-            "/static/Assets/ecodren-13/Ecodren ED-13 v3.webp"
-        ]
-    },
-    {
-        id: "Ecodren-10",
-        nombre: "Ecodren 10",
-        tagline: "Configuracion semirobusta para operaciones intensas y de una productividad para viajes poco prolongados",
-        capacidad: "10 m³",
-        presion: "2000 PSI",
-        recomendado: true,
-        imagenes: [
-            "/static/Assets/ecodren-13/Ecodren ED-13.webp",
-            "/static/Assets/ecodren-13/Ecodren ED-13 v2.webp",
-            "/static/Assets/ecodren-13/Ecodren ED-13 v3.webp"
-        ]
-    },
-    {
-        id: "Ecodren-5",
-        nombre: "Ecodren 5",
-        tagline: "Maquinaria para operaciones en espacios poco reducidos y poco pesados",
-        capacidad: "5 m³",
-        presion: "1500 PSI",
-        recomendado: false,
-        imagenes: [
-            "/static/Assets/ecodren-5/Ecodren ED-5.webp",
-            "/static/Assets/ecodren-5/Ecodren ED-5 v2.webp",
-            "/static/Assets/ecodren-5/Ecodren ED-5 v3.webp"
-        ]
-    },
-    {
-        id: "Ecodren-3",
-        nombre: "Ecodren 3",
-        tagline: "Maquinaria para operaciones poco pesados y en espacios reducidos y angostos de poco acceso.",
-        capacidad: "3 m³",
-        presion: "1500 PSI",
-        recomendado: true,
-        imagenes: [
-            "/static/Assets/ecodren-5/Ecodren ED-5.webp",
-            "/static/Assets/ecodren-5/Ecodren ED-5 v2.webp",
-            "/static/Assets/ecodren-5/Ecodren ED-5 v3.webp"
-        ]
-    }
-    
-];
-
 let configActual = {
     maquinaIndex: 0,
     fotoIndex: 0,
@@ -119,6 +37,8 @@ window.renderMaquina = function() {
 
 function actualizarSoloFotoYIndicadores() {
     const maquina = MAQUINARIA[configActual.maquinaIndex];
+    if (!maquina || !maquina.imagenes || maquina.imagenes.length === 0) return;
+
     const imgElement = document.getElementById('mainMachineImage');
     if (imgElement) {
         imgElement.src = maquina.imagenes[configActual.fotoIndex];
@@ -448,7 +368,43 @@ document.addEventListener('click', function(e) {
     }
 });
 
+window.activarEcodren = function() {
+    const ecodrenCard = document.querySelector('.top-category-card[data-machine="ecodren"]');
+    if (ecodrenCard) ecodrenCard.click();
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     renderAccesorios();
     actualizarSoloFotoYIndicadores();
+
+    const categoryCard = document.querySelectorAll('.top-category-card');
+    const configuratorView = document.getElementById('configurator-main-view');
+    const constructionView = document.getElementById('under-construction-view');
+    const constructionTitle = document.getElementById('construction-category-title');
+
+    categoryCard.forEach(card => {
+        card.addEventListener('click', () => {
+            const selectedCategory = card.getAttribute('data-machine');
+
+            categoryCard.forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+
+            if (selectedCategory === 'ecodren') {
+                if (configuratorView) configuratorView.style.display = 'contents';
+                if (constructionView) constructionView.style.display = 'none';
+            } else {
+                if (configuratorView) configuratorView.style.display = 'none';
+                if (constructionView) constructionView.style.display = 'flex';
+
+                const nombres = {
+                    ecojet: 'Línea Ecojet',
+                    ecovac: 'Línea Ecovac',
+                    ecoclean: 'Línea Ecoclean'
+                };
+                if (constructionTitle) {
+                    constructionTitle.textContent = `${nombres[selectedCategory] || 'Línea'} — En Construcción`;
+                }
+            }
+        });
+    });
 });
