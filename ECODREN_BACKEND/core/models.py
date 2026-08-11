@@ -25,14 +25,11 @@ class Producto(models.Model):
     codigo_sku = models.CharField(max_length=50, unique=True, verbose_name="Código / SKU")
     nombre = models.CharField(max_length=200, verbose_name="Nombre del Producto/Equipo")
     descripcion = models.TextField(blank=True, null=True, verbose_name="Descripción General")
-    
-    # Detalle técnico (ej. Presión máx, Caudal, Material, Diámetro)
     especificaciones = models.TextField(
         blank=True, 
         null=True, 
         help_text="Especificaciones técnicas (presión, caudal, dimensiones, etc.)"
     )
-    
     precio_base = models.DecimalField(
         max_digits=12, 
         decimal_places=2, 
@@ -41,11 +38,8 @@ class Producto(models.Model):
     )
     stock = models.PositiveIntegerField(default=0, verbose_name="Stock / Inventario")
     disponible = models.BooleanField(default=True, verbose_name="¿Disponible para venta/cotización?")
-    
-    # Archivos adjuntos opcionales (imágenes y ficha técnica)
     imagen = models.ImageField(upload_to='productos/', blank=True, null=True, verbose_name="Imagen Principal")
     ficha_tecnica = models.FileField(upload_to='fichas_tecnicas/', blank=True, null=True, verbose_name="Ficha Técnica (PDF)")
-
     creado_en = models.DateTimeField(auto_now_add=True)
     actualizado_en = models.DateTimeField(auto_now=True)
 
@@ -56,6 +50,7 @@ class Producto(models.Model):
 
     def __str__(self):
         return f"[{self.codigo_sku}] {self.nombre}"
+
 
 class Maquinaria(models.Model):
     CATEGORIAS_EQUIPO = [
@@ -70,17 +65,21 @@ class Maquinaria(models.Model):
     tagline = models.TextField(help_text="Descripcion corta del equipo")
     capacidad = models.CharField(max_length=50)
     presion = models.CharField(max_length=50)
+    succion = models.CharField(max_length=50, default="Alto vacío", blank=True, null=True)
+    peso = models.CharField(max_length=50, default="19,500 Kg", blank=True, null=True)
+    tipo_trabajo = models.CharField(max_length=50, default="Industrial", blank=True, null=True)
     recomendado = models.BooleanField(default=False)
-    activo = models.BooleanField(default = True)
+    activo = models.BooleanField(default=True)
     creado_en = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'Maquinaria'
-        verbose_name_plural= 'Maquinarias'
+        verbose_name_plural = 'Maquinarias'
         ordering = ['-recomendado', 'nombre']
 
     def __str__(self):
         return self.nombre
+
 
 class ImagenMaquinaria(models.Model):
     maquinaria = models.ForeignKey(
@@ -94,3 +93,30 @@ class ImagenMaquinaria(models.Model):
         ordering = ['orden']
         verbose_name = 'Imagen de Maquinaria'
         verbose_name_plural = 'Imágenes de Maquinaria'
+
+
+class Equipamento(models.Model):
+    maquinaria = models.ForeignKey(Maquinaria, on_delete=models.CASCADE, related_name='equipamentos')
+    nombre = models.CharField(max_length=100)
+    especificacion = models.CharField(max_length=255, help_text="Ej. Fibra de vidrio o Aluminio / 80 GPM / Hidrahulico")
+    icono = models.CharField(max_length=50, default="fa-screwdriver-wrench", help_text="Clase FontAwesome, ej: fa-water")
+
+    class Meta:
+        verbose_name = "Equipamento"
+        verbose_name_plural = "Equipamentos"
+
+    def __str__(self):
+        return f"{self.nombre} - {self.maquinaria.nombre}"
+
+
+class AccesorioExtra(models.Model):
+    nombre = models.CharField(max_length=100)
+    descripcion = models.CharField(max_length=255, blank=True, null=True)
+    maquinarias = models.ManyToManyField(Maquinaria, related_name='accesorios_disponibles', blank=True)
+
+    class Meta:
+        verbose_name = "Accesorio Extra"
+        verbose_name_plural = "Accesorios Extras"
+
+    def __str__(self):
+        return self.nombre

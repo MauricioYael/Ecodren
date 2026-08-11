@@ -159,7 +159,6 @@
             </div>
         </div>
         
-        <!-- Vista principal del configurador -->
         <div id="configurator-main-view">
             <div class="radical-viewer-header">
                 <span class="machine-category-radical">Serie Industrial</span>
@@ -223,59 +222,7 @@
                     </div>
 
                     <div class="radical-tab-content-wrapper" id="tabContentWrapper">
-                        <div class="radical-tab-pane active" id="tab-accesorios">
-
-                            <div class="radical-dropdown-selector-group">
-                                <label class="radical-selector-label">Selección de boquillas</label>
-                                <div class="custom-premium-dropdown-wrapper">
-                                    <div class="custom-dropdown-trigger" id="trigger-boquillas" onclick="toggleCustomDropdown('dropdown-boquillas', 'trigger-boquillas')">
-                                        <span id="label-boquillas">Selecciona una opción...</span>
-                                        <i class="fa-solid fa-chevron-down custom-arrow"></i>
-                                    </div>
-                                    <div class="custom-dropdown-options-list" id="dropdown-boquillas">
-                                        <div class="custom-dropdown-option" onclick="selectCustomOption('boquilla-estandar', 'Modelo BPT-1 (Estándar)', 'boquillas', 'trigger-boquillas')">
-                                            Modelo BPT-1 (Estándar)
-                                        </div>
-                                        <div class="custom-dropdown-option" onclick="selectCustomOption('boquilla-premium', 'Modelo BPT-3 (Premium)', 'boquillas', 'trigger-boquillas')">
-                                            Modelo BPT-3 (Premium)
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="radical-selector-desc-card hidden-card" id="card-desc-boquillas">
-                                    <div class="desc-card-icon"><i class="fa-solid fa-satellite-dish" id="icon-boquillas"></i></div>
-                                    <div class="desc-card-text">
-                                        <strong id="title-desc-boquillas"></strong>
-                                        <p id="text-desc-boquillas"></p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="radical-dropdown-selector-group">
-                                <label class="radical-selector-label">Selección de mangueras</label>
-                                <div class="custom-premium-dropdown-wrapper">
-                                    <div class="custom-dropdown-trigger" id="trigger-mangueras" onclick="toggleCustomDropdown('dropdown-mangueras', 'trigger-mangueras')">
-                                        <span id="label-mangueras">Selecciona una opción...</span>
-                                        <i class="fa-solid fa-chevron-down custom-arrow"></i>
-                                    </div>
-                                    <div class="custom-dropdown-options-list" id="dropdown-mangueras">
-                                        <div class="custom-dropdown-option" onclick="selectCustomOption('manguera-34', 'Manguera Hidrojet 3/4', 'mangueras', 'trigger-mangueras')">
-                                            Manguera Hidrojet 3/4"
-                                        </div>
-                                        <div class="custom-dropdown-option" onclick="selectCustomOption('manguera-1', 'Manguera Hidrojet 1', 'mangueras', 'trigger-mangueras')">
-                                            Manguera Hidrojet 1"
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="radical-selector-desc-card hidden-card" id="card-desc-mangueras">
-                                    <div class="desc-card-icon"><i class="fa-solid fa-gear"></i></div>
-                                    <div class="desc-card-text">
-                                        <strong id="title-desc-mangueras"></strong>
-                                        <p id="text-desc-mangueras"></p>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
+                        <div class="radical-tab-pane active" id="tab-accesorios"></div>
 
                         <div class="radical-tab-pane" id="tab-componentes">
                             <div id="componentesContent"></div>
@@ -285,9 +232,7 @@
                             <div id="opcionesContent"></div>
                         </div>
 
-                        <div class="radical-tab-pane" id="tab-modelos">
-
-                        </div>
+                        <div class="radical-tab-pane" id="tab-modelos"></div>
                     </div>
                     
                     <div class="radical-actions-footer-group">
@@ -306,7 +251,7 @@
                     <div class="strip-icon-box"><i class="fa-solid fa-cube"></i></div>
                     <div class="strip-text-box">
                         <span class="strip-label">Capacidad</span>
-                        <strong class="strip-value">17 m³</strong>
+                        <strong class="strip-value" id="strip-capacidad">17 m³</strong>
                     </div>
                 </div>
                 <div class="strip-divider"></div>
@@ -314,7 +259,7 @@
                     <div class="strip-icon-box"><i class="fa-solid fa-gauge-high"></i></div>
                     <div class="strip-text-box">
                         <span class="strip-label">Presión Máxima</span>
-                        <strong class="strip-value">3000 PSI</strong>
+                        <strong class="strip-value" id="strip-presion">3000 PSI</strong>
                     </div>
                 </div>
                 <div class="strip-divider"></div>
@@ -322,7 +267,7 @@
                     <div class="strip-icon-box"><i class="fa-solid fa-filter"></i></div>
                     <div class="strip-text-box">
                         <span class="strip-label">Sistema de succión</span>
-                        <strong class="strip-value">Alto vacío</strong>
+                        <strong class="strip-value" id="strip-succion">Alto vacío</strong>
                     </div>
                 </div>
                 <div class="strip-divider"></div>
@@ -330,7 +275,7 @@
                     <div class="strip-icon-box"><i class="fa-solid fa-truck-ramp-box"></i></div>
                     <div class="strip-text-box">
                         <span class="strip-label">Peso Operativo</span>
-                        <strong class="strip-value">19,500 Kg</strong>
+                        <strong class="strip-value" id="strip-peso">19,500 Kg</strong>
                     </div>
                 </div>
                 <div class="strip-divider"></div>
@@ -338,13 +283,12 @@
                     <div class="strip-icon-box"><i class="fa-solid fa-briefcase"></i></div>
                     <div class="strip-text-box">
                         <span class="strip-label">Tipo de trabajo</span>
-                        <strong class="strip-value">Industrial</strong>
+                        <strong class="strip-value" id="strip-tipo">Industrial</strong>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Vista En Construcción -->
         <div id="under-construction-view" class="under-construction-container" style="display: none;">
             <div class="under-construction-content">
                 <div class="construction-icon-box">
@@ -422,7 +366,7 @@
 </footer>
 
 <script>
-    const MAQUINARIA = JSON.parse('{{ maquinaria_json|escapejs }}');
+    window.MAQUINARIA = JSON.parse('{{ maquinaria_json|escapejs }}');
 </script>
 
 <script src="{% static 'js/main.js' %}"></script>

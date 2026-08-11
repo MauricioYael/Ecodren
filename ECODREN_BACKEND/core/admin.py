@@ -1,27 +1,33 @@
 from django.contrib import admin
-from .models import Categoria, Producto
-from .models import Maquinaria, ImagenMaquinaria
+from .models import Categoria, Producto, Maquinaria, ImagenMaquinaria, Equipamento, AccesorioExtra
 
 
-@admin.register(Categoria)
-class CategoriaAdmin(admin.ModelAdmin):
-    list_display = ('id', 'nombre', 'creado_en')
-    search_fields = ('nombre',)
+class ImagenMaquinariaInline(admin.TabularInline):
+    model = ImagenMaquinaria
+    extra = 1
+
+
+class EquipamentoInline(admin.TabularInline):
+    model = Equipamento
+    extra = 1
+
+
+@admin.register(Maquinaria)
+class MaquinariaAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'categoria_equipo', 'capacidad', 'presion', 'activo')
+    inlines = [ImagenMaquinariaInline, EquipamentoInline]
+
+
+@admin.register(AccesorioExtra)
+class AccesorioExtraAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'descripcion')
 
 
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
-    list_display = ('codigo_sku', 'nombre', 'categoria', 'precio_base', 'stock', 'disponible')
-    list_filter = ('categoria', 'disponible')
-    search_fields = ('codigo_sku', 'nombre', 'descripcion')
-    list_editable = ('precio_base', 'stock', 'disponible')
+    list_display = ('nombre', 'codigo_sku', 'precio_base', 'disponible', 'stock')
 
-class ImagenMaquinariaInLine(admin.TabularInline):
-    model = ImagenMaquinaria
-    extra = 3
-@admin.register(Maquinaria)
-class MaquinariaAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'slug', 'categoria_equipo', 'capacidad', 'presion', 'recomendado', 'activo')
-    list_filter = ('categoria_equipo', 'recomendado', 'activo')
-    prepopulated_fields = {'slug': ('nombre', )}
-    inlines = [ImagenMaquinariaInLine]
+
+@admin.register(Categoria)
+class CategoriaAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'creado_en')

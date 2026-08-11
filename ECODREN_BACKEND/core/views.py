@@ -1,8 +1,7 @@
+import json
 from django.shortcuts import render
 from django.db.models import Q
-from .models import Producto, Categoria
-from .models import Maquinaria
-import json
+from .models import Producto, Categoria, Maquinaria
 
 
 def index(request):
@@ -11,16 +10,15 @@ def index(request):
         'productos_destacados': productos_destacados
     })
 
+
 def tienda(request):
     categorias = Categoria.objects.all()
     productos = Producto.objects.filter(disponible=True)
 
-    # 1. Filtro por Categoría
     cat_id = request.GET.get('cat')
     if cat_id and cat_id != 'todos':
         productos = productos.filter(categoria_id=cat_id)
 
-    # 2. Filtro de Búsqueda por Nombre o SKU
     busqueda = request.GET.get('q')
     if busqueda:
         productos = productos.filter(
@@ -29,12 +27,10 @@ def tienda(request):
             Q(descripcion__icontains=busqueda)
         )
 
-    # 3. Filtro Solo en Stock
     solo_stock = request.GET.get('stock')
     if solo_stock == '1':
         productos = productos.filter(stock__gt=0)
 
-    # 4. Ordenamiento
     orden = request.GET.get('sort')
     if orden == 'price-asc':
         productos = productos.order_by('precio_base')
@@ -53,26 +49,61 @@ def tienda(request):
     }
     return render(request, 'tienda.html', context)
 
-def maquinaria(request):
-    maquinas_db = Maquinaria.objects.filter(activo=True).prefetch_related('imagenes')
 
+def maquinaria(request):
+    maquinas_db = Maquinaria.objects.filter(activo=True).prefetch_related('imagenes', 'equipamentos', 'accesorios_disponibles')
     maquinaria_list = []
+    
     for m in maquinas_db:
-        imgs = [img.imagen.url for img in m.imagenes.all()]
+        imgs = []
+        for img in m.imagenes.all():
+            try:
+                if img.imagen and hasattr(img.imagen, 'url'):
+                    imgs.append(img.imagen.url)
+            except ValueError:
+                continue
 
         if not imgs:
-            imgs = ['/static/Assets/logo_web_ecodren.png']
+            imgs = ['/static/Assets/logo-ecodren.png']
+
+        equipamentos = []
+        if hasattr(m, 'equipamentos'):
+            equipamentos = [
+                {
+                    'id': eq.id,
+                    'nombre': eq.nombre,
+                    'especificacion': eq.especificacion,
+                    'icono': eq.icono
+                } for eq in m.equipamentos.all()
+            ]
+
+        accesorios = []
+        if hasattr(m, 'accesorios_disponibles'):
+            accesorios = [
+                {
+                    'id': acc.id,
+                    'nombre': acc.nombre,
+                    'descripcion': acc.descripcion or ''
+                } for acc in m.accesorios_disponibles.all()
+            ]
 
         maquinaria_list.append({
-            'id': m.slug,
+            'id': m.id,
+            'slug': getattr(m, 'slug', str(m.id)),
             'nombre': m.nombre,
-            'categoria': m.categoria_equipo,
-            'tagline': m.tagline,
-            'capacidad': m.capacidad,
-            'presion': m.presion,
+            'categoria': getattr(m, 'categoria_equipo', 'ecodren'),
+            'tagline': m.tagline or '',
+            'capacidad': m.capacidad or '',
+            'presion': m.presion or '',
+            'succion': getattr(m, 'succion', 'Alto vacío') or 'Alto vacío',
+            'peso': getattr(m, 'peso', '19,500 Kg') or '19,500 Kg',
+            'tipo_trabajo': getattr(m, 'tipo_trabajo', 'Industrial') or 'Industrial',
             'recomendado': m.recomendado,
-            'imagenes': imgs 
+            'imagenes': imgs,
+            'equipamento': equipamentos,
+            'accesorios': accesorios
         })
+
     context = {
         'maquinaria_json': json.dumps(maquinaria_list)
     }

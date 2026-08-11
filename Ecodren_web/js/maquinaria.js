@@ -2,14 +2,14 @@ let configActual = {
     maquinaIndex: 0,
     fotoIndex: 0,
     chasis: "chasis-6x4",
-    accesorio: "",
-    manguera: "",
-    bomba: "",
+    equipamentos: [],
     extras: []
 };
 
 window.cambiarFotoInterna = function(direccion) {
-    const fotosDelModelo = MAQUINARIA[configActual.maquinaIndex].imagenes;
+    if (!window.MAQUINARIA || !window.MAQUINARIA[configActual.maquinaIndex]) return;
+    const fotosDelModelo = window.MAQUINARIA[configActual.maquinaIndex].imagenes || [];
+    if (fotosDelModelo.length === 0) return;
     configActual.fotoIndex = (configActual.fotoIndex + direccion + fotosDelModelo.length) % fotosDelModelo.length;
     actualizarSoloFotoYIndicadores();
 };
@@ -20,12 +20,29 @@ window.irAFotoInterna = function(index) {
 };
 
 window.renderMaquina = function() {
-    const maquina = MAQUINARIA[configActual.maquinaIndex];
+    if (!window.MAQUINARIA || window.MAQUINARIA.length === 0 || !window.MAQUINARIA[configActual.maquinaIndex]) return;
+    const maquina = window.MAQUINARIA[configActual.maquinaIndex];
+    
     const nameHeading = document.getElementById('current-machine-name');
     if (nameHeading) nameHeading.innerText = maquina.nombre;
     
     const taglineParagraph = document.querySelector('.machine-tagline-radical');
     if (taglineParagraph && maquina.tagline) taglineParagraph.innerText = maquina.tagline;
+
+    const elCap = document.getElementById('strip-capacidad');
+    if (elCap) elCap.innerText = maquina.capacidad || 'N/A';
+
+    const elPres = document.getElementById('strip-presion');
+    if (elPres) elPres.innerText = maquina.presion || 'N/A';
+
+    const elSuc = document.getElementById('strip-succion');
+    if (elSuc) elSuc.innerText = maquina.succion || 'Alto vacío';
+
+    const elPeso = document.getElementById('strip-peso');
+    if (elPeso) elPeso.innerText = maquina.peso || 'N/A';
+
+    const elTipo = document.getElementById('strip-tipo');
+    if (elTipo) elTipo.innerText = maquina.tipo_trabajo || 'Industrial';
 
     actualizarSoloFotoYIndicadores();
     
@@ -36,8 +53,9 @@ window.renderMaquina = function() {
 };
 
 function actualizarSoloFotoYIndicadores() {
-    const maquina = MAQUINARIA[configActual.maquinaIndex];
-    if (!maquina || !maquina.imagenes || maquina.imagenes.length === 0) return;
+    if (!window.MAQUINARIA || window.MAQUINARIA.length === 0 || !window.MAQUINARIA[configActual.maquinaIndex]) return;
+    const maquina = window.MAQUINARIA[configActual.maquinaIndex];
+    if (!maquina.imagenes || maquina.imagenes.length === 0) return;
 
     const imgElement = document.getElementById('mainMachineImage');
     if (imgElement) {
@@ -50,188 +68,62 @@ function actualizarSoloFotoYIndicadores() {
     });
 }
 
+window.toggleEquipamento = function(checkbox, nombre) {
+    if (!configActual.equipamentos) configActual.equipamentos = [];
+    
+    if (checkbox.checked) {
+        if (!configActual.equipamentos.includes(nombre)) configActual.equipamentos.push(nombre);
+        checkbox.closest('.radical-option-selectable-card').classList.add('active-option-card');
+    } else {
+        configActual.equipamentos = configActual.equipamentos.filter(e => e !== nombre);
+        checkbox.closest('.radical-option-selectable-card').classList.remove('active-option-card');
+    }
+};
+
 function renderAccesorios() {
     const container = document.getElementById('tab-accesorios');
     if (!container) return;
 
-    const textoBoquilla = configActual.accesorio === 'boquilla-premium' ? 'Modelo BPT-3 (Premium)' : 'Modelo BPT-1 (Estándar)';
-    const descBoquilla = configActual.accesorio === 'boquilla-premium' 
-        ? 'Diseño avanzado con chorros de penetración frontal para desobstrucción severa.' 
-        : 'Diseño hidrodinámico para limpieza general de arrastre.';
-    const iconBoquilla = configActual.accesorio === 'boquilla-premium' ? 'fa-bolt' : 'fa-satellite-dish';
+    if (!window.MAQUINARIA || window.MAQUINARIA.length === 0 || !window.MAQUINARIA[configActual.maquinaIndex]) {
+        container.innerHTML = `<p style="color: #aaa; padding: 1.5rem;">No hay información disponible.</p>`;
+        return;
+    }
 
-    const textoManguera = configActual.manguera === 'manguera-1' ? 'Manguera Hidrojet 1"' : 'Manguera Hidrojet 3/4"';
-    const descManguera = configActual.manguera === 'manguera-1'
-        ? 'Máximo flujo volumétrico para arrastre pesado de lodos densos.'
-        : 'Alta resistencia con trenzado de seguridad reinforced para alta presión.';
+    const maquinaActual = window.MAQUINARIA[configActual.maquinaIndex];
+    const equipamientos = maquinaActual.equipamento || [];
 
-    const textoBomba = configActual.bomba === 'bomba-industrial' ? 'Bomba Industrial 80 GPM' : 'Bomba Estándar 50 GPM';
-    const descBomba = configActual.bomba === 'bomba-industrial' ? 'Alta presión para desazolve pesado.' : 'Flujo óptimo municipal.';
+    if (equipamientos.length === 0) {
+        container.innerHTML = `<p style="color: #aaa; padding: 1.5rem; text-align: center;">No hay equipamiento registrado en la base de datos para este modelo.</p>`;
+        return;
+    }
 
-    container.innerHTML = `
-        <div class="radical-dropdown-selector-group">
-            <label class="radical-selector-label">Selección de boquillas</label>
-            <div class="custom-premium-dropdown-wrapper">
-                <div class="custom-dropdown-trigger" id="trigger-boquillas" onclick="toggleCustomDropdown('dropdown-boquillas', 'trigger-boquillas')">
-                    <span id="label-boquillas">${configActual.accesorio ? textoBoquilla : 'Selecciona una opción...'}</span>
-                    <i class="fa-solid fa-chevron-down custom-arrow"></i>
-                </div>
-                <div class="custom-dropdown-options-list" id="dropdown-boquillas">
-                    <div class="custom-dropdown-option" onclick="selectCustomOption('boquilla-estandar', 'Modelo BPT-1 (Estándar)', 'boquillas', 'trigger-boquillas')">
-                        Modelo BPT-1 (Estándar)
-                    </div>
-                    <div class="custom-dropdown-option" onclick="selectCustomOption('boquilla-premium', 'Modelo BPT-3 (Premium)', 'boquillas', 'trigger-boquillas')">
-                        Modelo BPT-3 (Premium)
-                    </div>
-                </div>
-            </div>
-            <div class="radical-selector-desc-card ${configActual.accesorio ? '' : 'hidden-card'}" id="card-desc-boquillas">
-                <div class="desc-card-icon"><i class="fa-solid ${iconBoquilla}" id="icon-boquillas"></i></div>
-                <div class="desc-card-text">
-                    <strong id="title-desc-boquillas">${textoBoquilla}</strong>
-                    <p id="text-desc-boquillas">${descBoquilla}</p>
-                </div>
-            </div>
-        </div>
+    let html = `<h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: #fff;">Equipamiento Seleccionable</h3>`;
+    equipamientos.forEach(item => {
+        const isChecked = configActual.equipamentos.includes(item.nombre);
+        const activeClass = isChecked ? 'active-option-card' : '';
+        const checkedAttr = isChecked ? 'checked' : '';
 
-        <div class="radical-dropdown-selector-group">
-            <label class="radical-selector-label">Selección de mangueras</label>
-            <div class="custom-premium-dropdown-wrapper">
-                <div class="custom-dropdown-trigger" id="trigger-mangueras" onclick="toggleCustomDropdown('dropdown-mangueras', 'trigger-mangueras')">
-                    <span id="label-mangueras">${configActual.manguera ? textoManguera : 'Selecciona una opción...'}</span>
-                    <i class="fa-solid fa-chevron-down custom-arrow"></i>
+        html += `
+            <label class="radical-option-selectable-card ${activeClass}" style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 1rem; cursor: pointer;">
+                <input type="checkbox" ${checkedAttr} onchange="toggleEquipamento(this, '${item.nombre}')" style="display: none;">
+                <div class="option-card-indicator-box">
+                    <i class="fa-solid fa-check"></i>
                 </div>
-                <div class="custom-dropdown-options-list" id="dropdown-mangueras">
-                    <div class="custom-dropdown-option" onclick="selectCustomOption('manguera-34', 'Manguera Hidrojet 3/4', 'mangueras', 'trigger-mangueras')">
-                        Manguera Hidrojet 3/4"
-                    </div>
-                    <div class="custom-dropdown-option" onclick="selectCustomOption('manguera-1', 'Manguera Hidrojet 1', 'mangueras', 'trigger-mangueras')">
-                        Manguera Hidrojet 1"
-                    </div>
+                <div class="desc-card-icon" style="font-size: 1.2rem; color: var(--eco-green, #88ff00); width: 35px; text-align: center;">
+                    <i class="fa-solid ${item.icono || 'fa-screwdriver-wrench'}"></i>
                 </div>
-            </div>
-            <div class="radical-selector-desc-card ${configActual.manguera ? '' : 'hidden-card'}" id="card-desc-mangueras">
-                <div class="desc-card-icon"><i class="fa-solid fa-gear"></i></div>
-                <div class="desc-card-text">
-                    <strong id="title-desc-mangueras">${textoManguera}</strong>
-                    <p id="text-desc-mangueras">${descManguera}</p>
+                <div class="option-card-text-content" style="flex: 1;">
+                    <strong style="display: block; font-size: 0.95rem; color: #fff;">${item.nombre}</strong>
+                    <p style="margin: 0; font-size: 0.8rem; color: #aaa;">${item.especificacion}</p>
                 </div>
-            </div>
-        </div>
-
-        <div class="radical-dropdown-selector-group">
-            <label class="radical-selector-label">Selección de bombas</label>
-            <div class="custom-premium-dropdown-wrapper">
-                <div class="custom-dropdown-trigger" id="trigger-bombas" onclick="toggleCustomDropdown('dropdown-bombas', 'trigger-bombas')">
-                    <span id="label-bombas">${configActual.bomba ? textoBomba : 'Selecciona una opción...'}</span>
-                    <i class="fa-solid fa-chevron-down custom-arrow"></i>
-                </div>
-                <div class="custom-dropdown-options-list" id="dropdown-bombas">
-                    <div class="custom-dropdown-option" onclick="selectCustomOption('bomba-estandar', 'Bomba Estándar 50 GPM', 'bombas', 'trigger-bombas')">
-                        Bomba Estándar 50 GPM
-                    </div>
-                    <div class="custom-dropdown-option" onclick="selectCustomOption('bomba-industrial', 'Bomba Industrial 80 GPM', 'bombas', 'trigger-bombas')">
-                        Bomba Industrial 80 GPM
-                    </div>
-                </div>
-            </div>
-            <div class="radical-selector-desc-card ${configActual.bomba ? '' : 'hidden-card'}" id="card-desc-bombas">
-                <div class="desc-card-icon"><i class="fa-solid fa-water"></i></div>
-                <div class="desc-card-text">
-                    <strong id="title-desc-bombas">${textoBomba}</strong>
-                    <p id="text-desc-bombas">${descBomba}</p>
-                </div>
-            </div>
-        </div>
-    `;
+            </label>
+        `;
+    });
+    container.innerHTML = html;
 }
-
-window.toggleCustomDropdown = function(id, triggerId) {
-    document.querySelectorAll('.custom-dropdown-options-list').forEach(el => {
-        if(el.id !== id) el.classList.remove('open');
-    });
-    document.querySelectorAll('.custom-dropdown-trigger').forEach(el => {
-        if(el.id !== triggerId) el.classList.remove('menu-active');
-    });
-
-    const targetMenu = document.getElementById(id);
-    const targetTrigger = document.getElementById(triggerId);
-    
-    if (targetMenu && targetTrigger) {
-        targetMenu.classList.toggle('open');
-        targetTrigger.classList.toggle('menu-active');
-    }
-};
-
-window.selectCustomOption = function(valor, texto, tipo, triggerId) {
-    if (tipo === 'boquillas') {
-        configActual.accesorio = valor;
-        const triggerLabel = document.getElementById('label-boquillas');
-        if (triggerLabel) triggerLabel.innerText = texto;
-        
-        const descTitle = document.getElementById('title-desc-boquillas');
-        const descText = document.getElementById('text-desc-boquillas');
-        const descIcon = document.getElementById('icon-boquillas');
-        const cardBoquilla = document.getElementById('card-desc-boquillas');
-        
-        if (cardBoquilla) cardBoquilla.classList.remove('hidden-card');
-        
-        if (valor === 'boquilla-premium') {
-            if (descTitle) descTitle.innerText = 'Modelo BPT-3 (Premium)';
-            if (descText) descText.innerText = 'Diseño avanzado con chorros de penetración frontal para desobstrucción severa.';
-            if (descIcon) descIcon.className = 'fa-solid fa-bolt';
-        } else {
-            if (descTitle) descTitle.innerText = 'Modelo BPT-1 (Estándar)';
-            if (descText) descText.innerText = 'Diseño hidrodinámico para limpieza general de arrastre.';
-            if (descIcon) descIcon.className = 'fa-solid fa-satellite-dish';
-        }
-    } else if (tipo === 'mangueras') {
-        configActual.manguera = valor;
-        const triggerLabel = document.getElementById('label-mangueras');
-        if (triggerLabel) triggerLabel.innerText = texto;
-
-        const descTitle = document.getElementById('title-desc-mangueras');
-        const descText = document.getElementById('text-desc-mangueras');
-        const cardManguera = document.getElementById('card-desc-mangueras');
-        
-        if (cardManguera) cardManguera.classList.remove('hidden-card');
-        
-        if (valor === 'manguera-1') {
-            if (descTitle) descTitle.innerText = 'Manguera Hidrojet 1"';
-            if (descText) descText.innerText = 'Máximo flujo volumétrico para arrastre pesado de lodos densos.';
-        } else {
-            if (descTitle) descTitle.innerText = 'Manguera Hidrojet 3/4"';
-            if (descText) descText.innerText = 'Alta resistencia con trenzado de seguridad reforzado para alta presión.';
-        }
-    } else if (tipo === 'bombas') {
-        configActual.bomba = valor;
-        const triggerLabel = document.getElementById('label-bombas');
-        if (triggerLabel) triggerLabel.innerText = texto;
-
-        const descTitle = document.getElementById('title-desc-bombas');
-        const descText = document.getElementById('text-desc-bombas');
-        const cardBomba = document.getElementById('card-desc-bombas');
-        
-        if (cardBomba) cardBomba.classList.remove('hidden-card');
-        
-        if (valor === 'bomba-industrial') {
-            if (descTitle) descTitle.innerText = 'Bomba Industrial 80 GPM';
-            if (descText) descText.innerText = 'Alta presión para desazolve pesado.';
-        } else {
-            if (descTitle) descTitle.innerText = 'Bomba Estándar 50 GPM';
-            if (descText) descText.innerText = 'Flujo óptimo municipal.';
-        }
-    }
-    
-    const menu = document.getElementById(triggerId.replace('trigger-', 'dropdown-'));
-    const trigger = document.getElementById(triggerId);
-    if (menu) menu.classList.remove('open');
-    if (trigger) trigger.classList.remove('menu-active');
-};
 
 window.cambiarTabChasis = function(radioBtn) {
     configActual.chasis = radioBtn.value;
-    
     document.querySelectorAll('.radical-chasis-selectable-card').forEach(card => {
         card.classList.remove('active-chasis-card');
     });
@@ -278,15 +170,23 @@ function renderComponentes() {
 function renderOpciones() {
     const container = document.getElementById('tab-opciones');
     if (!container) return;
-    
-    const opcionesData = [
-        { id: 'led', nombre: 'Luces LED' },
-        { id: 'gps', nombre: 'Sistema GPS' },
-        { id: 'camara', nombre: 'Cámara 360°' }
-    ];
 
-    let html = `<h3>Opciones Adicionales</h3>`;
-    opcionesData.forEach(opt => {
+    let html = `<h3>Accesorios Adicionales</h3>`;
+
+    if (!window.MAQUINARIA || window.MAQUINARIA.length === 0 || !window.MAQUINARIA[configActual.maquinaIndex]) {
+        container.innerHTML = html + `<p style="color: #aaa; padding: 1.5rem;">No hay información disponible.</p>`;
+        return;
+    }
+
+    const maquinaActual = window.MAQUINARIA[configActual.maquinaIndex];
+    const accesoriosDb = maquinaActual.accesorios || [];
+
+    if (accesoriosDb.length === 0) {
+        container.innerHTML = html + `<p style="color: #aaa; padding: 1.5rem;">No hay accesorios adicionales registrados en la base de datos para este equipo.</p>`;
+        return;
+    }
+
+    accesoriosDb.forEach(opt => {
         const isChecked = configActual.extras.includes(opt.id);
         const activeClass = isChecked ? 'active-option-card' : '';
         const checkedAttr = isChecked ? 'checked' : '';
@@ -299,6 +199,7 @@ function renderOpciones() {
                 </div>
                 <div class="option-card-text-content">
                     <strong>${opt.nombre}</strong>
+                    ${opt.descripcion ? `<p>${opt.descripcion}</p>` : ''}
                 </div>
             </label>
         `;
@@ -308,11 +209,11 @@ function renderOpciones() {
 
 function renderModelos() {
     const container = document.getElementById('tab-modelos');
-    if (!container) return;
+    if (!container || !window.MAQUINARIA) return;
 
     let html = `<h3 class="tab-models-title">Modelos disponibles</h3>`;
 
-    MAQUINARIA.forEach((maq, index) => {
+    window.MAQUINARIA.forEach((maq, index) => {
         const isActive = (configActual.maquinaIndex === index) ? 'active-model-card' : '';
         
         html += `
@@ -361,21 +262,17 @@ window.cambiarTab = function(btn) {
     }
 };
 
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('.custom-premium-dropdown-wrapper')) {
-        document.querySelectorAll('.custom-dropdown-options-list').forEach(el => el.classList.remove('open'));
-        document.querySelectorAll('.custom-dropdown-trigger').forEach(el => el.classList.remove('menu-active'));
-    }
-});
-
 window.activarEcodren = function() {
     const ecodrenCard = document.querySelector('.top-category-card[data-machine="ecodren"]');
     if (ecodrenCard) ecodrenCard.click();
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderAccesorios();
-    actualizarSoloFotoYIndicadores();
+    if (window.MAQUINARIA && window.MAQUINARIA.length > 0) {
+        renderMaquina();
+    } else {
+        renderAccesorios();
+    }
 
     const categoryCard = document.querySelectorAll('.top-category-card');
     const configuratorView = document.getElementById('configurator-main-view');
