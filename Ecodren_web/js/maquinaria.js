@@ -44,6 +44,25 @@ window.renderMaquina = function() {
     const elTipo = document.getElementById('strip-tipo');
     if (elTipo) elTipo.innerText = maquina.tipo_trabajo || 'Industrial';
 
+    const bulletsPanel = document.querySelector('.radical-specs-bullets-panel');
+    if (bulletsPanel && maquina.puntos_destacados) {
+        let htmlBullets = '';
+        maquina.puntos_destacados.forEach(item => {
+            htmlBullets += `
+                <div class="radical-bullet-item">
+                    <div class="bullet-icon-circle">
+                        <i class="fa-solid ${item.icono || 'fa-shield-halved'}"></i>
+                    </div>
+                    <div class="bullet-text-box">
+                        <h3>${item.titulo}</h3>
+                        <p>${item.descripcion}</p>
+                    </div>
+                </div>
+            `;
+        });
+        bulletsPanel.innerHTML = htmlBullets;
+    }
+
     actualizarSoloFotoYIndicadores();
     
     const activeTabBtn = document.querySelector('.radical-tab-btn.active');
@@ -305,3 +324,56 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+window.solicitarCotizacion = function() {
+    if (!window.MAQUINARIA || !window.MAQUINARIA[configActual.maquinaIndex]) return;
+    const maquina = window.MAQUINARIA[configActual.maquinaIndex];
+
+    const cotizacionData = {
+        modelo: maquina.nombre,
+        chasis: configActual.chasis,
+        equipamento: configActual.equipamentos,
+        extras: configActual.extras
+    };
+
+    sessionStorage.setItem('ecodren_cotizacion_pending', JSON.stringify(cotizacionData));
+
+    const modalOverlay = document.querySelector('.custom-modal-overlay');
+    const modalMessage = document.getElementById('modal-message');
+
+    if (modalOverlay) {
+        if (modalMessage) {
+            modalMessage.innerHTML = `
+                Has seleccionado el modelo <strong>${maquina.nombre}</strong>.<br>
+                Nos pondremos en contacto contigo a la brevedad para enviarte la cotización detallada.
+            `;
+        }
+        modalOverlay.classList.add('modal-active');
+    } else {
+        window.location.href = `/ #contacto?modelo=${encodeURIComponent(maquina.nombre)}`;
+    }
+};
+
+window.descargarFichaTecnica = function(event) {
+    if (event) event.preventDefault();
+
+    if(!window.MAQUINARIA || !window.MAQUINARIA [configActual.maquinaIndex]) return;
+    const maquina = window.MAQUINARIA[configActual.maquinaIndex];
+
+    if (maquina.pdf_url) {
+        const link = document.createElement('a');
+        link.href = maquina.pdf_url;
+        link.download = `Ficha_Tecnica_${maquina.nombre.replace(/\s+/g, '_')}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } else {
+        alert(`La ficha técnica en PDF para el modelo "${maquina.nombre}" se estará cargando próximamente.`);
+    }
+}
+window.cerrarModalCotizacion = function() {
+    const modalOverlay = document.querySelector('.custom-modal-overlay');
+    if (modalOverlay) {
+        modalOverlay.classList.remove('modal-active');
+    }
+};

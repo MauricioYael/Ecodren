@@ -120,3 +120,26 @@ class AccesorioExtra(models.Model):
 
     def __str__(self):
         return self.nombre
+
+class PuntoDestacado(models.Model):
+    maquinaria = models.ForeignKey(
+        Maquinaria,
+        on_delete=models.CASCADE,
+        related_name='puntos_destacados'
+    )
+    titulo = models.CharField(max_length=100,help_text="Ej: Alto rendimiento")
+    descripcion = models.CharField(max_length=255, help_text="Ej: Tecnologia avanzada para máxima eficiencia.")
+    icono = models.CharField(
+        max_length=50,
+        default="fa-shield-halved",
+        help_text="Clase FontAwesome, ej: fa-shield-halved, fa-droplet, fa-gear"
+    )
+    orden = models.PositiveBigIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Puntos Destacado"
+        verbose_name_plural = "Puntos Destacados"
+        ordering = ['orden']
+
+    def __str__(self):
+        return f"{self.titulo} - {self.maquinaria.nombre}"

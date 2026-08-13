@@ -160,58 +160,62 @@
         </div>
         
         <div id="configurator-main-view">
-            <div class="radical-viewer-header">
-                <span class="machine-category-radical">Serie Industrial</span>
-                <h1 id="current-machine-name">Ecodren 17</h1>
-                <p class="machine-tagline-radical">Equipos de alto rendimiento diseñado para trabajos de limpieza y succión industrial en cualquier condición.</p>
+            <!-- Columna Izquierda: Encabezado y Visor -->
+            <div class="radical-left-column">
+                <div class="radical-viewer-header">
+                    <span class="machine-category-radical">Serie Industrial</span>
+                    <h1 id="current-machine-name">Ecodren 17</h1>
+                    <p class="machine-tagline-radical">Equipos de alto rendimiento diseñado para trabajos de limpieza y succión industrial en cualquier condición.</p>
+                </div>
+
+                <div class="radical-viewer-column">
+                    <div class="radical-machine-display-box">
+                        <div class="radical-specs-bullets-panel">
+                            <div class="radical-bullet-item">
+                                <div class="bullet-icon-circle"><i class="fa-solid fa-shield-halved"></i></div>
+                                <div class="bullet-text-box">
+                                    <h3>Alto rendimiento</h3>
+                                    <p>Tecnologia avanzada para máxima eficiencia</p>
+                                </div>
+                            </div>
+                            <div class="radical-bullet-item">
+                                <div class="bullet-icon-circle"><i class="fa-solid fa-droplet"></i></div>
+                                <div class="bullet-text-box">
+                                    <h3>Limpiza profunda</h3>
+                                    <p>Sistema de succión y presion que garantiza resultados superiores</p>
+                                </div>
+                            </div>
+                            <div class="radical-bullet-item">
+                                <div class="bullet-icon-circle"><i class="fa-solid fa-gear"></i></div>
+                                <div class="bullet-text-box">
+                                    <h3>Construccion robusta</h3>
+                                    <p>Materiales de alta calidad para mayor durabilidad.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="radical-image-carousel-wrapper">
+                            <img id="mainMachineImage" src="{% static 'Assets/ecodren-17/Ecodren_ED-17.webp' %}" alt="ecodren 17">
+                        </div>
+
+                        <div class="radical-slider-controls-row">
+                            <button class="carousel-photo-arrow-inline" onclick="cambiarFotoInterna(-1); event.preventDefault();" aria-label="Foto Anterior">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div class="radical-slider-indicators">
+                                <span class="indicator-bar active" onclick="irAFotoInterna(0)" style="cursor: pointer;"></span>
+                                <span class="indicator-bar" onclick="irAFotoInterna(1)" style="cursor: pointer;"></span>
+                                <span class="indicator-bar" onclick="irAFotoInterna(2)" style="cursor: pointer;"></span>
+                            </div>
+                            <button class="carousel-photo-arrow-inline" onclick="cambiarFotoInterna(1); event.preventDefault();" aria-label="Siguiente Foto">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>    
+                </div>
             </div>
 
-            <div class="radical-viewer-column">
-                <div class="radical-machine-display-box">
-                    <div class="radical-specs-bullets-panel">
-                        <div class="radical-bullet-item">
-                            <div class="bullet-icon-circle"><i class="fa-solid fa-shield-halved"></i></div>
-                            <div class="bullet-text-box">
-                                <h3>Alto rendimiento</h3>
-                                <p>Tecnologia avanzada para máxima eficiencia</p>
-                            </div>
-                        </div>
-                        <div class="radical-bullet-item">
-                            <div class="bullet-icon-circle"><i class="fa-solid fa-droplet"></i></div>
-                            <div class="bullet-text-box">
-                                <h3>Limpiza profunda</h3>
-                                <p>Sistema de succión y presion que garantiza resultados superiores</p>
-                            </div>
-                        </div>
-                        <div class="radical-bullet-item">
-                            <div class="bullet-icon-circle"><i class="fa-solid fa-gear"></i></div>
-                            <div class="bullet-text-box">
-                                <h3>Construccion robusta</h3>
-                                <p>Materiales de alta calidad para mayor durabilidad.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="radical-image-carousel-wrapper">
-                        <img id="mainMachineImage" src="{% static 'Assets/ecodren-17/Ecodren_ED-17.webp' %}" alt="ecodren 17">
-                    </div>
-
-                    <div class="radical-slider-controls-row">
-                        <button class="carousel-photo-arrow-inline" onclick="cambiarFotoInterna(-1); event.preventDefault();" aria-label="Foto Anterior">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <div class="radical-slider-indicators">
-                            <span class="indicator-bar active" onclick="irAFotoInterna(0)" style="cursor: pointer;"></span>
-                            <span class="indicator-bar" onclick="irAFotoInterna(1)" style="cursor: pointer;"></span>
-                            <span class="indicator-bar" onclick="irAFotoInterna(2)" style="cursor: pointer;"></span>
-                        </div>
-                        <button class="carousel-photo-arrow-inline" onclick="cambiarFotoInterna(1); event.preventDefault();" aria-label="Siguiente Foto">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>    
-            </div>
-
+            <!-- Columna Derecha: Panel de Configuración -->
             <div class="radical-control-column">
                 <div class="radical-customization-card">
                     <div class="radical-tabs-pill" id="tabsPill">
@@ -246,6 +250,7 @@
                 </div>
             </div>
 
+            <!-- Tira de Especificaciones (Abarca ambas columnas abajo) -->
             <div class="radical-spec-strip-container">
                 <div class="strip-spec-item">
                     <div class="strip-icon-box"><i class="fa-solid fa-cube"></i></div>

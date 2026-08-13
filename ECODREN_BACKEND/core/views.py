@@ -86,6 +86,15 @@ def maquinaria(request):
                     'descripcion': acc.descripcion or ''
                 } for acc in m.accesorios_disponibles.all()
             ]
+        puntos = []
+        if hasattr(m, 'puntos_destacados'):
+            puntos = [
+                {
+                    'titulo': p.titulo,
+                    'descripcion': p.descripcion,
+                    'icono': p.icono
+                } for p in m.puntos_destacados.all()
+            ]
 
         maquinaria_list.append({
             'id': m.id,
@@ -101,7 +110,8 @@ def maquinaria(request):
             'recomendado': m.recomendado,
             'imagenes': imgs,
             'equipamento': equipamentos,
-            'accesorios': accesorios
+            'accesorios': accesorios,
+            'puntos_destacados': puntos 
         })
 
     context = {
