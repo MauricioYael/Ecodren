@@ -49,6 +49,7 @@
             </div>
         </li>
         <li><a href="#contacto">Recursos</a></li>
+        <li><a href="#">Capacitaciones</a></li>
         <li><a href="{% url 'home' %}#por-que">Nosotros</a></li>
     </ul>
 
@@ -243,7 +244,7 @@
                         <button onclick="solicitarCotizacion()" class="btn-radical-submit-quote">
                             <i class="fa-solid fa-file-invoice"></i> Solicitar Cotización
                         </button>
-                        <a href="#" class="btn-radical-download-pdf">
+                        <a href="#" onclick="descargarFichaTecnica(event)" class="btn-radical-download-pdf">
                             <i class="fa-solid fa-download"></i> Descargar ficha técnica
                         </a>
                     </div>

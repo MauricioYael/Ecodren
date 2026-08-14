@@ -1,7 +1,7 @@
 import json
 from django.shortcuts import render
 from django.db.models import Q
-from .models import Producto, Categoria, Maquinaria
+from .models import Producto, Categoria, Maquinaria, PublicacionRecurso
 
 
 def index(request):
@@ -111,10 +111,36 @@ def maquinaria(request):
             'imagenes': imgs,
             'equipamento': equipamentos,
             'accesorios': accesorios,
-            'puntos_destacados': puntos 
+            'puntos_destacados': puntos,
+            'pdf_url': m.ficha_tecnica_pdf.url if m.ficha_tecnica_pdf else ''
         })
 
     context = {
         'maquinaria_json': json.dumps(maquinaria_list)
     }
     return render(request, 'maquinaria.html', context)
+
+def recursos(request):
+    videos = PublicacionRecurso.objects.filter(activo=True, tipo='video')
+    noticias = PublicacionRecurso.objects.filter(activo=True, tipo='noticia')
+    comunidad_bento = PublicacionRecurso.objects.filter(activo=True, tipo='redes')
+
+    context = {
+        'videos': videos,
+        'noticias': noticias,
+        'comunidad_bento': comunidad_bento,
+    }
+    return render(request, 'recursos.html', context)
+
+def publicaciones(request):
+    cat = request.GET.get('cat', 'todos')
+    publicaciones_qs = PublicacionRecurso.objects.filter(activo=True)
+
+    if cat and cat != 'todos':
+        publicaciones_qs = publicaciones_qs.filter(tipo=cat)
+
+    context = {
+        'publicaciones': publicaciones_qs,
+        'cat_actual': cat,
+    }
+    return render(request, 'publicaciones.html', context)

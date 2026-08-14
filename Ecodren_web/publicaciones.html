@@ -1,34 +1,35 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todas las Publicaciones | ECODREN</title>
-    <link rel="icon" type="image/jpeg" href="Assets/logo_web_ecodren.png">
+    <link rel="icon" type="image/jpeg" href="{% static 'Assets/logo_web_ecodren.png' %}">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/recursos.css"> 
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/recursos.css' %}"> 
 </head>
 <body>
 
     <nav id="mainNav">
-        <a href="index.html" class="nav-logo">
-            <img src="Assets/logo-ecodren.png" alt="Ecodren Logo" class="web-logo">
+        <a href="{% url 'home' %}" class="nav-logo">
+            <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren Logo" class="web-logo">
         </a>
         <ul class="nav-center" id="navCenter">
-            <li><a href="index.html#categorias">Ficha Técnica</a></li>
-            <li><a href="tienda.html">Tienda</a></li>
-            <li><a href="maquinaria.html">Equipos</a></li>
-            <li><a href="recursos.html" class="nav-active">Recursos</a></li>
-            <li><a href="index.html#por-que">Nosotros</a></li>
+            <li><a href="{% url 'home' %}#categorias">Ficha Técnica</a></li>
+            <li><a href="{% url 'tienda' %}">Tienda</a></li>
+            <li><a href="{% url 'maquinaria' %}">Equipos</a></li>
+            <li><a href="{% url 'recursos' %}" class="nav-active">Recursos</a></li>
+            <li><a href="{% url 'home' %}#por-que">Nosotros</a></li>
         </ul>
         <div class="nav-right">
-            <a href="index.html#contacto" class="nav-cta" id="navCta">Cotizar</a>
+            <a href="{% url 'home' %}#contacto" class="nav-cta" id="navCta">Cotizar</a>
             <button class="cart-nav-btn" id="cartNavBtn" aria-label="Carrito">
                 🛒<span class="cart-count" id="cartCount">0</span>
             </button>
@@ -50,7 +51,7 @@
                                 Iniciar sesión
                             </button>
                             <button class="profile-item" onclick="openModal('register')">
-                                <svg viewBox="0 0 24 24"><path d="M15 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/></svg>
+                                <svg viewBox="0 0 24 24"><path d="M15 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4-4 1.8-4 4 1.8 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/></svg>
                                 Crear cuenta
                             </button>
                         </div>
@@ -64,15 +65,15 @@
                             </div>
                         </div>
                         <div class="profile-menu">
-                            <a href="perfil.html" class="profile-item">
+                            <a href="#" class="profile-item">
                                 <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.9 0 3.5 1.6 3.5 3.5S13.9 13 12 13s-3.5-1.6-3.5-3.5S10.1 6 12 6zm7 13H5v-.6c0-2 4-3.1 7-3.1s7 1.1 7 3.1V19z"/></svg>
                                 Mi perfíl
                             </a>
-                            <a href="perfil.html" class="profile-item">
+                            <a href="#" class="profile-item">
                                 <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.4-1.4L12 14.2l7.6-7.6L21 8l-9 9z"/></svg>
                                 Mis pedidos<span class="profile-badge">3</span>
                             </a>
-                            <a href="perfil.html" class="profile-item">
+                            <a href="#" class="profile-item">
                                 <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                                 Cotizaciones guardadas
                             </a>
@@ -96,12 +97,12 @@
     </nav>
 
     <div class="mobile-menu" id="mobileMenu">
-        <a href="index.html#categorias">Ficha Técnica</a>
-        <a href="tienda.html">Tienda</a>
-        <a href="maquinaria.html">Equipos</a>
-        <a href="recursos.html">Recursos</a>
-        <a href="index.html#por-que">Nosotros</a>
-        <a href="#contacto" class="mobile-link" style="color: var(--eco-green); font-weight: 600;">Cotizar →</a>
+        <a href="{% url 'home' %}#categorias">Ficha Técnica</a>
+        <a href="{% url 'tienda' %}">Tienda</a>
+        <a href="{% url 'maquinaria' %}">Equipos</a>
+        <a href="{% url 'recursos' %}">Recursos</a>
+        <a href="{% url 'home' %}#por-que">Nosotros</a>
+        <a href="{% url 'home' %}#contacto" class="mobile-link" style="color: var(--eco-green); font-weight: 600;">Cotizar →</a>
     </div>
 
     <main class="resources-main-content" style="padding-top: 4rem;">
@@ -115,22 +116,46 @@
             <section class="resources-filter-bar-section publicaciones-filter-bar">
                 <div class="resources-filter-container">
                     <div class="filter-tabs-wrapper">
-                        <button class="filter-tab active" data-category="todos">
+                        <a href="{% url 'publicaciones' %}?cat=todos" class="filter-tab {% if cat_actual == 'todos' %}active{% endif %}" style="text-decoration: none;">
                             <i class="fa-solid fa-table-cells-large"></i> Todos
-                        </button>
-                        <button class="filter-tab" data-category="videos">
+                        </a>
+                        <a href="{% url 'publicaciones' %}?cat=video" class="filter-tab {% if cat_actual == 'video' %}active{% endif %}" style="text-decoration: none;">
                             <i class="fa-solid fa-circle-play"></i> Videos
-                        </button>
-                        <button class="filter-tab" data-category="noticias">
+                        </a>
+                        <a href="{% url 'publicaciones' %}?cat=noticia" class="filter-tab {% if cat_actual == 'noticia' %}active{% endif %}" style="text-decoration: none;">
                             <i class="fa-solid fa-newspaper"></i> Noticias
-                        </button>
+                        </a>
                     </div>
                 </div>
             </section>
 
             <div class="premium-bento-grid">
-                <div class="bento-card card-featured" data-category="noticias" onclick="window.open('https://www.facebook.com/people/Equipos-MC/100054393135080/', '_blank')">
-                    <div class="bento-card-img" style="background-image: url('Assets/ecodren17.webp');"></div>
+                {% for post in publicaciones %}
+                <a href="{% if post.url_destino %}{{ post.url_destino }}{% else %}#{% endif %}" target="_blank" class="bento-card {% if post.destacado %}card-featured{% endif %}" data-category="{{ post.tipo }}">
+                    <img class="bento-card-img" src="{% if post.imagen_portada %}{{ post.imagen_portada.url }}{% else %}{% static 'Assets/ecodren17.webp' %}{% endif %}" alt="{{ post.titulo }}">
+                    <div class="bento-card-content">
+                        {% if post.destacado %}
+                        <span class="bento-badge-pill badge-tag-destacado">
+                            <i class="fa-solid fa-star"></i>Destacado
+                        </span>
+                        {% else %}
+                        <span class="bento-badge-pill">
+                            <i class="fa-brands fa-{{ post.red_social|default:'facebook' }}"></i>{{ post.get_red_social_display }}
+                        </span>
+                        {% endif %}
+                        <span class="bento-category-label">{{ post.get_tipo_display }}</span>
+                        <h3 class="bento-card-title">{{ post.titulo }}</h3>
+                        <p class="bento-card-text">{{ post.descripcion }}</p>
+
+                        <div class="bento-meta-row">
+                            <span><i class="fa-regular fa-calendar"></i>{{ post.duracion_o_fecha|default:post.creado_en|date:'d M Y' }}</span>
+                        </div>
+                        <span class="bento-action-link">Ver publicación <i class="fa-solid fa-arrow-right-long"></i></span>
+                    </div>
+                </a>
+                {% empty %}
+                <a href="https://www.facebook.com/people/Equipos-MC/100054393135080/" target="_blank" class="bento-card card-featured">
+                    <img class="bento-card-img" src="{% static 'Assets/ecodren17.webp' %}" alt="ED-17 Guadalajara">
                     <div class="bento-card-content">
                         <span class="bento-badge-pill badge-tag-destacado">
                             <i class="fa-solid fa-star"></i>Destacado
@@ -145,56 +170,8 @@
                         </div>
                         <span class="bento-action-link">Leer Publicación <i class="fa-solid fa-arrow-right-long"></i></span>
                     </div>
-                </div>
-
-                <div class="bento-card" data-category="videos" onclick="window.open('https://youtu.be/m2Rqb15EIxA?si=LDT2y2FdPHb2U3Oi')">
-                    <div class="bento-card-img" style="background-image: url('Assets/ecodren17.webp');"></div>
-                    <div class="bento-card-content">
-                        <span class="bento-badge-pill">
-                            <i class="fa-brands fa-youtube" style="color: #ff0000;"></i>Video
-                        </span>
-                        <h3 class="bento-card-title">Operación de alta presión ED-17</h3>
-                        <p class="bento-card-text">Mira en acción nuestro sistema de alta presión limpiando tuberías industriales.</p>
-
-                        <div class="bento-meta-row">
-                            <span><i class="fa-regular fa-calendar"></i>12 de Mayo, 2024</span>
-                            <span><i class="fa-regular fa-clock"></i>2:45 min</span>
-                        </div>
-                        <span class="bento-action-link">Ver video <i class="fa-solid fa-arrow-right-long"></i></span>
-                    </div>
-                </div>
-
-                <div class="bento-card" data-category="noticias" onclick="window.open('https://www.linkedin.com/company/equipos-mc/', '_blank')">
-                    <div class="bento-card-img" style="background-image: url('Assets/grupo-mc.png');"></div>
-                    <div class="bento-card-content">
-                        <span class="bento-badge-pill">
-                            <i class="fa-brands fa-linkedin" style="color: #0a66c2;"></i>LinkedIn
-                        </span>
-                        <h3 class="bento-card-title">Innovación y tecnología para el desazolve</h3>
-                        <p class="bento-card-text">Agradecemos al sector de logística y aduanas por el excelente recibimiento de nuestra nueva gama.</p>
-
-                        <div class="bento-meta-row">
-                            <span><i class="fa-regular fa-calendar"></i>10 de Mayo, 2025</span>
-                        </div>
-                        <span class="bento-action-link">Ver publicación <i class="fa-solid fa-arrow-right-long"></i></span>
-                    </div>
-                </div>
-
-                <div class="bento-card" data-category="noticias" onclick="window.open('https://www.instagram.com', '_blank')">
-                    <div class="bento-card-img" style="background-image: url('Assets/grupo-mc.png');"></div>
-                    <div class="bento-card-content">
-                        <span class="bento-badge-pill">
-                            <i class="fa-brands fa-instagram" style="color: #e1306c;"></i>Instagram  
-                        </span>
-                        <h3 class="bento-card-title">Equipos diseñados para rendir</h3>
-                        <p class="bento-card-text">Cada componente está pensado para soportar las condiciones más exigentes del mercado.</p>
-
-                        <div class="bento-meta-row">
-                            <span><i class="fa-regular fa-calendar"></i>8 de Mayo, 2025</span>
-                        </div>
-                        <span class="bento-action-link">Ver en Instagram <i class="fa-solid fa-arrow-right-long"></i></span>
-                    </div>
-                </div>
+                </a>
+                {% endfor %}
             </div>
 
             <div class="comunidad-pagination-wrapper">
@@ -204,19 +181,14 @@
                     </button>
                     <div class="page-numbers-pill">
                         <button class="page-num-btn active">1</button>
-                        <button class="page-num-btn">2</button>
-                        <button class="page-num-btn">3</button>
-                        <button class="page-num-btn">4</button>
-                        <span class="page-ellipsis">...</span>
-                        <button class="page-num-btn">12</button>
                     </div>
-                    <button class="page-nav-btn next-page" aria-label="Siguiente página">
+                    <button class="page-nav-btn next-page" disabled aria-label="Siguiente página">
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
                 
                 <div class="comunidad-pagination-info">
-                    Mostrando <span>1 - 8</span> de <span>96</span> publicaciones
+                    Mostrando publicaciones activas
                 </div>
             </div>
         </section>
@@ -225,21 +197,21 @@
     <footer>
         <div class="footer-container">
             <div class="footer-brand">
-                <a href="index.html" class="nav-logo" style="margin-bottom: 0.75rem;">
-                    <img src="Assets/logo-ecodren.png" alt="Ecodren Logo" class="web-logo">
+                <a href="{% url 'home' %}" class="nav-logo" style="margin-bottom: 0.75rem;">
+                    <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren Logo" class="web-logo">
                 </a>
                 <p>Maquinaria y refacciones especializadas para desazolvadores. Soluciones confiables para profesionales del drenaje.</p>
             </div>
-            <div><h4>Tienda</h4><ul><li><a href="tienda.html">Maquinaria</a></li><li><a href="tienda.html">Refacciones</a></li></ul></div>
-            <div><h4>Empresa</h4><ul><li><a href="index.html#por-que">Quiénes somos</a></li><li><a href="recursos.html">Recursos</a></li></ul></div>
-            <div><h4>Contacto</h4><ul><li><a href="index.html#contacto">Solicitar cotización</a></li><li><a href="#">+52 (55) XXX-XXXX</a></li></ul></div>
+            <div><h4>Tienda</h4><ul><li><a href="{% url 'tienda' %}">Maquinaria</a></li><li><a href="{% url 'tienda' %}">Refacciones</a></li></ul></div>
+            <div><h4>Empresa</h4><ul><li><a href="{% url 'home' %}#por-que">Quiénes somos</a></li><li><a href="{% url 'recursos' %}">Recursos</a></li></ul></div>
+            <div><h4>Contacto</h4><ul><li><a href="{% url 'home' %}#contacto">Solicitar cotización</a></li><li><a href="#">+52 (55) XXX-XXXX</a></li></ul></div>
         </div>
         <div class="footer-corporate-brands">
             <span class="corporate-title">Una empresa de Equipos Hidromecánicos MC</span>
             <div class="brand-grid">
-                <img src="Assets/afilial1_ecovac.webp" alt="Ecovac" class="corp-logo">
-                <img src="Assets/afilial2_ecojet.webp" alt="Ecojet" class="corp-logo">
-                <img src="Assets/afilial3_ecoclean.webp" alt="Ecoclean" class="corp-logo">
+                <img src="{% static 'Assets/afilial1_ecovac.webp' %}" alt="Ecovac" class="corp-logo">
+                <img src="{% static 'Assets/afilial2_ecojet.webp' %}" alt="Ecojet" class="corp-logo">
+                <img src="{% static 'Assets/afilial3_ecoclean.webp' %}" alt="Ecoclean" class="corp-logo">
             </div>
         </div>
         <div class="social-pills-container">
@@ -260,50 +232,13 @@
             <span>© 2026 Ecodren. Todos los derechos reservados.</span>
             <div class="footer-signature-wrap">
                 <span class="signature-tag">Una marca de</span>
-                <img src="Assets/grupo-mc.webp" alt="GrupoMC" class="signature-logo">
+                <img src="{% static 'Assets/grupo-mc.webp' %}" alt="GrupoMC" class="signature-logo">
                 <span class="signature-text">Diseñado para profesionales del desazolve</span>
             </div>
         </div>
     </footer>
 
-    <div class="cart-overlay" id="cartOverlay"></div>
-    <div class="cart-sidebar" id="cartSidebar" style="padding: 1.5rem 2rem; box-sizing: border-box;">
-        <div class="cart-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eaeaea; padding-bottom: 1rem; margin-bottom: 1rem;">
-            <h2 style="font-size: 1.2rem; margin: 0; color: #333; display: flex; align-items: center; gap: 0.5rem;">🛒 Tu carrito</h2>
-            <button class="cart-close" id="cartClose" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #666; padding: 0; line-height: 1;">×</button>
-        </div>
-        <div class="cart-items" id="cartItems"></div>
-        <div class="cart-footer" id="cartFooter" style="display: none;">
-            <div class="cart-total-row"><span>Total</span><strong id="cartTotal">$0 MXN</strong></div>
-            <button class="checkout-btn" onclick="handleCheckout()">Proceder al pago →</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-box" style="max-width: 420px; width: 90%;">
-            <button class="modal-close" onclick="closeModal()">×</button>
-            <div class="modal-tabs">
-                <button class="modal-tab active" onclick="switchTab('login')">Iniciar sesión</button>
-                <button class="modal-tab" onclick="switchTab('register')">Crear cuenta</button>
-            </div>
-            <div class="modal-panel active" id="panel-login">
-                <h3>Bienvenido de vuelta</h3>
-                <form id="loginForm" onsubmit="handleLogin(event)">
-                    <div class="mform-group">
-                        <label>Correo electrónico</label>
-                        <input type="email" id="loginEmail" placeholder="correo@empresa.com" style="width: 100%; box-sizing: border-box;">
-                    </div>
-                    <div class="mform-group">
-                        <label>Contraseña</label>
-                        <input type="password" id="loginPassword" placeholder="••••••••" required style="width: 100%; box-sizing: border-box;">
-                    </div>
-                    <button type="submit" class="mform-submit">Iniciar sesión</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <script src="js/main.js"></script>
-    <script src="js/publicaciones.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/publicaciones.js' %}"></script>
 </body>
 </html>

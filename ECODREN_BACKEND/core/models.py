@@ -69,6 +69,13 @@ class Maquinaria(models.Model):
     peso = models.CharField(max_length=50, default="19,500 Kg", blank=True, null=True)
     tipo_trabajo = models.CharField(max_length=50, default="Industrial", blank=True, null=True)
     recomendado = models.BooleanField(default=False)
+    ficha_tecnica_pdf = models.FileField(
+        upload_to='ficha_tecnica/',
+        blank=True,
+        null=True,
+        verbose_name="Ficha Tecnica (PDF)"
+    )
+
     activo = models.BooleanField(default=True)
     creado_en = models.DateTimeField(auto_now_add=True)
 
@@ -143,3 +150,67 @@ class PuntoDestacado(models.Model):
 
     def __str__(self):
         return f"{self.titulo} - {self.maquinaria.nombre}"
+
+class PublicacionRecurso(models.Model):
+    TIPO_CHOICES = [
+        ('video', 'Video'),
+        ('noticia', 'Noticia / Artículo'),
+        ('redes', 'Publicación de Comunidad'),
+    ]
+
+    RED_SOCIAL_CHOICES = [
+        ('facebook', 'Facebook'),
+        ('youtube', 'YouTube'),
+        ('linkedin', 'LinkedIn'),
+        ('instagram', 'Instagram'),
+        ('ninguna', 'Ninguna / Web'),
+    ]
+
+    titulo = models.CharField(max_length=200, verbose_name="Título")
+    descripcion = models.TextField(blank=True, null=True, verbose_name="Descripción corta")
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, default='noticia', verbose_name="Tipo de contenido")
+    
+    etiqueta_badge = models.CharField(max_length=50, blank=True, null=True, help_text="Ej: 04:35 Min, 20 May 2024, Empresa, Destacado")
+    duracion_o_fecha = models.CharField(max_length=50, blank=True, null=True, help_text="Ej: 04:35 Min ó 15 de mayo, 2024")
+    
+    imagen_portada = models.ImageField(upload_to='recursos_portadas/', blank=True, null=True, verbose_name="Imagen de Portada")
+    url_destino = models.URLField(blank=True, null=True, help_text="URL externa (ej: YouTube, Facebook, LinkedIn)")
+    
+    red_social = models.CharField(max_length=20, choices=RED_SOCIAL_CHOICES, default='ninguna', verbose_name="Red Social")
+    
+    destacado = models.BooleanField(default=False, verbose_name="¿Es destacado / Card grande?")
+    activo = models.BooleanField(default=True, verbose_name="¿Publicado?")
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Publicación / Recurso"
+        verbose_name_plural = "Publicaciones y Recursos"
+        ordering = ['-creado_en']
+
+    def __str__(self):
+        return f"[{self.get_tipo_display()}] {self.titulo}"
+
+class DocumentoTecnico(models.Model):
+    CATEGORIAS_DOC = [
+        ('ficha', 'Ficha Técnica'),
+        ('manual', 'Manual de Operación'),
+        ('catalogo', 'Catálogo de Producto'),
+    ]
+
+    titulo = models.CharField(max_length=200, verbose_name="Título del Documento")
+    categoria = models.CharField(max_length=20, choices=CATEGORIAS_DOC, verbose_name="Categoría de Documento")
+    descripcion = models.CharField(max_length=255, blank=True, null=True, verbose_name="Descripción corta")
+    
+    # Campo para subir el archivo PDF
+    archivo_pdf = models.FileField(upload_to='documentos_tecnicos/', verbose_name="Archivo PDF")
+    
+    activo = models.BooleanField(default=True, verbose_name="¿Activo / Visible?")
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Documento Técnico / Guía"
+        verbose_name_plural = "Documentos Técnicos y Guías"
+        ordering = ['categoria', '-actualizado_en']
+
+    def __str__(self):
+        return f"[{self.get_categoria_display()}] {self.titulo}"

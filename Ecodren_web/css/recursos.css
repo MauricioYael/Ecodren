@@ -396,6 +396,7 @@
         transparent 360deg
     );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     opacity: 0;
@@ -1210,6 +1211,22 @@ button.page-num-btn.active {
     color: #021510 !important;
 }
 
+img.resource-card-bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+img.bento-card-img {
+    width: 120%;
+    height: 110%;
+    object-fit: cover;
+}
+a.bento-card {
+    text-decoration: none;
+    display: block;
+}
+
+
 @media (max-width: 1024px) {
     .social-hub-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -1526,6 +1543,7 @@ button.page-num-btn.active {
             transparent 360deg
         ) !important;
         -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
         -webkit-mask-composite: xor !important;
         mask-composite: exclude !important;
         opacity: 0 !important;
