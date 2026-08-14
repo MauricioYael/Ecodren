@@ -1,58 +1,58 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Capacitaciones | ECODREN </title>
-    <link rel="icon" type="image/jpeg" href="Assets/logo_web_ecodren.png">
+    <title>Capacitaciones | ECODREN</title>
+    <link rel="icon" type="image/jpeg" href="{% static 'Assets/logo_web_ecodren.png' %}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/capacitaciones.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/capacitaciones.css' %}">
 </head>
 <body>
     <nav id="mainNav">
-        <a href="index.html" class="nav-logo">
-            <img src="Assets/logo-ecodren.png" alt="Ecodren Logo" class="web-logo">
+        <a href="{% url 'home' %}" class="nav-logo">
+            <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren Logo" class="web-logo">
         </a>
         <ul class="nav-center" id="navCenter">
-            <li><a href="index.html#categorias">Ficha Técnica</a></li>
-            <li><a href="tienda.html">Tienda</a></li>
+            <li><a href="{% url 'home' %}#categorias">Ficha Técnica</a></li>
+            <li><a href="{% url 'tienda' %}">Tienda</a></li>
             <li class="mega-dropdown">
-                <a href="maquinaria.html">Equipos</a>
+                <a href="{% url 'maquinaria' %}">Equipos</a>
                 <div class="mega-menu">
                     <div class="mega-menu-grid">
-                        <a href="maquinaria.html" class="machine-card">
-                            <img src="Assets/afilial2_ecojet.webp" alt="Ecojet">
+                        <a href="{% url 'maquinaria' %}" class="machine-card">
+                            <img src="{% static 'Assets/afilial2_ecojet.webp' %}" alt="Ecojet">
                             <span>Equipos de Presión</span>
                         </a>
-                        <a href="maquinaria.html" class="machine-card">
-                            <img src="Assets/afilial1_ecovac.webp" alt="Ecovac">
+                        <a href="{% url 'maquinaria' %}" class="machine-card">
+                            <img src="{% static 'Assets/afilial1_ecovac.webp' %}" alt="Ecovac">
                             <span>Equipos de Vacio</span>
                         </a>
-                        <a href="maquinaria.html" class="machine-card">
-                            <img src="Assets/logo-ecodren.png" alt="Ecodren">
+                        <a href="{% url 'maquinaria' %}" class="machine-card">
+                            <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren">
                             <span>Equipos Mixtos</span>
                         </a>
-                        <a href="maquinaria.html" class="machine-card">
-                            <img src="Assets/afilial3_ecoclean.webp" alt="Ecoclean">
+                        <a href="{% url 'maquinaria' %}" class="machine-card">
+                            <img src="{% static 'Assets/afilial3_ecoclean.webp' %}" alt="Ecoclean">
                             <span>Equipos de Vacio Seco</span>
                         </a>
                     </div>
-
                 </div>
             </li>
-            <li><a href="recursos.html">Recursos</a></li>
-            <li><a href="capacitaciones.html" class="nav-active">Capacitaciones</a></li>
-            <li><a href="index.html#por-que">Nosotros</a></li>
+            <li><a href="{% url 'recursos' %}">Recursos</a></li>
+            <li><a href="{% url 'capacitaciones' %}" class="nav-active">Capacitaciones</a></li>
+            <li><a href="{% url 'home' %}#por-que">Nosotros</a></li>
         </ul>
         
         <div class="nav-right">
-            <a href="index.html#contacto" class="nav-cta" id="navCta">Cotizar</a>
+            <a href="{% url 'home' %}#contacto" class="nav-cta" id="navCta">Cotizar</a>
             <button class="cart-nav-btn" id="cartNavBtn" aria-label="Carrito">
                 🛒<span class="cart-count" id="cartCount">0</span>
             </button>
@@ -79,38 +79,6 @@
                             </button>
                         </div>
                     </div>
-                    <div id="userState" style="display: none;">
-                        <div class="profile-header">
-                            <div class="profile-avatar" id="userAvatar">JD</div>
-                            <div>
-                                <div class="profile-name" id="userName">Juan Díaz</div>
-                                <div class="profile-email" id="userEmail">juan@empresa.com</div>
-                            </div>
-                        </div>
-                        <div class="profile-menu">
-                            <a href="perfil.html" class="profile-item">
-                                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.9 0 3.5 1.6 3.5 3.5S13.9 13 12 13s-3.5-1.6-3.5-3.5S10.1 6 12 6zm7 13H5v-.6c0-2 4-3.1 7-3.1s7 1.1 7 3.1V19z"/></svg>
-                                Mi perfíl
-                            </a>
-                            <a href="perfil.html" class="profile-item">
-                                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.4-1.4L12 14.2l7.6-7.6L21 8l-9 9z"/></svg>
-                                Mis pedidos<span class="profile-badge">3</span>
-                            </a>
-                            <a href="perfil.html" class="profile-item">
-                                <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                                Cotizaciones guardadas
-                            </a>
-                            <a href="#" class="profile-item">
-                                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-                                Configuración
-                            </a>
-                            <div class="profile-divider"></div>
-                            <button class="profile-item danger" onclick="logOut()">
-                                <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
-                                Cerrar sesión
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
             <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
@@ -120,13 +88,13 @@
     </nav>
 
     <div class="mobile-menu" id="mobileMenu">
-        <a href="index.html#categorias">Ficha Técnica</a>
-        <a href="tienda.html">Tienda</a>
-        <a href="maquinaria.html">Equipos</a>
-        <a href="recursos.html">Recursos</a>
-        <a href="capacitaciones.html">Capacitaciones</a>
-        <a href="index.html#por-que">Nosotros</a>
-        <a href="#contacto" class="mobile-link" style="color: var(--eco-green); font-weight: 600; ">Cotizar →</a>
+        <a href="{% url 'home' %}#categorias">Ficha Técnica</a>
+        <a href="{% url 'tienda' %}">Tienda</a>
+        <a href="{% url 'maquinaria' %}">Equipos</a>
+        <a href="{% url 'recursos' %}">Recursos</a>
+        <a href="{% url 'capacitaciones' %}">Capacitaciones</a>
+        <a href="{% url 'home' %}#por-que">Nosotros</a>
+        <a href="{% url 'home' %}#contacto" class="mobile-link" style="color: var(--eco-green); font-weight: 600;">Cotizar →</a>
     </div>
 
     <main class="capacitaciones-main-content">
@@ -153,13 +121,13 @@
                             </div>
                         </div>
 
-                        <div class="cap-features-info">
+                        <div class="cap-feature-item">
                             <div class="cap-feature-icon">
                                 <i class="fa-solid fa-file-signature"></i>
                             </div>
                             <div class="cap-feature-info">
                                 <h3>Certificación oficial</h3>
-                                <p>Diplomas avalados por STPS, IMEEC y CONOCER .</p>
+                                <p>Diplomas avalados por STPS, IMEEC y CONOCER.</p>
                             </div>
                         </div>
 
@@ -183,7 +151,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
@@ -206,7 +173,7 @@
         <section class="cap-main-section">
             <div class="cap-main-container">
                 
-                <!-- Columna Izquierda: Nuestra Experiencia (Ocupa la mitad izquierda) -->
+                <!-- Columna Izquierda: Nuestra Experiencia -->
                 <div class="cap-col-experience" id="sec-experiencia">
                     <div class="cap-section-header">
                         <div class="cap-header-titles">
@@ -225,73 +192,35 @@
                         </button>
 
                         <div class="cap-cards-track">
-                            <!-- Tarjeta 1 -->
+                            {% for exp in experiencias %}
                             <div class="cap-exp-card">
                                 <div class="cap-card-img-wrap">
-                                    <img src="Assets/afilial1_ecovac.webp" alt="Operación segura de equipos de succión">
+                                    <img src="{% if exp.imagen %}{{ exp.imagen.url }}{% else %}{% static 'Assets/afilial1_ecovac.webp' %}{% endif %}" alt="{{ exp.titulo }}">
+                                    <div class="cap-card-date-overlay">{{ exp.fecha }}</div>
+                                </div>
+                                <div class="cap-card-body">
+                                    <h3>{{ exp.titulo }}</h3>
+                                    <p class="cap-card-location">
+                                        <i class="fa-solid fa-location-dot"></i> {{ exp.ubicacion }}
+                                    </p>
+                                    <p class="cap-card-participants">
+                                        <i class="fa-solid fa-user-group"></i> {{ exp.participantes }} participantes
+                                    </p>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="cap-exp-card">
+                                <div class="cap-card-img-wrap">
+                                    <img src="{% static 'Assets/afilial1_ecovac.webp' %}" alt="Operación segura">
                                     <div class="cap-card-date-overlay">12 May 2024</div>
                                 </div>
                                 <div class="cap-card-body">
                                     <h3>Operación segura de equipos de succión</h3>
-                                    <p class="cap-card-location">
-                                        <i class="fa-solid fa-location-dot"></i> Monterrey, NL
-                                    </p>
-                                    <p class="cap-card-participants">
-                                        <i class="fa-solid fa-user-group"></i> 45 participantes
-                                    </p>
+                                    <p class="cap-card-location"><i class="fa-solid fa-location-dot"></i> Monterrey, NL</p>
+                                    <p class="cap-card-participants"><i class="fa-solid fa-user-group"></i> 45 participantes</p>
                                 </div>
                             </div>
-
-                            <!-- Tarjeta 2 -->
-                            <div class="cap-exp-card">
-                                <div class="cap-card-img-wrap">
-                                    <img src="Assets/afilial2_ecojet.webp" alt="Mantenimiento preventivo de sistemas hidromecánicos">
-                                    <div class="cap-card-date-overlay">28 Abr 2024</div>
-                                </div>
-                                <div class="cap-card-body">
-                                    <h3>Mantenimiento preventivo de sistemas hidromecánicos</h3>
-                                    <p class="cap-card-location">
-                                        <i class="fa-solid fa-location-dot"></i> Querétaro, QRO
-                                    </p>
-                                    <p class="cap-card-participants">
-                                        <i class="fa-solid fa-user-group"></i> 32 participantes
-                                    </p>
-                                </div>
-                            </div>
-
-                            <!-- Tarjeta 3 -->
-                            <div class="cap-exp-card">
-                                <div class="cap-card-img-wrap">
-                                    <img src="Assets/afilial3_ecoclean.webp" alt="Diagnóstico y solución de fallas comunes">
-                                    <div class="cap-card-date-overlay">15 Abr 2024</div>
-                                </div>
-                                <div class="cap-card-body">
-                                    <h3>Diagnóstico y solución de fallas comunes</h3>
-                                    <p class="cap-card-location">
-                                        <i class="fa-solid fa-location-dot"></i> Puebla, PUE
-                                    </p>
-                                    <p class="cap-card-participants">
-                                        <i class="fa-solid fa-user-group"></i> 28 participantes
-                                    </p>
-                                </div>
-                            </div>
-
-                            <!-- Tarjeta 4 -->
-                            <div class="cap-exp-card">
-                                <div class="cap-card-img-wrap">
-                                    <img src="Assets/logo-ecodren.png" alt="Optimización de procesos de limpieza industrial">
-                                    <div class="cap-card-date-overlay">01 Abr 2024</div>
-                                </div>
-                                <div class="cap-card-body">
-                                    <h3>Optimización de procesos de limpieza industrial</h3>
-                                    <p class="cap-card-location">
-                                        <i class="fa-solid fa-location-dot"></i> Guadalajara, JAL
-                                    </p>
-                                    <p class="cap-card-participants">
-                                        <i class="fa-solid fa-user-group"></i> 36 participantes
-                                    </p>
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
 
                         <button class="cap-carousel-arrow next-arrow" aria-label="Siguiente">
@@ -304,7 +233,7 @@
                     </div>
                 </div>
 
-                <!-- Columna Derecha: Reservada para Cursos Disponibles y Diploma -->
+                <!-- Columna Derecha: Cursos Disponibles -->
                 <div class="cap-col-available" id="sec-disponibles">
                     <div class="cap-section-header">
                         <div class="cap-header-titles">
@@ -312,7 +241,7 @@
                                 <i class="fa-solid fa-square-poll-vertical cap-green-icon"></i>
                                 Cursos Disponibles
                             </h2>
-                            <p class="cap-subtitle">Inscribete en nuestros próximos cursos</p>
+                            <p class="cap-subtitle">Inscríbete en nuestros próximos cursos</p>
                         </div>
                         <a href="#" class="cap-calendar-link">
                             Ver Calendario <i class="fa-regular fa-calendar"></i>
@@ -320,56 +249,41 @@
                     </div>
 
                     <div class="cap-courses-list">
+                        {% for curso in cursos_disponibles %}
                         <div class="cap-course-card">
                             <div class="cap-course-thumb">
-                                <img src="Assets/afilial1_ecovac.webp" alt="Ecodren">
+                                <img src="{% if curso.imagen %}{{ curso.imagen.url }}{% else %}{% static 'Assets/afilial1_ecovac.webp' %}{% endif %}" alt="{{ curso.titulo }}">
+                            </div>
+                            <div class="cap-course-info">
+                                <h3>{{ curso.titulo }}</h3>
+                                <div class="cap-course-meta">
+                                    <span><i class="fa-solid fa-building-user"></i> {{ curso.fecha_proxima }}</span>
+                                    <span><i class="fa-regular fa-clock"></i> {{ curso.duracion }}</span>
+                                </div>
+                            </div>
+                            <div class="cap-course-action">
+                                <span class="cap-course-price">${{ curso.precio|floatformat:2 }} MXN</span>
+                                <button class="cap-btn-enroll">Inscribirme <i class="fa-solid fa-arrow-right"></i></button>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="cap-course-card">
+                            <div class="cap-course-thumb">
+                                <img src="{% static 'Assets/afilial1_ecovac.webp' %}" alt="Ecodren">
                             </div>
                             <div class="cap-course-info">
                                 <h3>Operación de equipos Ecodren 17</h3>
                                 <div class="cap-course-meta">
-                                    <span><i class="fa-solid fa-building-user"></i> Proximamente</span>
-                                    <span><i class="fa-regular fa-clock"></i> 5 Horas </span>
+                                    <span><i class="fa-solid fa-building-user"></i> Próximamente</span>
+                                    <span><i class="fa-regular fa-clock"></i> 5 Horas</span>
                                 </div>
                             </div>
                             <div class="cap-course-action">
-                                <span class="cap-course-price">$3,800 MXN</span>
+                                <span class="cap-course-price">$3,800.00 MXN</span>
                                 <button class="cap-btn-enroll">Inscribirme <i class="fa-solid fa-arrow-right"></i></button>
                             </div>
                         </div>
-
-                        <div class="cap-course-card">
-                            <div class="cap-course-thumb">
-                                <img src="Assets/afilial1_ecovac.webp" alt="Ecodren">
-                            </div>
-                            <div class="cap-course-info">
-                                <h3>Operación de equipos Ecodren 17</h3>
-                                <div class="cap-course-meta">
-                                    <span><i class="fa-solid fa-building-user"></i> Proximamente</span>
-                                    <span><i class="fa-regular fa-clock"></i> 5 Horas </span>
-                                </div>
-                            </div>
-                            <div class="cap-course-action">
-                                <span class="cap-course-price">$3,800 MXN</span>
-                                <button class="cap-btn-enroll">Inscribirme <i class="fa-solid fa-arrow-right"></i></button>
-                            </div>
-                        </div>
-
-                        <div class="cap-course-card">
-                            <div class="cap-course-thumb">
-                                <img src="Assets/afilial1_ecovac.webp" alt="Ecodren">
-                            </div>
-                            <div class="cap-course-info">
-                                <h3>Operación de equipos Ecodren 17</h3>
-                                <div class="cap-course-meta">
-                                    <span><i class="fa-solid fa-building-user"></i> Proximamente</span>
-                                    <span><i class="fa-regular fa-clock"></i> 5 Horas </span>
-                                </div>
-                            </div>
-                            <div class="cap-course-action">
-                                <span class="cap-course-price">$3,800 MXN</span>
-                                <button class="cap-btn-enroll">Inscribirme <i class="fa-solid fa-arrow-right"></i></button>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
                     <div class="cap-all-courses-footer">
                         <a href="#" class="cap-link-all-courses">
@@ -382,21 +296,21 @@
         </section>
 
         <section class="cap-diploma-section" id="sec-diploma">
-            <div class="cap diploma-container">
+            <div class="cap-diploma-container">
                 <div class="cap-diploma-banner-card">
                     <div class="cap-diploma-info-col">
                         <div class="cap-diploma-status-badge">
-                            <span class="status-dot"></span> Certificacion Acreditada
+                            <span class="status-dot"></span> Certificación Acreditada
                         </div>
                         <h2>Diploma Vigente</h2>
-                        <p>Accede de forma rapida a tus documentos oficiales avalados por ECODREN. Descarga o valida la autenticidad de tu constancia técnica en cualquier momento.</p>
+                        <p>Accede de forma rápida a tus documentos oficiales avalados por ECODREN. Descarga o valida la autenticidad de tu constancia técnica en cualquier momento.</p>
 
                         <div class="cap-diploma-meta-pills">
                             <div class="meta-pill">
                                 <i class="fa-solid fa-user-check"></i>
                                 <div>
                                     <span>Titular</span>
-                                    <strong>Juan Diaz</strong>
+                                    <strong>Juan Díaz</strong>
                                 </div>
                             </div>
                             <div class="meta-pill">
@@ -408,8 +322,8 @@
                             </div>
                         </div>
 
-                        <div class="cap diploma-buttons-group">
-                            <a href="Assets/ecodren-5/Ecodren ED-5.webp" download class="cap-btn-download-glow">
+                        <div class="cap-diploma-buttons-group">
+                            <a href="{% static 'Assets/ecodren-5/Ecodren ED-5.webp' %}" download class="cap-btn-download-glow">
                                 <i class="fa-solid fa-download"></i> Descargar diploma
                             </a>
                             <a href="#" class="cap-btn-history-outline">
@@ -421,14 +335,14 @@
                     <div class="cap-diploma-preview-col">
                         <div class="cap-certificate-pass-card">
                             <div class="pass-header">
-                                <img src="Assets/logo-ecodren.png" alt="Ecodren" class="pass-logo">
-                                <span class="pass-code"> ID: <ECO-88492></ECO-88492></span>
+                                <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren" class="pass-logo">
+                                <span class="pass-code">ID: ECO-88492</span>
                             </div>
 
                             <div class="pass-body">
                                 <span class="pass-label">Diploma de participación</span>
                                 <h3 class="pass-course">Operación segura de equipos de succión</h3>
-                                <p class="pass-grant">Otorgado a <strong>Juan Diaz</strong> por haber completado satisfactoriamente la capacitacion técnica en campo.</p>
+                                <p class="pass-grant">Otorgado a <strong>Juan Díaz</strong> por haber completado satisfactoriamente la capacitación técnica en campo.</p>
                             </div>
 
                             <div class="pass-footer">
@@ -437,14 +351,12 @@
                                 </div>
                                 <div class="pass-dates">
                                     <span>Emitido: 12/05/2024</span>
-                                    <span>Validez: 2 año</span>
+                                    <span>Validez: 2 años</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
-                
             </div>
         </section>
     </main>
@@ -452,21 +364,21 @@
     <footer>
         <div class="footer-container">
             <div class="footer-brand">
-                <a href="index.html" class="nav-logo" style="margin-bottom: 0.75rem;">
-                    <img src="Assets/logo-ecodren.png" alt="Ecodren Logo" class="web-logo">
+                <a href="{% url 'home' %}" class="nav-logo" style="margin-bottom: 0.75rem;">
+                    <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren Logo" class="web-logo">
                 </a>
                 <p>Maquinaria y refacciones especializadas para desazolvadores. Soluciones confiables para profesionales del drenaje.</p>
             </div>
-            <div><h4>Tienda</h4><ul><li><a href="tienda.html">Maquinaria</a></li><li><a href="tienda.html">Refacciones</a></li></ul></div>
-            <div><h4>Empresa</h4><ul><li><a href="index.html#por-que">Quiénes somos</a></li><li><a href="recursos.html">Recursos</a></li></ul></div>
-            <div><h4>Contacto</h4><ul><li><a href="index.html#contacto">Solicitar cotización</a></li><li><a href="#">+52 (55) XXX-XXXX</a></li></ul></div>
+            <div><h4>Tienda</h4><ul><li><a href="{% url 'tienda' %}">Maquinaria</a></li><li><a href="{% url 'tienda' %}">Refacciones</a></li></ul></div>
+            <div><h4>Empresa</h4><ul><li><a href="{% url 'home' %}#por-que">Quiénes somos</a></li><li><a href="{% url 'recursos' %}">Recursos</a></li></ul></div>
+            <div><h4>Contacto</h4><ul><li><a href="{% url 'home' %}#contacto">Solicitar cotización</a></li><li><a href="#">+52 (55) XXX-XXXX</a></li></ul></div>
         </div>
         <div class="footer-corporate-brands">
             <span class="corporate-title">Una empresa de Equipos Hidromecánicos MC</span>
             <div class="brand-grid">
-                <img src="Assets/afilial1_ecovac.webp" alt="Ecovac" class="corp-logo">
-                <img src="Assets/afilial2_ecojet.webp" alt="Ecojet" class="corp-logo">
-                <img src="Assets/afilial3_ecoclean.webp" alt="Ecoclean" class="corp-logo">
+                <img src="{% static 'Assets/afilial1_ecovac.webp' %}" alt="Ecovac" class="corp-logo">
+                <img src="{% static 'Assets/afilial2_ecojet.webp' %}" alt="Ecojet" class="corp-logo">
+                <img src="{% static 'Assets/afilial3_ecoclean.webp' %}" alt="Ecoclean" class="corp-logo">
             </div>
         </div>
         <div class="social-pills-container">
@@ -487,95 +399,13 @@
             <span>© 2026 Ecodren. Todos los derechos reservados.</span>
             <div class="footer-signature-wrap">
                 <span class="signature-tag">Una marca de</span>
-                <img src="Assets/grupo-mc.webp" alt="GrupoMC" class="signature-logo">
+                <img src="{% static 'Assets/grupo-mc.webp' %}" alt="GrupoMC" class="signature-logo">
                 <span class="signature-text">Diseñado para profesionales del desazolve</span>
             </div>
         </div>
     </footer>
 
-    <div class="cart-overlay" id="cartOverlay"></div>
-    <div class="cart-sidebar" id="cartSidebar" style="padding: 1.5rem 2rem; box-sizing: border-box;">
-        <div class="cart-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eaeaea; padding-bottom: 1rem; margin-bottom: 1rem;">
-            <h2 style="font-size: 1.2rem; margin: 0; color: #333; display: flex; align-items: center; gap: 0.5rem;">🛒 Tu carrito</h2>
-            <button class="cart-close" id="cartClose" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #666; padding: 0; line-height: 1;">×</button>
-        </div>
-        <div class="cart-items" id="cartItems"></div>
-        <div class="cart-footer" id="cartFooter" style="display: none;">
-            <div class="cart-total-row"><span>Total</span><strong id="cartTotal">$0 MXN</strong></div>
-            <button class="checkout-btn" onclick="handleCheckout()">Proceder al pago →</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-box" style="max-width: 420px; width: 90%;">
-            <button class="modal-close" onclick="closeModal()">×</button>
-            <div class="modal-tabs">
-                <button class="modal-tab active" onclick="switchTab('login')">Iniciar sesión</button>
-                <button class="modal-tab" onclick="switchTab('register')">Crear cuenta</button>
-            </div>
-            <div class="modal-panel active" id="panel-login">
-                <h3>Bienvenido de vuelta</h3>
-                <form id="loginForm" onsubmit="handleLogin(event)">
-                    <div class="mform-group">
-                        <label>Correo electrónico</label>
-                        <input type="email" id="loginEmail" placeholder="correo@empresa.com" style="width: 100%; box-sizing: border-box;">
-                    </div>
-                    <div class="mform-group">
-                        <label>Contraseña</label>
-                        <input type="password" id="loginPassword" placeholder="••••••••" required style="width: 100%; box-sizing: border-box;">
-                    </div>
-                    <button type="submit" class="mform-submit">Iniciar sesión</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-guias-docs" class="modal-overlay">
-        <div class="modal-box modal-guias-box">
-            <button type="button" class="modal-close-btn" id="close-guias-modal">&times;</button>
-            <div class="modal-guias-header">
-                <span class="modal-guias-tag">Repositorio Técnico</span>
-                <h3>Guías y Documentos</h3>
-                <p>Selecciona la categoria de documentos que deseas consultar o descargar:</p>
-            </div>
-            <div class="modal-guias-grid">
-                <a href="publicaciones.html?categoria=fichas-tecnicas" class="guias-card-option">
-                    <div class="guias-icon-wrapper">
-                        <i class="fas fa-file-code"></i>
-                    </div>
-                    <div class="guias-option-info">
-                        <h4>Fichas Técnicas</h4>
-                        <p>Especificaciones y datos de equipos ED.</p>
-                    </div>
-                    <i class="fas fa-chevron-right guias-arrow"></i>
-                </a>
-
-                <a href="publicaciones.html?categoria=manuales" class="guias-card-option">
-                    <div class="guias-icon-wrapper">
-                        <i class="fas fa-book-open"></i>
-                    </div>
-                    <div class="guias-option-info">
-                        <h4>Manuales de Operación</h4>
-                        <p>Guías paso a paso para el uso seguro.</p>
-                    </div>
-                    <i class="fas fa-chevron-right guias-arrow"></i>
-                </a>
-
-                <a href="publicaciones.html?categoria=catalogos" class="guias-card-option">
-                    <div class="guias-icon-wrapper">
-                        <i class="fas fa-folder-open"></i>
-                    </div>
-                    <div class="guias-option-info">
-                        <h4>Catálogo de producto</h4>
-                        <p>Gama completa de soluciones Ecodren.</p>
-                    </div>
-                    <i class="fas fa-chevron-right guias-arrow"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <script src="js/main.js"></script>
-    <script src="js/capacitaciones.js"></script> 
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/capacitaciones.js' %}"></script> 
 </body>
 </html>

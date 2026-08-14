@@ -1,6 +1,8 @@
 from django.contrib import admin
 from .models import Categoria, Producto, Maquinaria, ImagenMaquinaria, Equipamento, AccesorioExtra, PuntoDestacado
 from .models import PublicacionRecurso, DocumentoTecnico
+from .models import CapacitacionImpartida, CursoDisponible
+
 
 class ImagenMaquinariaInline(admin.TabularInline):
     model = ImagenMaquinaria
@@ -46,3 +48,15 @@ class DocumentoTecnicoAdmin(admin.ModelAdmin):
     list_display =('titulo', 'categoria', 'activo', 'actualizado_en')
     list_filter = ('categoria', 'activo')
     search_fields = ('titulo', 'descripcion')
+
+@admin.register(CapacitacionImpartida)
+class CapacitacionImpartidaAdmin(admin.ModelAdmin):
+    list_display=('titulo', 'ubicacion', 'fecha', 'participantes', 'activo')
+    list_filter=('ubicacion', 'activo')
+    search_fields=('titulo', 'ubicacion')
+
+@admin.register(CursoDisponible)
+class CursoDisponibleAdmin(admin.ModelAdmin):
+    list_display = ('titulo', 'fecha_proxima', 'duracion', 'precio', 'activo')
+    list_filter = ('activo',)
+    search_fields = ('titulo',) 

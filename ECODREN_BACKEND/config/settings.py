@@ -94,3 +94,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR.parent, 'Ecodren_web', 'media')
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+lOGIN_URL = 'home'
+lOGIN_REDIRECT_URL = 'perfil'
+lOGOUT_REDIRECT_URL = 'home'

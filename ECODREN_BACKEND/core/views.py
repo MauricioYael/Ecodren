@@ -1,8 +1,8 @@
 import json
 from django.shortcuts import render
 from django.db.models import Q
-from .models import Producto, Categoria, Maquinaria, PublicacionRecurso
-
+from .models import Producto, Categoria, Maquinaria, PublicacionRecurso, DocumentoTecnico, CapacitacionImpartida, CursoDisponible
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     productos_destacados = Producto.objects.filter(disponible=True).order_by('?')[:4]
@@ -144,3 +144,17 @@ def publicaciones(request):
         'cat_actual': cat,
     }
     return render(request, 'publicaciones.html', context)
+
+def capacitaciones(request):
+    experiencias = CapacitacionImpartida.objects.filter(activo=True)
+    cursos_disponibles = CursoDisponible.objects.filter(activo=True)
+
+    context = {
+        'experiencias': experiencias,
+        'cursos_disponibles': cursos_disponibles,
+    }
+    return render(request, 'capacitaciones.html', context)
+
+@login_required
+def perfil_view(request):
+    return render(request, 'perfil.html')

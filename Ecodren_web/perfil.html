@@ -1,68 +1,69 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Perfil | ECODREN — Equipos MC</title>
-    <link rel="icon" type="image/jpeg" href="Assets/logo_web_ecodren.png">
+    <link rel="icon" type="image/jpeg" href="{% static 'Assets/logo_web_ecodren.png' %}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/tienda.css">
-    <link rel="stylesheet" href="css/perfil.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tienda.css' %}">
+    <link rel="stylesheet" href="{% static 'css/perfil.css' %}">
 </head>
 <body class="profile-body">
 
-    <!-- NAV CORREGIDO -->
+    <!-- NAV -->
     <nav id="mainNav" class="light scrolled profile-nav">
-        <a href="index.html" class="nav-logo">
-            <img src="Assets/logo-ecodren.png" alt="Ecodren Logo" class="web-logo">
+        <a href="{% url 'home' %}" class="nav-logo">
+            <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren Logo" class="web-logo">
         </a>
 
         <ul class="nav-center">
-            <li><a href="index.html#categorias">Ficha Técnica</a></li>
-            <li><a href="tienda.html">Tienda</a></li>
+            <li><a href="{% url 'home' %}#categorias">Ficha Técnica</a></li>
+            <li><a href="{% url 'tienda' %}">Tienda</a></li>
             <li class="mega-dropdown">
-                <a href="maquinaria.html">Equipos</a>
+                <a href="{% url 'maquinaria' %}">Equipos</a>
                 <div class="mega-menu">
                     <div class="mega-menu-grid">
-                        <a href="maquinaria.html" class="machine-card">
-                            <img src="Assets/afilial2_ecojet.webp" alt="Ecojet">
+                        <a href="{% url 'maquinaria' %}" class="machine-card">
+                            <img src="{% static 'Assets/afilial2_ecojet.webp' %}" alt="Ecojet">
                             <span>Equipos de Presión</span>
                         </a>
-                        <a href="maquinaria.html" class="machine-card">
-                            <img src="Assets/afilial1_ecovac.webp" alt="Ecovac">
+                        <a href="{% url 'maquinaria' %}" class="machine-card">
+                            <img src="{% static 'Assets/afilial1_ecovac.webp' %}" alt="Ecovac">
                             <span>Equipos de Vacio</span>
                         </a>
-                        <a href="maquinaria.html" class="machine-card">
-                            <img src="Assets/logo-ecodren.png" alt="Ecodren">
+                        <a href="{% url 'maquinaria' %}" class="machine-card">
+                            <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren">
                             <span>Equipos Mixtos</span>
                         </a>
-                        <a href="maquinaria.html" class="machine-card">
-                            <img src="Assets/afilial3_ecoclean.webp" alt="Ecoclean">
-                            <span>Equipos de Vacio Seco </span>
+                        <a href="{% url 'maquinaria' %}" class="machine-card">
+                            <img src="{% static 'Assets/afilial3_ecoclean.webp' %}" alt="Ecoclean">
+                            <span>Equipos de Vacio Seco</span>
                         </a>
                     </div>
                 </div>
             </li>
-            <li><a href="recursos.html">Recursos</a></li>
-            <li><a href="index.html#por-que">Nosotros</a></li>
+            <li><a href="{% url 'recursos' %}">Recursos</a></li>
+            <li><a href="{% url 'home' %}#por-que">Nosotros</a></li>
         </ul>
 
         <div class="nav-right">
-            <a href="index.html#contacto" class="nav-cta">Cotizar</a>
+            <a href="{% url 'home' %}#contacto" class="nav-cta">Cotizar</a>
             <button class="cart-nav-btn" id="cartNavBtn">🛒</button>
             
             <div class="profile-wrap">
-                <button class="profile-btn active">
+                <a href="{% url 'perfil' %}" class="profile-btn active" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: inherit;">
                     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="width:18px; height:18px;">
                         <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
                     </svg>
-                </button>
+                </a>
             </div>
 
             <button class="hamburger" id="hamburger" aria-label="Menú">
@@ -72,12 +73,12 @@
     </nav>
 
     <div class="mobile-menu" id="mobileMenu">
-        <a href="index.html#categorias">Ficha Técnica</a>
-        <a href="tienda.html">Tienda</a>
-        <a href="maquinaria.html">Equipos</a>
-        <a href="recursos.html">Recursos</a>
-        <a href="index.html#por-que">Nosotros</a>
-        <a href="index.html#contacto" style="color:var(--eco-green);font-weight:600">Cotizar →</a>
+        <a href="{% url 'home' %}#categorias">Ficha Técnica</a>
+        <a href="{% url 'tienda' %}">Tienda</a>
+        <a href="{% url 'maquinaria' %}">Equipos</a>
+        <a href="{% url 'recursos' %}">Recursos</a>
+        <a href="{% url 'home' %}#por-que">Nosotros</a>
+        <a href="{% url 'home' %}#contacto" style="color:var(--eco-green);font-weight:600">Cotizar →</a>
     </div>
 
     <main class="profile-page-wrapper">
@@ -86,10 +87,14 @@
             <aside class="profile-sidebar">
                 <div class="profile-user-card">
                     <div class="profile-avatar-wrapper">
-                        <div class="profile-avatar-letters profile-avatar" id="userAvatar"></div>
+                        <div class="profile-avatar-letters profile-avatar" id="userAvatar">
+                            {{ request.user.first_name|slice:":1"|default:request.user.username|slice:":1"|upper }}
+                        </div>
                         <button class="avatar-edit-btn"><i class="fa-solid fa-pen"></i></button>
                     </div>
-                    <h2 class="profile-user-name" id="userName"></h2>
+                    <h2 class="profile-user-name" id="userName">
+                        {{ request.user.get_full_name|default:request.user.username }}
+                    </h2>
                     <p class="profile-user-role">Cliente industrial Certificado</p>
                     <div class="profile-badge-status">
                         <span class="status-dot"></span> CUENTA ACTIVA
@@ -97,7 +102,7 @@
                 </div>
 
                 <button class="mobile-menu-trigger" id="mobileMenuTrigger">
-                    <span><i class="fa-solid fa-building"></i>Datos de la Empresa</span>
+                    <span><i class="fa-solid fa-building"></i> Datos de la Empresa</span>
                     <i class="fa-solid fa-chevron-down arrow-toogle"></i>
                 </button>
 
@@ -115,7 +120,7 @@
                         <i class="fa fa-credit-card-alt"></i> Métodos de pago
                     </button>
                     <button class="sidebar-menu-item" data-pane="direcciones">
-                        <i class="fa fa-map-marker" aria-hidden="true"></i> Dírecciones Guardadas
+                        <i class="fa fa-map-marker" aria-hidden="true"></i> Direcciones Guardadas
                     </button>
                     <button class="sidebar-menu-item" data-pane="configuracion">
                         <i class="fa-solid fa-sliders"></i> Preferencias
@@ -147,10 +152,10 @@
                             </div>
                         </a>
                         <button onclick="mostrarManualTecnico()" class="support-menu-item btn-inline-support">
-                            <i class="fa-solif fa-book" style="color: #bffd00;"></i>
+                            <i class="fa-solid fa-book" style="color: #bffd00;"></i>
                             <div>
                                 <strong>Manuales Técnicos</strong>
-                                <span>Descargar guias de desazolve</span>
+                                <span>Descargar guías de desazolve</span>
                             </div>
                         </button>
                     </div>
@@ -163,12 +168,12 @@
                 <div class="profile-pane active" id="pane-datos">
                     <div class="welcome-operational-header">
                         <div class="welcome-text-side">
-                            <span class="welcome-tagline">Bienvenido, Mauricio</span>
+                            <span class="welcome-tagline">Bienvenido, {{ request.user.first_name|default:request.user.username }}</span>
                             <h1>Información Operativa Corporativa</h1>
-                            <p>Administra la informacion de tu empresa y manten tus datos actualizados para una mejor experiencia</p>
+                            <p>Administra la información de tu empresa y mantén tus datos actualizados para una mejor experiencia</p>
                         </div>
                         <div class="welcome-illustration-side">
-                           <img src="Assets/granjero.svg" alt="Ilustracion Operativa" class="welcome-svg-vector">
+                           <img src="{% static 'Assets/granjero.svg' %}" alt="Ilustracion Operativa" class="welcome-svg-vector">
                         </div>
                     </div>
 
@@ -176,7 +181,7 @@
                         <div class="operational-col-item">
                             <div class="col-item-icon"><i class="fa-solid fa-user"></i></div>
                             <h4>Nombre Completo</h4>
-                            <p class="profile-name">&nbsp;</p>
+                            <p class="profile-name">{{ request.user.get_full_name|default:"No especificado" }}</p>
                         </div>
                         <div class="operational-col-item">
                             <div class="col-item-icon"><i class="fa-solid fa-building"></i></div>
@@ -186,12 +191,12 @@
                         <div class="operational-col-item">
                             <div class="col-item-icon"><i class="fa-solid fa-envelope"></i></div>
                             <h4>Correo Electrónico</h4>
-                            <p class="highlight-green profile-email" id="userEmail">&nbsp;</p>
+                            <p class="highlight-green profile-email" id="userEmail">{{ request.user.email|default:"contacto@empresa.com" }}</p>
                         </div>
                         <div class="operational-col-item">
                             <div class="col-item-icon"><i class="fa-solid fa-phone"></i></div>
                             <h4>Teléfono Operativo</h4>
-                            <p class="highlight-green ">+52 55 XXXX XXXX</p>
+                            <p class="highlight-green">+52 55 XXXX XXXX</p>
                         </div>
                     </div>
 
@@ -199,7 +204,7 @@
                         <div class="address-icon-box"><i class="fa-solid fa-location-dot"></i></div>
                         <div class="address-text-box">
                             <h4>Dirección de Entrega Principal</h4>
-                            <p>Av.Central #123, Col.Industrial, C.P. 12345 <br>Ciudad de México, México</p>
+                            <p>Av. Central #123, Col. Industrial, C.P. 12345 <br>Ciudad de México, México</p>
                         </div>
                         <div class="address-action-box">
                             <button class="btn-address-edit-inline"><i class="fa-solid fa-pen"></i> Editar</button>
@@ -216,7 +221,7 @@
                     </div>
 
                     <div class="operational-submit-container">
-                        <button class="btn-save-operational-changes"><i class="fa-solid fa-floppy-disk"></i>Guardar Cambios</button>
+                        <button class="btn-save-operational-changes"><i class="fa-solid fa-floppy-disk"></i> Guardar Cambios</button>
                     </div>
                 </div>
 
@@ -285,12 +290,12 @@
                     </div>
                 </div>
 
-                <!-- 💳 PANEL 4: MÉTODOS DE PAGO (Nuevo) -->
+                <!-- 💳 PANEL 4: MÉTODOS DE PAGO -->
                 <div class="profile-pane" id="pane-pagos">
                     <div class="pane-header payment-pane-header">
                         <div class="header-text-side">
                             <h3>Métodos de Pago</h3>
-                            <p>Administra las tarjetas de crédito, débito o cuentas bancarias ligadas a cuenta comercial.</p>
+                            <p>Admstra las tarjetas de crédito, débito o cuentas bancarias ligadas a cuenta comercial.</p>
                         </div>
                         <button class="btn-add-payment-method" id="btn-add-payment"><i class="fa-solid fa-plus"></i> Agregar Método</button>
                     </div>
@@ -305,7 +310,7 @@
                                     <label style="margin-top: 4px; color: #10b981; font-weight: 700;">Vence: 12/29</label>
                                 </div>
                                 <div class="desktop-cart-actions">
-                                    <button class="btn-action-edit" title="Modificador"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn-action-edit" title="Modificar"><i class="fa-solid fa-pen"></i></button>
                                     <button class="btn-action-delete" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             </div>
@@ -321,10 +326,10 @@
                                 <div class="company-card-info">
                                     <label>Método Alternativo</label>
                                     <p>Transferencia Interbancaria (SPEI)</p>
-                                    <label style="margin-top: 4px;">Clabel Registrada</label>
+                                    <label style="margin-top: 4px;">Clabe Registrada</label>
                                 </div>
                                 <div class="desktop-card-actions">
-                                    <button class="btn-action-edit" title="Modificador"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn-action-edit" title="Modificar"><i class="fa-solid fa-pen"></i></button>
                                     <button class="btn-action-delete" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             </div>
@@ -333,11 +338,10 @@
                                 <button class="swipe-btn-delete"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
-                        
                     </div>
                 </div>
 
-                <!-- 📍 PANEL 5: DIRECCIONES GUARDADAS (Nuevo) -->
+                <!-- 📍 PANEL 5: DIRECCIONES GUARDADAS -->
                 <div class="profile-pane" id="pane-direcciones">
                     <div class="pane-header address-header-flex">
                         <div class="header-text">
@@ -352,6 +356,7 @@
                     <div class="address-form-box" id="address-form-container">
                         <h4 id="address-form-title"><i class="fa-solid fa-map-location-dot"></i> Agregar Nueva Dirección</h4>
                         <form id="form-manage-address">
+                            {% csrf_token %}
                             <input type="hidden" id="address-id-field">
                             <div class="profile-form-group">
                                 <label for="address-name">Nombre de la Ubicación / Sucursal </label>
@@ -364,17 +369,17 @@
                                 </div>
                                 <div class="profile-form-group">
                                     <label for="address-colony"> Colonia</label>
-                                    <input type="text" id="address-colony" placeholder="Ej.Industrial" required> 
+                                    <input type="text" id="address-colony" placeholder="Ej. Industrial" required> 
                                 </div>
                             </div>
                             <div class="address-form-grid-row">
                                 <div class="profile-form-group">
                                     <label for="address-cp">Código Postal</label>
-                                    <input type="text" id="address-cp" placeholder="Ej.12345" required>
+                                    <input type="text" id="address-cp" placeholder="Ej. 12345" required>
                                 </div>
                                 <div class="profile-form-group">
                                     <label for="address-city">Ciudad y Estado</label>
-                                    <input type="text" id="address-city" placeholder="Ej.Ciudad de México" required>
+                                    <input type="text" id="address-city" placeholder="Ej. Ciudad de México" required>
                                 </div>
                             </div>
 
@@ -420,8 +425,8 @@
                     </div>
 
                     <div class="config-section">
-                        <h4><i class="fa-solid fa-circle-half-stroke"></i>Personalización de la interfaz</h4>
-                        <p style="font-size: 0.85rem; color: #64749b; margin-bottom: 1.25rem;">Cambiar el aspecto visual de la plataforma para adaptarlo a tus necesidades o iluminacion ambiental</p>
+                        <h4><i class="fa-solid fa-circle-half-stroke"></i> Personalización de la interfaz</h4>
+                        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.25rem;">Cambiar el aspecto visual de la plataforma para adaptarlo a tus necesidades o iluminación ambiental</p>
 
                         <div class="profile-form-group" style="margin-bottom: 1.5rem;">
                             <label style="margin-bottom: 0.5rem;">Tema del sistema</label>
@@ -445,22 +450,24 @@
                         <div class="profile-form-group">
                             <label for="pref-density">Densidad de las tablas de historial</label>
                             <select id="pref-density" class="profile-select-field font-density-select">
-                                <option value="default" selected>Estandar (Recomendado)</option>
+                                <option value="default" selected>Estándar (Recomendado)</option>
                                 <option value="compact">Compacta (Más datos, menos espacio)</option>
                             </select>
                         </div>
                     </div>
+
                     <div class="config-section">
-                        <h4><i class="fa-solid fa-key"></i>Seguridad y Acceso</h4>
+                        <h4><i class="fa-solid fa-key"></i> Seguridad y Acceso</h4>
                         <form id="form-password">
+                            {% csrf_token %}
                             <div class="profile-form-group">
-                                <label  for="current-password">Contraseña actual</label>
-                                <input type="password"  id="current-password" placeholder="••••••••" required>
+                                <label for="current-password">Contraseña actual</label>
+                                <input type="password" id="current-password" placeholder="••••••••" required>
                             </div>
                             <div class="profile-form-row">
                                 <div class="profile-form-group">
                                     <label for="new-password">Nueva Contraseña</label>
-                                    <input type="password" id="new-password" placeholder="Minimo 8 Caracteres" required>
+                                    <input type="password" id="new-password" placeholder="Mínimo 8 Caracteres" required>
                                 </div>
                                 <div class="profile-form-group">
                                     <label for="confirm-password">Confirmar nueva Contraseña</label>
@@ -472,12 +479,12 @@
                     </div>
 
                     <div class="config-section">
-                        <h4><i class="fa-solid fa-bell"></i>Preferencias de alertas Comerciales</h4>
-                        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Seleciona los canales y tipos de notificaciones operativas que deseas recibir.</p>
+                        <h4><i class="fa-solid fa-bell"></i> Preferencias de alertas Comerciales</h4>
+                        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Selecciona los canales y tipos de notificaciones operativas que deseas recibir.</p>
 
                         <div class="toggle-group">
                             <label class="switch-container">
-                                <span>Notificarme sobre actualizaciones de envios.</span>
+                                <span>Notificarme sobre actualizaciones de envíos.</span>
                                 <div class="switch-wrapper">
                                     <input type="checkbox" id="notify-customs" checked>
                                     <span class="switch-slider"></span>
@@ -485,15 +492,15 @@
                             </label>
 
                             <label class="switch-container">
-                                <span>Recibir alertas automaticas cuando una cotizacion esté por vencer (7 días antes)</span>
+                                <span>Recibir alertas automáticas cuando una cotización esté por vencer (7 días antes)</span>
                                 <div class="switch-wrapper">
-                                    <input type="checkbox"  id="notify-quotes" checked>
+                                    <input type="checkbox" id="notify-quotes" checked>
                                     <span class="switch-slider"></span>
                                 </div>
                             </label>
 
                             <label class="switch-container">
-                                <span>Recibir confirmaciones de despacho y liberacion de guias de entrega en mi correo.</span>
+                                <span>Recibir confirmaciones de despacho y liberación de guías de entrega en mi correo.</span>
                                 <div class="switch-wrapper">
                                     <input type="checkbox" id="notify-delivery" checked>
                                     <span class="switch-slider"></span>
@@ -503,27 +510,28 @@
                     </div>
 
                     <div class="config-section">
-                        <h4><i class="fa-solid fa-earth-americas"></i> Localizacion e Idiomas del sistema</h4>
+                        <h4><i class="fa-solid fa-earth-americas"></i> Localización e Idiomas del sistema</h4>
                         <div class="profile-form-row">
                             <div class="profile-form-group">
-                                <label for="pref-currency">Moneda de facturacion por defecto</label>
+                                <label for="pref-currency">Moneda de facturación por defecto</label>
                                 <select id="pref-currency" style="padding: 0.75rem 1rem; border: 1px solid rgba(26,34,38,0.15); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; background: #fdfdfd; outline: none;">
                                     <option value="MXN" selected>MXN - Peso Mexicano</option>
-                                    <option value="USD" selected>USD - Dólar Americano</option>
+                                    <option value="USD">USD - Dólar Americano</option>
                                 </select>
                             </div>
                             <div class="profile-form-group">
                                 <label for="pref-lang">Idioma del Panel Técnico</label>
-                                <select id="pref-lang"  style="padding: 0.75rem 1rem; border: 1px solid rgba(26,34,38,0.15); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; background: #fdfdfd; outline: none;">
+                                <select id="pref-lang" style="padding: 0.75rem 1rem; border: 1px solid rgba(26,34,38,0.15); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; background: #fdfdfd; outline: none;">
                                     <option value="es" selected>Español (América Latina)</option>
                                     <option value="en">English (International)</option>
                                 </select>
                             </div>
                         </div>
                     </div>
+
                     <div class="config-section" style="border-bottom: none; padding-bottom: 0;">
-                        <h4 style="color: #dc2626;"><i class="fa-solid fa-triangle-exclamation" style="color: #dc2626;"></i>Zona de peligro</h4>
-                        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem;">Al eliminar tu cuenta perderas de forma permanente el acceso al historial de pedidos, cotizaciones guardadas y catálogos logisticos.</p>
+                        <h4 style="color: #dc2626;"><i class="fa-solid fa-triangle-exclamation" style="color: #dc2626;"></i> Zona de peligro</h4>
+                        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem;">Al eliminar tu cuenta perderás de forma permanente el acceso al historial de pedidos, cotizaciones guardadas y catálogos logísticos.</p>
 
                         <button type="button" class="delete-account-btn" onclick="confirmDeleteAccount()">
                             <i class="fa-solid fa-trash-can"></i> Eliminar cuenta
@@ -538,22 +546,22 @@
     <footer>
         <div class="footer-container">
             <div class="footer-brand">
-                <a href="#" class="nav-logo" style="margin-bottom: 0.75rem;">
-                    <img src="Assets/logo-ecodren.png" alt="Ecodren Logo" class="web-logo">
+                <a href="{% url 'home' %}" class="nav-logo" style="margin-bottom: 0.75rem;">
+                    <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren Logo" class="web-logo">
                 </a>
                 <p>Maquinaria y refacciones especializadas para desazolvadores. Soluciones confiables para profesionales del drenaje.</p>
             </div>
-            <div><h4>Tienda</h4><ul><li><a href="#tienda">Maquinaria</a></li><li><a href="#tienda">Refacciones</a></li><li><a href="#contacto">Servicio técnico</a></li></ul></div>
-            <div><h4>Empresa</h4><ul><li><a href="#por-que">Quiénes somos</a></li><li><a href="#por-que">Ventajas</a></li><li><a href="#contacto">Trabaja con nosotros</a></li></ul></div>
-            <div><h4>Contacto</h4><ul><li><a href="#contacto">Solicitar cotización</a></li><li><a href="#">+52 (55) XXX-XXXX</a></li><li><a href="#">ventas@ecodren.com</a></li></ul></div>
+            <div><h4>Tienda</h4><ul><li><a href="{% url 'tienda' %}">Maquinaria</a></li><li><a href="{% url 'tienda' %}">Refacciones</a></li><li><a href="{% url 'home' %}#contacto">Servicio técnico</a></li></ul></div>
+            <div><h4>Empresa</h4><ul><li><a href="{% url 'home' %}#por-que">Quiénes somos</a></li><li><a href="{% url 'home' %}#por-que">Ventajas</a></li><li><a href="{% url 'home' %}#contacto">Trabaja con nosotros</a></li></ul></div>
+            <div><h4>Contacto</h4><ul><li><a href="{% url 'home' %}#contacto">Solicitar cotización</a></li><li><a href="#">+52 (55) XXX-XXXX</a></li><li><a href="#">ventas@ecodren.com</a></li></ul></div>
         </div>
 
         <div class="footer-corporate-brands">
             <span class="corporate-title">Una empresa de Equipos Hidromecánicos MC</span>
             <div class="brand-grid">
-                <img src="Assets/afilial1_ecovac.webp" alt="Ecovac" class="corp-logo">
-                <img src="Assets/afilial2_ecojet.webp" alt="Ecojet" class="corp-logo">
-                <img src="Assets/afilial3_ecoclean.webp" alt="Ecoclean" class="corp-logo">
+                <img src="{% static 'Assets/afilial1_ecovac.webp' %}" alt="Ecovac" class="corp-logo">
+                <img src="{% static 'Assets/afilial2_ecojet.webp' %}" alt="Ecojet" class="corp-logo">
+                <img src="{% static 'Assets/afilial3_ecoclean.webp' %}" alt="Ecoclean" class="corp-logo">
             </div>
         </div>
         
@@ -562,26 +570,26 @@
                 <div class="icon-circle"><i class="fab fa-facebook-f"></i></div>
                 <span class="social-text">Ecodren Oficial</span>
             </a>
-             <a href="https://x.com/equipos_mc" target="_blank" class="social-pill instagram">
+            <a href="https://x.com/equipos_mc" target="_blank" class="social-pill instagram">
                 <div class="icon-circle"><i class="fab fa-instagram"></i></div>
                 <span class="social-text">@ecodren</span>
-             </a>
-             <a href="https://www.linkedin.com/in/equipos-mc-770731114/?trk=nav_responsive_tab_profile" target="_blank" class="social-pill linkedin">
+            </a>
+            <a href="https://www.linkedin.com/in/equipos-mc-770731114/?trk=nav_responsive_tab_profile" target="_blank" class="social-pill linkedin">
                 <div class="icon-circle"><i class="fab fa-linkedin-in"></i></div>
                 <span class="social-text">Ecodren México</span>
-             </a>
+            </a>
         </div>
 
         <div class="footer-bottom">
             <span>© 2026 Ecodren. Todos los derechos reservados.</span>
             <div class="footer-signature-wrap">
                 <span class="signature-tag">Una marca de</span>
-                <img src="Assets/grupo-mc.webp" alt="GrupoMC" class="signature-logo">
+                <img src="{% static 'Assets/grupo-mc.webp' %}" alt="GrupoMC" class="signature-logo">
                 <span class="signature-text">Diseñado para profesionales del desazolve</span>
             </div>
         </div>
     </footer>
 
-    <script src="js/perfil.js"></script>
+    <script src="{% static 'js/perfil.js' %}"></script>
 </body>
 </html>

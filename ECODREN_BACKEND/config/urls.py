@@ -11,6 +11,8 @@ urlpatterns = [
     path('maquinaria/', views.maquinaria, name='maquinaria'),
     path('recursos/', views.recursos, name='recursos'),
     path('publicaciones', views.publicaciones, name='publicaciones'),
+    path('capacitaciones/', views.capacitaciones, name='capacitaciones'),
+    path('perfil/', views.perfil_view, name='perfil')
 ]
 
 if settings.DEBUG:

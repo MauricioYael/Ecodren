@@ -214,3 +214,38 @@ class DocumentoTecnico(models.Model):
 
     def __str__(self):
         return f"[{self.get_categoria_display()}] {self.titulo}"
+
+class CapacitacionImpartida(models.Model):
+    titulo = models.CharField(max_length=200, verbose_name="Titulo del curso impartido")
+    fecha = models.CharField(max_length=50, help_text="Ej: 12 May 2024", verbose_name="Fecha del evento")
+    ubicacion = models.CharField(max_length=100, help_text="Ej: Monterrey, N", verbose_name="Ubicacion / Ciudad")
+    participantes = models.PositiveBigIntegerField(default=30, verbose_name="Numero de participantes")
+    imagen = models.ImageField(upload_to='capacitaciones_exp/', blank=True, null=True, verbose_name="Foto del evento")
+    activo = models.BooleanField(default=True, verbose_name="¿Visible?")
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Capacitación Impartida (Experiencia)"
+        verbose_name_plural = "Capacitaciones Impartidas"
+        ordering = ['-creado_en']
+
+    def __str__(self):
+        return f"{self.titulo}- {self.ubicacion}"
+
+class CursoDisponible(models.Model):
+    titulo = models.CharField(max_length=200, verbose_name="Titulo del curso")
+    fecha_proxima = models.CharField(max_length=100, default="Proximamente", verbose_name="Fecha / Estado")
+    duracion = models.CharField(max_length=50, default="5 Horas", verbose_name="Duracion")
+    precio = models.DecimalField(max_digits=10, decimal_places=2, default=3800.00, verbose_name="Precio (MXN)")
+    imagen = models.ImageField(upload_to='cursos_disponibles/', blank=True, null=True, verbose_name="Miniatura del Curso")
+    cupos = models.PositiveBigIntegerField(default=15, verbose_name="Cupos Disponibles")
+    activo = models.BooleanField(default=True, verbose_name="¿Disponible para inscripcion?")
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Curso Disponible"
+        verbose_name_plural = "Cursos Disponibles"
+        ordering = ['-creado_en']
+
+    def __str__(self):
+        return self.titulo
