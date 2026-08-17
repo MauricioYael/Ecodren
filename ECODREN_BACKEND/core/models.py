@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 
 class Categoria(models.Model):
     nombre = models.CharField(max_length=100, unique=True, verbose_name="Nombre de la Categoría")
@@ -249,3 +249,77 @@ class CursoDisponible(models.Model):
 
     def __str__(self):
         return self.titulo
+
+class PerfilEmpresa(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
+    razon_social = models.CharField(max_length=200, default="Servicios Hidrahilicos del Centro", verbose_name="Razón Social")
+    telefono = models.CharField(max_length=30, default="+52 55 XXXX XXXX", verbose_name="Telefono Operativo")
+    direccion_principal = models.TextField(
+        default="Av. Central #123, Col. Industrial, C.P. 12345, Ciudad de México",
+        verbose_name="Dirección de Entrega Principal"
+    )
+    class Meta:
+        verbose_name = "Perfil de Empresa"
+        verbose_name_plural = "Perfiles de Empresa"
+
+    def __str__(self):
+        return f"{self.usuario.username} - {self.razon_social}"
+
+class DireccionEntrega(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='direcciones')
+    nombre_sucursal = models.CharField(max_length=150, verbose_name="Nombre de la Ubicacion / Sucursal")
+    calle_numero = models.CharField(max_length=200, verbose_name="Calle y Numero")
+    colonia = models.CharField(max_length=150, verbose_name="Colonia")
+    codigo_postal = models.CharField(max_length=10, verbose_name="Codigo Postal")
+    ciudad_estado = models.CharField(max_length=150, verbose_name="Ciudad y Estado")
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Dirección de Entrega"
+        verbose_name_plural = "Direcciones de Entrega"
+        ordering = ['-creado_en']
+
+    def __srt__(self):
+        return f"{self.nombre_sucursal ({self.usuario.username})}"
+
+class Pedido (models.Model):
+    ESTATUS_CHOICES = [
+        ('aduana', 'En Aduana / Puerto'),
+        ('proceso', 'En preparación'),
+        ('entregado', 'Liberado / Entregado'),
+        ('cancelado', 'Cancelado'),
+    ]
+
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pedidos')
+    codigo_pedido = models.CharField(max_length=50, unique=True, verbose_name="ID pedido (Ej: #EC-2026-9821)")
+    equipo_insumo = models.CharField(max_length=255, verbose_name="Equipos / Insumo Solicitado")
+    total = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Costo Total (MXN)")
+    estatus = models.CharField(max_length=20, choices=ESTATUS_CHOICES, default='proceso', verbose_name="Estatus de Despacho")
+    fecha_operacion = models.DateField(auto_now_add=True, verbose_name="Fecha de Operación")
+
+    class Meta:
+        verbose_name = "Pedido"
+        verbose_name_plural = "Historial de Pedidos"
+        ordering = ['-fecha_operacion']
+        
+    def __str__(self):
+        return f"{self.codigo_pedido} - {self.usuario.username}"
+
+class CotizacionGuardada(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cotizaciones')
+    numero_cotizacion = models.CharField(max_length=50, verbose_name="No. Cotización (Ej: COT-2026-042)")
+    equipo_solicitado = models.CharField(max_length=255, verbose_name="Equipo Solicitado")
+    vigencia = models.CharField(max_length=100, default="30 Jul 2026", verbose_name="Vigencia")
+    asesor_asignado = models.CharField(max_length=150, default="Ing. Roberto Martínez", verbose_name="Asesor Técnico Asignado")
+    tipo_operacion = models.CharField(max_length=150, default="Soporte Comercial Directo", verbose_name="Tipo de Operación")
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Cotización Guardada"
+        verbose_name_plural = "Cotizaciones Guardadas"
+        ordering = ['-creado_en']
+
+    def __str__(self):
+        return f"{self.numero_cotizacion} - {self.usuario.username}"  
+
+    
