@@ -18,6 +18,30 @@
 </head>
 <body>
 
+<!-- Capa Semántica para Motores de Búsqueda y Crawlers (SEO) -->
+<section class="seo-crawler-content" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;" aria-hidden="true">
+    {% for maquina in maquinas %}
+    <article itemscope itemtype="https://schema.org/Product">
+        <h2 itemprop="name">{{ maquina.nombre }}</h2>
+        <p itemprop="description">{{ maquina.tagline }}</p>
+        <span itemprop="category">{{ maquina.get_categoria_equipo_display }}</span>
+        <ul>
+            <li>Capacidad: {{ maquina.capacidad }}</li>
+            <li>Presión: {{ maquina.presion }}</li>
+            <li>Succión: {{ maquina.succion }}</li>
+            <li>Peso Operativo: {{ maquina.peso }}</li>
+            <li>Tipo de Trabajo: {{ maquina.tipo_trabajo }}</li>
+        </ul>
+        {% for eq in maquina.equipamentos.all %}
+        <p>{{ eq.nombre }}: {{ eq.especificacion }}</p>
+        {% endfor %}
+        {% for punto in maquina.puntos_destacados.all %}
+        <p>{{ punto.titulo }}: {{ punto.descripcion }}</p>
+        {% endfor %}
+    </article>
+    {% endfor %}
+</section>
+
 <nav id="mainNav">
     <a href="{% url 'home' %}" class="nav-logo">
         <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren Logo" class="web-logo">
@@ -48,8 +72,8 @@
                 </div>
             </div>
         </li>
-        <li><a href="#contacto">Recursos</a></li>
-        <li><a href="{% url 'capacitaciones'%}">Capacitaciones</a></li>
+        <li><a href="{% url 'recursos' %}">Recursos</a></li>
+        <li><a href="{% url 'capacitaciones' %}">Capacitaciones</a></li>
         <li><a href="{% url 'home' %}#por-que">Nosotros</a></li>
     </ul>
 
@@ -72,15 +96,15 @@
                         </div>
                     </div>
                     <ul class="dropdown-menu-list">
-                        <li><a href="#"><i class="far fa-user"></i> Mi perfil</a></li>
+                        <li><a href="{% url 'perfil' %}"><i class="far fa-user"></i> Mi perfil</a></li>
                         <li>
-                            <a href="#">
+                            <a href="{% url 'perfil' %}">
                                 <i class="far fa-check-square"></i> Mis pedidos
                                 <span class="badge-pedidos-count">3</span>
                             </a>
                         </li>
-                        <li><a href="#"><i class="far fa-comment-alt"></i> Cotizaciones guardadas</a></li>
-                        <li><a href="#"><i class="fas fa-cog"></i> Configuración</a></li>
+                        <li><a href="{% url 'perfil' %}"><i class="far fa-comment-alt"></i> Cotizaciones guardadas</a></li>
+                        <li><a href="{% url 'perfil' %}"><i class="fas fa-cog"></i> Configuración</a></li>
                         <li class="dropdown-divider"></li>
                         <li><a href="#" onclick="logOut()" class="logout-link"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
                     </ul>
@@ -104,6 +128,8 @@
     <a href="{% url 'home' %}#categorias" class="mobile-link">Ficha Técnica</a>
     <a href="{% url 'tienda' %}" class="mobile-link">Tienda</a>
     <a href="{% url 'maquinaria' %}" class="mobile-link">Equipos</a>
+    <a href="{% url 'recursos' %}" class="mobile-link">Recursos</a>
+    <a href="{% url 'capacitaciones' %}" class="mobile-link">Capacitaciones</a>
     <a href="{% url 'home' %}#por-que" class="mobile-link">Nosotros</a>
     <a href="{% url 'home' %}#contacto" class="mobile-link" style="color:var(--eco-green);font-weight:600">Cotizar →</a>
 </div>
@@ -120,7 +146,7 @@
                         <span class="top-card-action">Ver modelos <i class="fas fa-arrow-right"></i></span>
                     </div>
                     <div class="top-card-img-wrap">
-                        <img src="{% static 'Assets/afilial2_ecojet.webp'%}" alt="Ecojet">
+                        <img src="{% static 'Assets/afilial2_ecojet.webp' %}" alt="Ecojet">
                     </div>
                 </div>
 
@@ -131,7 +157,7 @@
                         <span class="top-card-action">Ver modelos <i class="fas fa-arrow-right"></i></span>
                     </div>
                     <div class="top-card-img-wrap">
-                        <img src="{% static 'Assets/afilial1_ecovac.webp'%}" alt="Ecovac">
+                        <img src="{% static 'Assets/afilial1_ecovac.webp' %}" alt="Ecovac">
                     </div>
                 </div>
 
@@ -142,7 +168,7 @@
                         <span class="top-card-action">Ver modelos <i class="fas fa-arrow-right"></i></span>
                     </div>
                     <div class="top-card-img-wrap">
-                        <img src="{% static 'Assets/logo-ecodren.png'%}" alt="Ecodren">
+                        <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren">
                     </div>
                 </div>
 
@@ -153,7 +179,7 @@
                         <span class="top-card-action">Ver modelos <i class="fas fa-arrow-right"></i></span>
                     </div>
                     <div class="top-card-img-wrap">
-                        <img src="{% static 'Assets/afilial3_ecoclean.webp'%}" alt="Ecoclean">
+                        <img src="{% static 'Assets/afilial3_ecoclean.webp' %}" alt="Ecoclean">
                     </div>
                 </div>
 
@@ -251,7 +277,7 @@
                 </div>
             </div>
 
-            <!-- Tira de Especificaciones (Abarca ambas columnas abajo) -->
+            <!-- Tira de Especificaciones -->
             <div class="radical-spec-strip-container">
                 <div class="strip-spec-item">
                     <div class="strip-icon-box"><i class="fa-solid fa-cube"></i></div>
@@ -320,10 +346,9 @@
             <p>Maquinaria y refacciones especializadas para desazolvadores. Soluciones confiables para profesionales del drenaje.</p>
         </div>
         <div><h4>Tienda</h4><ul>
-            <li><a href="{% url 'tienda' %}">Todas las refacciones</a></li>
-            <li><a href="{% url 'tienda' %}?cat=boquillas">Boquillas y Toberas</a></li>
-            <li><a href="{% url 'tienda' %}?cat=mangueras">Mangueras</a></li>
-            <li><a href="{% url 'tienda' %}?cat=bombas">Bombas</a></li>
+            <li><a href="{% url 'maquinaria' %}">Equipos</a></li>
+            <li><a href="{% url 'tienda' %}">Refacciones</a></li>
+            <li><a href="{% url 'home' %}#contacto">Servicio técnico</a></li>
         </ul></div>
         <div><h4>Empresa</h4><ul>
             <li><a href="{% url 'home' %}#por-que">Quiénes somos</a></li>
@@ -371,8 +396,10 @@
     </div>
 </footer>
 
+{{ maquinaria_data|json_script:"maquinaria-json-data" }}
+
 <script>
-    window.MAQUINARIA = JSON.parse('{{ maquinaria_json|escapejs }}');
+    window.MAQUINARIA = JSON.parse(document.getElementById('maquinaria-json-data').textContent);
 </script>
 
 <script src="{% static 'js/main.js' %}"></script>

@@ -1,12 +1,17 @@
-from pathlib import Path
 import os
+from pathlib import Path
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY ='django-insecure-z95y56th9b74!_za0_8u8tgespqz49j3=!z3n+q)-qn!(%$nie'
-DEBUG = True
+# ── Cargar variables de entorno desde .env ─────────────────────────
+load_dotenv(os.path.join(BASE_DIR, '.env'))
+
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-clave-de-respaldo-dev')
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = ['*']
 
+# ── 1. INSTALLED_APPS ───────────────────────────────────────────────
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -14,13 +19,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'corsheaders',
+    'django.contrib.sites',  # Requerido por allauth
+
+    # Aplicaciones locales
     'core',
+
+    # django-allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
+SITE_ID = 1
+
+# ── 2. MIDDLEWARE ───────────────────────────────────────────────────
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Habilitado para conectar con el frontend
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -28,17 +42,26 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # Requerido por allauth
+    'allauth.account.middleware.AccountMiddleware',
 ]
+
 ROOT_URLCONF = 'config.urls'
+
+# ── 3. TEMPLATES ────────────────────────────────────────────────────
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR.parent, 'Ecodren_web')],
+        'DIRS': [
+            os.path.join(BASE_DIR.parent, 'Ecodren_web'),
+            os.path.join(BASE_DIR, 'templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
+                'django.template.context_processors.request',  # Requerido por admin y allauth
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -48,53 +71,40 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# ── 4. BASE DE DATOS SEGURA (Conexión vía variables de entorno) ─────
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ecodren_db',
-        'USER': 'root',
-        'PASSWORD': 'Travies025_',  # <-- ⚠️ REEMPLAZA ESTO CON TU CONTRASEÑA REAL
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+        'NAME': os.getenv('DB_NAME', 'ecodren_db'),
+        'USER': os.getenv('DB_USER', 'root'),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+        'PORT': os.getenv('DB_PORT', '3306'),
     }
 }
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+# ── 5. AUTENTICACIÓN Y ALLAUTH ──────────────────────────────────────
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-LANGUAGE_CODE = 'es-mx'
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
-TIME_ZONE = 'America/Mexico_City'
+LOGIN_URL = 'home'
+LOGIN_REDIRECT_URL = 'perfil'
+LOGOUT_REDIRECT_URL = 'home'
 
-USE_I18N = True
-
-USE_TZ = True
-
+# ── 6. ARCHIVOS ESTÁTICOS Y SUBIDOS (MEDIA) ─────────────────────────
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR.parent, 'Ecodren_web'),
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build')
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR.parent, 'Ecodren_web', 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-CORS_ALLOW_ALL_ORIGINS = True
-
-lOGIN_URL = 'home'
-lOGIN_REDIRECT_URL = 'perfil'
-lOGOUT_REDIRECT_URL = 'home'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

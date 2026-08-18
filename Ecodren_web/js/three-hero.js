@@ -4,19 +4,17 @@
 
 (function() {
   const heroContainer = document.getElementById('hero3d');
-  if (!heroContainer) return;
+  const heroCanvas = document.getElementById('hero-canvas');
+  if (!heroContainer || !heroCanvas) return;
 
   // 1. ESCENA, CÁMARA Y RENDERER
   const ecoScene = new THREE.Scene();
-  //ecoScene.background = new THREE.Color(0x1a2226); //Despues checar si es necesario si se borra la linea
-  //ecoScene.fog = new THREE.FogExp2(0x1a2226, 0.035);
-
   const ecoCamera = new THREE.PerspectiveCamera(45, heroContainer.clientWidth / heroContainer.clientHeight, 0.1, 100);
   
   ecoCamera.position.set(0, 0, 8); 
 
   const ecoRenderer = new THREE.WebGLRenderer({ 
-    canvas: document.getElementById('hero-canvas'), 
+    canvas: heroCanvas, 
     antialias: true,
     alpha: true
   });
@@ -52,8 +50,6 @@
     new THREE.MeshStandardMaterial({ color: 0x111618, roughness: 1 })
   );
   ecoGround.rotation.x = -Math.PI / 2;
-  
-  // Bajamos el suelo un poco más para darle espacio al descenso del logo
   ecoGround.position.y = -3.0;
   ecoGround.receiveShadow = true;
   ecoScene.add(ecoGround);
@@ -74,12 +70,15 @@
   );
   ecoScene.add(sparkParticles);
 
-  // 5. CARGADOR DE TU MODELO 3D REAL (.GLB)
+  // 5. CARGADOR DINÁMICO DEL MODELO 3D (.GLB)
   let realLogoMesh = null; 
   const gltfLoader = new THREE.GLTFLoader();
 
+  // 🚀 Leemos la ruta estática resuelta por Django en el HTML
+  const modelUrl = heroCanvas.getAttribute('data-model') || '/static/Assets/logo-web.glb';
+
   gltfLoader.load(
-    'assets/logo-web.glb', 
+    modelUrl, 
     function (gltf) {
       const modelContainer = new THREE.Group();
       const loadedModel = gltf.scene;
@@ -100,60 +99,41 @@
         modelContainer.add(loadedModel.children[0]);
       }
 
-      // Manteniendo tu tamaño ideal (2.3)
       modelContainer.scale.set(5, 5, 5);       
-      
-      // 🛠️ ORIENTACIÓN CORRECTA DE LA CARA:
-      // Devolvemos la rotación de 90 grados en X que ponía tu logo de frente a la pantalla
       modelContainer.rotation.set(Math.PI / 2, 0, 0); 
 
-      // Recalculado automático para clavar el eje en medio de la figura
       const box = new THREE.Box3().setFromObject(modelContainer);
       const center = new THREE.Vector3();
       box.getCenter(center);
       modelContainer.position.sub(center);
 
-      // Creación del pivote maestro para la rotación simétrica
       const pivot = new THREE.Group();
-      
-      // 📍 BAJAR EL LOGO COMPLETAMENTE:
-      // Lo bajamos a -1.5 en el eje Y para acomodarlo exactamente donde querías
       pivot.position.set(0, -1.5, 0); 
-
       pivot.add(modelContainer);
 
-      // Asignamos el pivote a la variable de animación
       realLogoMesh = pivot;
-      
-      // Lo agregamos a la escena
       ecoScene.add(realLogoMesh);
-      
-      console.log("¡Logotipo real en 3D alineado de frente y reposicionado!");
+      console.log("✔ Modelo 3D cargado correctamente desde:", modelUrl);
     },
     undefined,
     function (error) {
-      console.error('Error al cargar tu archivo .glb local:', error);
+      console.error('Error al cargar el archivo .glb:', error, 'Ruta intentada:', modelUrl);
     }
   );
 
-  // 6. BUCLE DE ANIMACIÓN (Giro tipo manecillas de reloj puro)
+  // 6. BUCLE DE ANIMACIÓN
   const ecoClock = new THREE.Clock();
 
   function runAnimation() {
     requestAnimationFrame(runAnimation);
     
     if (realLogoMesh) {
-      // Rotación sobre el eje Z (sentido del reloj)
       realLogoMesh.rotation.z -= 0.01; 
-
-      // Forzamos los otros ejes para evitar distorsiones de perfil
       realLogoMesh.rotation.x = 0;
       realLogoMesh.rotation.y = 0;
     }
 
-    // Movimiento sutil de las chispas de fondo
     sparkParticles.rotation.y = ecoClock.getElapsedTime() * 0.015;
-
     ecoRenderer.render(ecoScene, ecoCamera);
   }
   runAnimation();

@@ -1,8 +1,13 @@
 import json
 from django.shortcuts import render
 from django.db.models import Q
-from .models import Producto, Categoria, Maquinaria, PublicacionRecurso, DocumentoTecnico, CapacitacionImpartida, CursoDisponible
 from django.contrib.auth.decorators import login_required
+from .models import (
+    Producto, Categoria, Maquinaria, PublicacionRecurso, 
+    DocumentoTecnico, CapacitacionImpartida, CursoDisponible,
+    PerfilEmpresa, DireccionEntrega, Pedido, CotizacionGuardada
+)
+
 
 def index(request):
     productos_destacados = Producto.objects.filter(disponible=True).order_by('?')[:4]
@@ -10,20 +15,23 @@ def index(request):
         'productos_destacados': productos_destacados
     })
 
-
 def tienda(request):
     categorias = Categoria.objects.all()
     productos = Producto.objects.filter(disponible=True)
 
-    cat_id = request.GET.get('cat')
-    if cat_id and cat_id != 'todos':
-        productos = productos.filter(categoria_id=cat_id)
+    cat_param = request.GET.get('cat', '').strip()
 
-    busqueda = request.GET.get('q')
+    if cat_param and cat_param.lower() != 'todos':
+        if cat_param.isdigit():
+            productos = productos.filter(categoria_id=int(cat_param))
+        else:
+            productos = productos.filter(categoria__nombre__icontains=cat_param)
+
+    busqueda = request.GET.get('q', '').strip()
     if busqueda:
         productos = productos.filter(
-            Q(nombre__icontains=busqueda) | 
-            Q(codigo_sku__icontains=busqueda) | 
+            Q(nombre__icontains=busqueda) |
+            Q(codigo_sku__icontains=busqueda) |
             Q(descripcion__icontains=busqueda)
         )
 
@@ -44,93 +52,73 @@ def tienda(request):
     context = {
         'categorias': categorias,
         'productos': productos,
-        'cat_seleccionada': cat_id,
-        'busqueda': busqueda or '',
+        'cat_seleccionada': cat_param,
+        'busqueda': busqueda,
     }
     return render(request, 'tienda.html', context)
 
 
 def maquinaria(request):
-    maquinas_db = Maquinaria.objects.filter(activo=True).prefetch_related('imagenes', 'equipamentos', 'accesorios_disponibles')
-    maquinaria_list = []
-    
-    for m in maquinas_db:
-        imgs = []
-        for img in m.imagenes.all():
-            try:
-                if img.imagen and hasattr(img.imagen, 'url'):
-                    imgs.append(img.imagen.url)
-            except ValueError:
-                continue
-
-        if not imgs:
-            imgs = ['/static/Assets/logo-ecodren.png']
-
-        equipamentos = []
-        if hasattr(m, 'equipamentos'):
-            equipamentos = [
-                {
-                    'id': eq.id,
-                    'nombre': eq.nombre,
-                    'especificacion': eq.especificacion,
-                    'icono': eq.icono
-                } for eq in m.equipamentos.all()
-            ]
-
-        accesorios = []
-        if hasattr(m, 'accesorios_disponibles'):
-            accesorios = [
-                {
-                    'id': acc.id,
-                    'nombre': acc.nombre,
-                    'descripcion': acc.descripcion or ''
-                } for acc in m.accesorios_disponibles.all()
-            ]
-        puntos = []
-        if hasattr(m, 'puntos_destacados'):
-            puntos = [
-                {
-                    'titulo': p.titulo,
-                    'descripcion': p.descripcion,
-                    'icono': p.icono
-                } for p in m.puntos_destacados.all()
-            ]
-
-        maquinaria_list.append({
+    maquinas_qs = Maquinaria.objects.filter(activo=True).prefetch_related(
+        'imagenes', 'equipamentos', 'accesorios_disponibles', 'puntos_destacados'
+    )
+    maquinaria_data = []
+    for m in maquinas_qs:
+        maquinaria_data.append({
             'id': m.id,
-            'slug': getattr(m, 'slug', str(m.id)),
+            'slug': m.slug or str(m.id),
             'nombre': m.nombre,
-            'categoria': getattr(m, 'categoria_equipo', 'ecodren'),
+            'categoria': m.categoria_equipo,
             'tagline': m.tagline or '',
             'capacidad': m.capacidad or '',
             'presion': m.presion or '',
-            'succion': getattr(m, 'succion', 'Alto vacío') or 'Alto vacío',
-            'peso': getattr(m, 'peso', '19,500 Kg') or '19,500 Kg',
-            'tipo_trabajo': getattr(m, 'tipo_trabajo', 'Industrial') or 'Industrial',
+            'succion': m.succion or 'Alto Vacío',
+            'peso': m.peso or '19,500 Kg',
+            'tipo_trabajo': m.tipo_trabajo or 'Industrial',
             'recomendado': m.recomendado,
-            'imagenes': imgs,
-            'equipamento': equipamentos,
-            'accesorios': accesorios,
-            'puntos_destacados': puntos,
+            'imagenes': [img.imagen.url for img in m.imagenes.all() if img.imagen] or ['/static/Assets/logo-ecodren.png'],
+            'equipamento': [
+                {'nombre': eq.nombre, 'especificacion': eq.especificacion, 'icono': eq.icono}
+                for eq in m.equipamentos.all()
+            ],
+            'accesorios': [
+                {'nombre': acc.nombre, 'descripcion': acc.descripcion or ''}
+                for acc in m.accesorios_disponibles.all()
+            ],
+            'puntos_destacados': [
+                {'titulo': p.titulo, 'descripcion': p.descripcion, 'icono': p.icono}
+                for p in m.puntos_destacados.all()
+            ],
             'pdf_url': m.ficha_tecnica_pdf.url if m.ficha_tecnica_pdf else ''
         })
 
     context = {
-        'maquinaria_json': json.dumps(maquinaria_list)
+        'maquinas': maquinas_qs,
+        'maquinaria_data': maquinaria_data
     }
     return render(request, 'maquinaria.html', context)
+
 
 def recursos(request):
     videos = PublicacionRecurso.objects.filter(activo=True, tipo='video')
     noticias = PublicacionRecurso.objects.filter(activo=True, tipo='noticia')
     comunidad_bento = PublicacionRecurso.objects.filter(activo=True, tipo='redes')
 
+    # Documentos técnicos para el modal de descarga
+    doc_ficha = DocumentoTecnico.objects.filter(activo=True, categoria='ficha').first()
+    doc_manual = DocumentoTecnico.objects.filter(activo=True, categoria='manual').first()
+    doc_catalogo = DocumentoTecnico.objects.filter(activo=True, categoria='catalogo').first()
+
     context = {
         'videos': videos,
         'noticias': noticias,
         'comunidad_bento': comunidad_bento,
+        'doc_ficha': doc_ficha,
+        'doc_manual': doc_manual,
+        'doc_catalogo': doc_catalogo,
     }
     return render(request, 'recursos.html', context)
+
 
 def publicaciones(request):
     cat = request.GET.get('cat', 'todos')
@@ -145,6 +133,7 @@ def publicaciones(request):
     }
     return render(request, 'publicaciones.html', context)
 
+
 def capacitaciones(request):
     experiencias = CapacitacionImpartida.objects.filter(activo=True)
     cursos_disponibles = CursoDisponible.objects.filter(activo=True)
@@ -155,6 +144,18 @@ def capacitaciones(request):
     }
     return render(request, 'capacitaciones.html', context)
 
+
 @login_required
 def perfil_view(request):
-    return render(request, 'perfil.html')
+    perfil, _ = PerfilEmpresa.objects.get_or_create(usuario=request.user)
+    direcciones = DireccionEntrega.objects.filter(usuario=request.user)
+    pedidos = Pedido.objects.filter(usuario=request.user)
+    cotizaciones = CotizacionGuardada.objects.filter(usuario=request.user)
+
+    context = {
+        'perfil': perfil,
+        'direcciones': direcciones,
+        'pedidos': pedidos,
+        'cotizaciones': cotizaciones,
+    }
+    return render(request, 'perfil.html', context)
