@@ -315,10 +315,44 @@
 .btn-add-cart:hover { background: #144f2d; transform: scale(1.02); }
 
 /* Vista Lista */
-.shop-grid.list-view .shop-card,
-.shop-grid.list-view .product-card { display: grid; grid-template-columns: 160px 1fr; }
-.shop-grid.list-view .shop-img,
-.shop-grid.list-view .product-card-img { height: 100%; }
+.shop-grid.list-view {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+}
+
+.shop-grid.list-view .product-card {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 1.2rem 1.5rem !important;
+    gap: 1.5rem !important;
+    width: 100% !important;
+}
+
+.shop-grid.list-view .product-card-img {
+    width: 130px !important;
+    height: 130px !important;
+    flex-shrink: 0 !important;
+    border-radius: 10px;
+}
+
+.shop-grid.list-view .product-card-body {
+    flex: 1 !important;
+    padding: 0 !important;
+}
+
+.shop-grid.list-view .product-price-row {
+    margin-top: 0.5rem !important;
+    justify-content: flex-start !important;
+    gap: 1.5rem !important;
+}
+
+.shop-grid.list-view .btn-add-cart {
+    width: fit-content !important;
+    padding: 0.55rem 1.5rem !important;
+    margin-top: 0.6rem !important;
+}
 
 /* ── SKELETON LOADERS ── */
 .skeleton-card { background: #ffffff; border-radius: 16px; padding: 1.5rem; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgb(0, 0, 0, 0.02); display: flex; flex-direction: column; gap: 1rem; pointer-events: none; overflow: hidden; position: relative; }
@@ -609,5 +643,12 @@
         background: var(--eco-light, #e8f5ed); color: var(--eco-green, #1a6b3c);
         border: none; border-radius: 50%; cursor: pointer; z-index: 10;
         padding: 0;
+    }
+    .shop-grid.list-view .product-card {
+        flex-direction: column !important;
+    }
+    .shop-grid.list-view .product-card-img {
+        width: 100% !important;
+        height: 180px !important;
     }
 }

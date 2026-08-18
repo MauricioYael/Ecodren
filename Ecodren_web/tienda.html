@@ -44,7 +44,7 @@
                 </div>
             </div>
         </li>
-        <li><a href="{% url 'recursos'%}">Recursos</a></li>
+        <li><a href="{% url 'recursos' %}">Recursos</a></li>
         <li><a href="{% url 'capacitaciones' %}">Capacitaciones</a></li>
         <li><a href="{% url 'home' %}#por-que">Nosotros</a></li>
     </ul>
@@ -72,7 +72,7 @@
                             Iniciar sesión
                         </button>
                         <button class="profile-item" onclick="openModal('register')">
-                            <svg viewBox="0 0 24 24"><path d="M15 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4-4 1.8-4 4 1.8 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/></svg>
+                            <svg viewBox="0 0 24 24"><path d="M15 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/></svg>
                             Crear cuenta
                         </button>
                     </div>
@@ -86,16 +86,16 @@
                         </div>
                     </div>
                     <div class="profile-menu">
-                        <a href="#" class="profile-item">
+                        <a href="{% url 'perfil' %}" class="profile-item">
                             <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.9 0 3.5 1.6 3.5 3.5S13.9 13 12 13s-3.5-1.6-3.5-3.5S10.1 6 12 6zm7 13H5v-.6c0-2 4-3.1 7-3.1s7 1.1 7 3.1V19z"/></svg>
                             Mi perfil
                         </a>
-                        <a href="#" class="profile-item">
+                        <a href="{% url 'perfil' %}?tab=pedidos" class="profile-item">
                             <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.4-1.4L12 14.2l7.6-7.6L21 8l-9 9z"/></svg>
                             Mis pedidos
                             <span class="profile-badge">3</span>
                         </a>
-                        <a href="#" class="profile-item">
+                        <a href="{% url 'perfil' %}?tab=cotizaciones" class="profile-item">
                             <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                             Cotizaciones guardadas
                         </a>
@@ -117,9 +117,10 @@
 <div class="mobile-menu" id="mobileMenu">
     <a href="{% url 'home' %}#categorias" class="mobile-link">Ficha Técnica</a>
     <a href="{% url 'tienda' %}" class="mobile-link">Tienda</a>
-    <a href="#" class="mobile-link">Equipos</a>
+    <a href="{% url 'maquinaria' %}" class="mobile-link">Equipos</a>
+    <a href="{% url 'recursos' %}" class="mobile-link">Recursos</a>
+    <a href="{% url 'capacitaciones' %}" class="mobile-link">Capacitaciones</a>
     <a href="{% url 'home' %}#por-que" class="mobile-link">Nosotros</a>
-    <a href="#" class="mobile-link">Recursos</a>
     <a href="{% url 'home' %}#contacto" class="mobile-link" style="color:var(--eco-green);font-weight:600">Cotizar →</a>
 </div>
 
@@ -172,7 +173,7 @@
             <label class="filter-label">Buscar</label>
             <div class="search-input-wrap">
                 <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" value="{{busqueda}}" placeholder="Nombre o código..." onkeypress="if(event.key === 'Enter') aplicarFiltros()">
+                <input type="text" id="searchInput" value="{{ busqueda }}" placeholder="Nombre o código..." onkeypress="if(event.key === 'Enter') aplicarFiltros()">
             </div>
         </div>
         <div class="filter-group">
@@ -204,7 +205,7 @@
             </div>
         </div>
         <div class="filter-group">
-            <label class="filter-label">Precio máximo: <strong id="priceLabel">$20,000</strong></label>
+            <label class="filter-label">Precio máximo: <strong id="priceLabel">${{ precio_max|default:'10000' }}</strong></label>
             <input type="range" id="priceRange" min="0" max="20000" value="20000" step="500" class="price-range">
         </div>
         <button class="apply-filters-btn" id="applyFiltersBtn">Ver resultados</button>
@@ -241,34 +242,20 @@
                      data-precio="{{ producto.precio_base|stringformat:'s' }}"
                      data-stock="{{ producto.stock }}"
                      data-desc="{{ producto.descripcion|default:'' }}"
-                     data-img="{% if producto.imagen %}{{ producto.imagen.url }}{% endif %}"
+                     data-img="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'Assets/catalogo/boquillas/btp-3.webp' %}{% endif %}"
                      data-sku="{{ producto.codigo_sku }}"
-                     data-specs="{{ producto.especificaciones|default:'' }}"
-                     onclick="triggerModalDetalle(this)">
+                     data-specs="{{ producto.especificaciones|default:'' }}">
                     <span class="badge-sku">{{ producto.codigo_sku }}</span>
                     {% if producto.imagen %}
                         <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" loading="lazy">
                     {% else %}
-                        <div class="product-card-placeholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 180px; background: #f1f5f9; border-radius: 8px; color: #64748b;">
-                            <i class="fas fa-gears" style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--eco-green);"></i>
-                            <span style="font-size: 0.75rem; font-weight: 600;">{{ producto.codigo_sku }}</span>
-                        </div>
+                        <img src="{% static 'Assets/catalogo/boquillas/btp-3.webp' %}" alt="{{ producto.nombre }}" loading="lazy">
                     {% endif %}
                 </div>
 
                 <div class="product-card-body">
                     <span class="product-cat-name">{{ producto.categoria.nombre }}</span>
-                    <h3 class="product-title" style="cursor: pointer;"
-                        data-id="{{ producto.id }}"
-                        data-nombre="{{ producto.nombre }}"
-                        data-cat="{{ producto.categoria.nombre }}"
-                        data-precio="{{ producto.precio_base|stringformat:'s' }}"
-                        data-stock="{{ producto.stock }}"
-                        data-desc="{{ producto.descripcion|default:'' }}"
-                        data-img="{% if producto.imagen %}{{ producto.imagen.url }}{% endif %}"
-                        data-sku="{{ producto.codigo_sku }}"
-                        data-specs="{{ producto.especificaciones|default:'' }}"
-                        onclick="triggerModalDetalle(this)">
+                    <h3 class="product-title" style="cursor: pointer;">
                         {{ producto.nombre }}
                     </h3>
                     <p class="product-desc">
@@ -292,8 +279,7 @@
                             data-id="{{ producto.id }}"
                             data-nombre="{{ producto.nombre }}"
                             data-precio="{{ producto.precio_base|stringformat:'s' }}"
-                            data-img="{% if producto.imagen %}{{ producto.imagen.url }}{% endif %}"
-                            onclick="triggerAgregarAlCarrito(this)">
+                            data-img="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'Assets/catalogo/boquillas/btp-3.webp' %}{% endif %}">
                         <i class="fas fa-shopping-cart"></i> Agregar
                     </button>
                 </div>
@@ -566,33 +552,8 @@
     </div>
 </footer>
 
-<script>
-    function triggerModalDetalle(el) {
-        window.abrirModalDetalle(
-            el.dataset.id,
-            el.dataset.nombre,
-            el.dataset.cat,
-            el.dataset.precio,
-            el.dataset.stock,
-            el.dataset.desc,
-            el.dataset.img,
-            el.dataset.sku,
-            el.dataset.specs
-        );
-    }
-
-    function triggerAgregarAlCarrito(el) {
-        window.agregarAlCarrito(
-            el.dataset.id,
-            el.dataset.nombre,
-            el.dataset.precio,
-            el.dataset.img
-        );
-    }
-</script>
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="{% static 'js/main.js' %}"></script>
-<script src="{% static 'js/shop.js' %}?v=6.0"></script>
+<script src="{% static 'js/shop.js' %}?v=7.0"></script>
 </body>
 </html>

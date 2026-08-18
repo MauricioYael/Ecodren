@@ -20,7 +20,6 @@ def tienda(request):
     productos = Producto.objects.filter(disponible=True)
 
     cat_param = request.GET.get('cat', '').strip()
-
     if cat_param and cat_param.lower() != 'todos':
         if cat_param.isdigit():
             productos = productos.filter(categoria_id=int(cat_param))
@@ -34,10 +33,13 @@ def tienda(request):
             Q(codigo_sku__icontains=busqueda) |
             Q(descripcion__icontains=busqueda)
         )
-
     solo_stock = request.GET.get('stock')
     if solo_stock == '1':
         productos = productos.filter(stock__gt=0)
+
+    precio_max = request.GET.get('precio_max', '').strip()
+    if precio_max and precio_max.isdigit():
+        productos = productos.filter(precio_base__lte=float(precio_max))
 
     orden = request.GET.get('sort')
     if orden == 'price-asc':
@@ -47,16 +49,16 @@ def tienda(request):
     elif orden == 'nombre':
         productos = productos.order_by('nombre')
     elif orden == 'nuevo':
-        productos = productos.order_by('-creado_en')
+        producto = productos.order_by('-creado_en')
 
     context = {
         'categorias': categorias,
         'productos': productos,
         'cat_seleccionada': cat_param,
         'busqueda': busqueda,
+        'precio_max': precio_max or '10000',
     }
     return render(request, 'tienda.html', context)
-
 
 def maquinaria(request):
     maquinas_qs = Maquinaria.objects.filter(activo=True).prefetch_related(

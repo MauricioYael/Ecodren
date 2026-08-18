@@ -1,8 +1,3 @@
-/**
- * ECODREN - Control de Tienda, Filtros, Modales y Carrito
- */
-
-// 1. ESTADO Y GESTIÓN DEL CARRITO
 let carrito = JSON.parse(localStorage.getItem('ecodren_cart')) || [];
 
 window.guardarYActualizarCarrito = function () {
@@ -18,14 +13,14 @@ window.guardarYActualizarCarrito = function () {
         cartCountEl.textContent = totalCount;
         cartCountEl.setAttribute('data-count', totalCount);
     }
-    if (totalCount > 0){
+    if (totalCount > 0) {
         cartCountEl.style.display = 'flex';
         cartCountEl.style.transform = 'scale(1.3)';
         setTimeout(() => {
             cartCountEl.style.transform = 'scale(1)';
         }, 200); 
     } else {
-        cartCountEl.style.display ='none';
+        cartCountEl.style.display = 'none';
     }
 
     if (!cartItemsContainer) return;
@@ -104,7 +99,6 @@ window.eliminarDelCarrito = function (id) {
     window.guardarYActualizarCarrito();
 };
 
-// 2. SISTEMA DE NOTIFICACIONES (TOAST NATIVO)
 window.mostrarNotificacion = function(mensaje) {
     let toast = document.getElementById('ecoToast');
     if (!toast) {
@@ -121,7 +115,6 @@ window.mostrarNotificacion = function(mensaje) {
     }, 2500);
 };
 
-// 3. MODAL DE DETALLE DEL PRODUCTO (RECIBE 9 PARÁMETROS EN ORDEN EXACTO)
 window.abrirModalDetalle = function (id, nombre, categoria, precio, stock, descripcion, imagenUrl, sku, especificaciones) {
     const modalName = document.getElementById('modalName');
     const modalCat = document.getElementById('modalCat');
@@ -139,7 +132,6 @@ window.abrirModalDetalle = function (id, nombre, categoria, precio, stock, descr
     if (modalCat) modalCat.textContent = categoria;
     if (modalDesc) modalDesc.textContent = descripcion || 'Refacción original Ecodren de alto desempeño para sistemas de desazolve industrial.';
     
-    // Inyección de Especificaciones Reales
     if (modalSpecs) {
         let specsHtml = '';
         if (sku) {
@@ -164,15 +156,8 @@ window.abrirModalDetalle = function (id, nombre, categoria, precio, stock, descr
     }
 
     if (imgContainer) {
-        if (imagenUrl && imagenUrl !== '') {
-            imgContainer.innerHTML = `<img src="${imagenUrl}" alt="${nombre}">`;
-        } else {
-            imgContainer.innerHTML = `
-                <div class="product-card-placeholder">
-                    <i class="fas fa-gears"></i>
-                    <span>${sku || 'ECODREN'}</span>
-                </div>`;
-        }
+        const defaultImg = '/static/Assets/catalogo/boquillas/btp-3.webp';
+        imgContainer.innerHTML = `<img src="${imagenUrl || defaultImg}" alt="${nombre}">`;
     }
 
     if (btnAddModal) {
@@ -206,10 +191,11 @@ window.changeModalQty = function (delta) {
     qtyEl.textContent = val;
 };
 
-// 4. FILTROS Y BÚSQUEDA DINÁMICA
+// ── FILTROS Y BÚSQUEDA DINÁMICA ──────────────────────────────────────
 window.aplicarFiltros = function () {
     const urlParams = new URLSearchParams(window.location.search);
     
+    // 1. Filtro de búsqueda
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         const query = searchInput.value.trim();
@@ -220,6 +206,7 @@ window.aplicarFiltros = function () {
         }
     }
 
+    // 2. Filtro de disponibilidad
     const filterStock = document.getElementById('filterStock');
     if (filterStock) {
         if (filterStock.checked) {
@@ -229,15 +216,28 @@ window.aplicarFiltros = function () {
         }
     }
 
+    // 3. Ordenamiento
     const sortSelect = document.getElementById('sortSelect');
     if (sortSelect && sortSelect.value !== 'default') {
         urlParams.set('sort', sortSelect.value);
+    } else {
+        urlParams.delete('sort');
+    }
+
+    // 4. 🚀 Filtro de precio máximo
+    const priceRange = document.getElementById('priceRange');
+    if (priceRange) {
+        const valorPrecio = parseInt(priceRange.value, 10);
+        if (valorPrecio < 20000) {
+            urlParams.set('precio_max', valorPrecio);
+        } else {
+            urlParams.delete('precio_max');
+        }
     }
 
     window.location.search = urlParams.toString();
 };
 
-// 5. CONTROLADORES UI (SIDEBARS Y EVENTOS)
 window.abrirCarrito = function () {
     window.guardarYActualizarCarrito();
     const cartSidebar = document.getElementById('cartSidebar');
@@ -253,7 +253,6 @@ window.cerrarCarrito = function () {
     if (cartOverlay) cartOverlay.classList.remove('open');
 };
 
-// Inicialización
 document.addEventListener('DOMContentLoaded', function () {
     window.guardarYActualizarCarrito();
 
@@ -294,7 +293,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const urlParams = new URLSearchParams(window.location.search);
         const sortParam = urlParams.get('sort');
         if (sortParam) sortSelect.value = sortParam;
-
         sortSelect.addEventListener('change', window.aplicarFiltros);
     }
 
@@ -302,6 +300,29 @@ document.addEventListener('DOMContentLoaded', function () {
     if (filterStock) {
         const urlParams = new URLSearchParams(window.location.search);
         filterStock.checked = urlParams.get('stock') === '1';
+        filterStock.addEventListener('change', window.aplicarFiltros);
+    }
+
+    // ── 🚀 CONTROL DEL SLIDER DE PRECIO MÁXIMO ───────────────────────
+    const priceRange = document.getElementById('priceRange');
+    const priceLabel = document.getElementById('priceLabel');
+
+    if (priceRange && priceLabel) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const precioGuardado = urlParams.get('precio_max');
+        
+        if (precioGuardado) {
+            priceRange.value = precioGuardado;
+            priceLabel.textContent = `$${parseInt(precioGuardado, 10).toLocaleString('es-MX')}`;
+        }
+
+        // Actualizar el número en pantalla en tiempo real al mover la barra
+        priceRange.addEventListener('input', function () {
+            priceLabel.textContent = `$${parseInt(this.value, 10).toLocaleString('es-MX')}`;
+        });
+
+        // Aplicar el filtro al soltar el ratón o terminar de deslizar
+        priceRange.addEventListener('change', window.aplicarFiltros);
     }
 
     const filterToggleBtn = document.getElementById('filterToggleBtn');
@@ -311,17 +332,51 @@ document.addEventListener('DOMContentLoaded', function () {
             tiendaSidebar.classList.add('sidebar-open');
         });
     }
-});
 
-document.addEventListener('click', function (e) {
-    const card = e.target.closest('.shop-card');
-    if (!card) return;
+    const viewGrid = document.getElementById('viewGrid');
+    const viewList = document.getElementById('viewList');
+    const shopGrid = document.getElementById('shopGrid');
 
-    // Abrir modal si se hace clic en la imagen, título o botón "Ver detalles"
-    if (e.target.closest('.shop-img') || e.target.closest('h3') || e.target.closest('.btn-ver-detalle')) {
-        const d = card.dataset;
-        if (typeof window.abrirModalDetalle === 'function') {
-            window.abrirModalDetalle(d.id, d.nombre, d.cat, d.precio, d.stock, d.desc, d.img, d.sku, d.specs);
+    function setViewMode(mode) {
+        if (!shopGrid) return;
+        if (mode === 'list') {
+            shopGrid.classList.add('list-view');
+            viewList?.classList.add('active');
+            viewGrid?.classList.remove('active');
+            localStorage.setItem('ecodren_view_mode', 'list');
+        } else {
+            shopGrid.classList.remove('list-view');
+            viewGrid?.classList.add('active');
+            viewList?.classList.remove('active');
+            localStorage.setItem('ecodren_view_mode', 'grid');
         }
     }
+
+    const savedMode = localStorage.getItem('ecodren_view_mode') || 'grid';
+    setViewMode(savedMode);
+
+    viewGrid?.addEventListener('click', () => setViewMode('grid'));
+    viewList?.addEventListener('click', () => setViewMode('list'));
+
+    // Delegación centralizada de clics para productos
+    document.addEventListener('click', function (e) {
+        const btnAdd = e.target.closest('.btn-add-cart');
+        if (btnAdd) {
+            e.preventDefault();
+            e.stopPropagation();
+            const d = btnAdd.dataset;
+            window.agregarAlCarrito(d.id, d.nombre, d.precio, d.img);
+            return;
+        }
+
+        const card = e.target.closest('.product-card');
+        if (!card) return;
+
+        if (e.target.closest('.product-card-img') || e.target.closest('.product-title')) {
+            const imgContainer = card.querySelector('.product-card-img');
+            if (!imgContainer) return;
+            const d = imgContainer.dataset;
+            window.abrirModalDetalle(d.id, d.nombre, d.cat, d.precio, d.stock, d.desc, d.img, d.sku, d.specs);
+        }
+    });
 });
