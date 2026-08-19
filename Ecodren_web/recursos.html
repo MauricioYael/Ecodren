@@ -86,21 +86,17 @@
                             </div>
                         </div>
                         <div class="profile-menu">
-                            <a href="#" class="profile-item">
+                            <a href="{% url 'perfil' %}" class="profile-item">
                                 <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.9 0 3.5 1.6 3.5 3.5S13.9 13 12 13s-3.5-1.6-3.5-3.5S10.1 6 12 6zm7 13H5v-.6c0-2 4-3.1 7-3.1s7 1.1 7 3.1V19z"/></svg>
-                                Mi perfíl
+                                Mi perfil
                             </a>
-                            <a href="#" class="profile-item">
+                            <a href="{% url 'perfil' %}?tab=pedidos" class="profile-item">
                                 <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.4-1.4L12 14.2l7.6-7.6L21 8l-9 9z"/></svg>
                                 Mis pedidos<span class="profile-badge">3</span>
                             </a>
-                            <a href="#" class="profile-item">
+                            <a href="{% url 'perfil' %}?tab=cotizaciones" class="profile-item">
                                 <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                                 Cotizaciones guardadas
-                            </a>
-                            <a href="#" class="profile-item">
-                                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/></svg>
-                                Configuración
                             </a>
                             <div class="profile-divider"></div>
                             <button class="profile-item danger" onclick="logOut()">
@@ -122,6 +118,7 @@
         <a href="{% url 'tienda' %}">Tienda</a>
         <a href="{% url 'maquinaria' %}">Equipos</a>
         <a href="{% url 'recursos' %}">Recursos</a>
+        <a href="{% url 'capacitaciones' %}">Capacitaciones</a>
         <a href="{% url 'home' %}#por-que">Nosotros</a>
         <a href="{% url 'home' %}#contacto" class="mobile-link" style="color: var(--eco-green); font-weight: 600;">Cotizar →</a>
     </div>
@@ -166,12 +163,11 @@
             </div>
         </section>
 
-        <!-- SECCIÓN VIDEOS DINÁMICOS DESDE DJANGO -->
         <section class="resources-section-block" id="sec-videos">
             <div class="section-block-container">
                 <div class="section-block-header">
                     <h2><i class="fa-solid fa-circle-play icon-heading-green"></i> Videos Destacados</h2>
-                    <a href="#" class="view-all-link">Ver todos los videos <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="{% url 'publicaciones' %}?cat=video" class="view-all-link">Ver todos los videos <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
                 <div class="carousel-relative-container">
                     <button class="carousel-nav-prev-btn" onclick="scrollVideoIzquierda()" aria-label="Video anterior">
@@ -182,21 +178,27 @@
                         {% for video in videos %}
                         <div class="radical-resource-card">
                             <img class="resource-card-bg-image" src="{% if video.imagen_portada %}{{ video.imagen_portada.url }}{% else %}{% static 'Assets/header-recursos.png' %}{% endif %}" alt="{{ video.titulo }}">
+                            
                             <div class="resource-card-overlay-content">
                                 <span class="resource-card-badge-pill">
                                     <span class="badge-pill-dot" style="background: #10b981; box-shadow: 0 0 8px #10b981;"></span> 
                                     {{ video.duracion_o_fecha|default:'Video' }}
                                 </span>
-                                <h3 class="resource-card-title">{{ video.titulo }}</h3>
-                                <p class="resource-card-description">{{ video.descripcion|truncatechars:80 }}</p>
-                                
-                                {% if video.url_destino %}
-                                <a href="{{ video.url_destino }}" target="_blank" class="btn-resource-card-action" style="text-decoration: none;">
-                                    Reproducir Video <i class="fa-solid fa-play"></i>
-                                </a>
-                                {% else %}
-                                <button class="btn-resource-card-action">Reproducir Video <i class="fa-solid fa-play"></i></button>
-                                {% endif %}
+                                <div class="resource-card-body-text">
+                                    <h3 class="resource-card-title">{{ video.titulo }}</h3>
+                                    <p class="resource-card-description">{{ video.descripcion|truncatechars:80 }}</p>
+                                </div>
+                                <div class="resource-card-hover-action">
+                                    {% if video.url_destino %}
+                                    <a href="{{ video.url_destino }}" target="_blank" class="btn-resource-card-action">
+                                        Reproducir Video <i class="fa-solid fa-play"></i>
+                                    </a>
+                                    {% else %}
+                                    <button type="button" class="btn-resource-card-action">
+                                        Reproducir Video <i class="fa-solid fa-play"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                         {% empty %}
@@ -204,9 +206,15 @@
                             <img class="resource-card-bg-image" src="{% static 'Assets/header-recursos.png' %}" alt="Ecodren">
                             <div class="resource-card-overlay-content">
                                 <span class="resource-card-badge-pill"><span class="badge-pill-dot" style="background: #10b981; box-shadow: 0 0 8px #10b981;"></span> 04:35 Min</span>
-                                <h3 class="resource-card-title">¿Cómo funciona el sistema Ecodren?</h3>
-                                <p class="resource-card-description">Conoce el funcionamiento y beneficios de nuestro sistema de drenaje.</p>
-                                <button class="btn-resource-card-action">Reproducir Video <i class="fa-solid fa-play"></i></button>
+                                <div class="resource-card-body-text">
+                                    <h3 class="resource-card-title">¿Cómo funciona el sistema Ecodren?</h3>
+                                    <p class="resource-card-description">Conoce el funcionamiento y beneficios de nuestro sistema de drenaje.</p>
+                                </div>
+                                <div class="resource-card-hover-action">
+                                    <button type="button" class="btn-resource-card-action">
+                                        Reproducir Video <i class="fa-solid fa-play"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         {% endfor %}
@@ -220,12 +228,11 @@
             </div>
         </section>
         
-        <!-- SECCIÓN NOTICIAS DINÁMICAS DESDE DJANGO -->
         <section class="resources-section-block" id="sec-noticias">
             <div class="section-block-container">
                 <div class="section-block-header">
                     <h2><i class="fa-solid fa-square-poll-horizontal icon-heading-lime"></i> Noticias Recientes</h2>
-                    <a href="#" class="view-all-link">Ver todas las noticias <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="{% url 'publicaciones' %}?cat=noticia" class="view-all-link">Ver todas las noticias <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
                 
                 <div class="carousel-relative-container">
@@ -237,37 +244,50 @@
                         {% for noticia in noticias %}
                         <div class="radical-resource-card">
                             <img class="resource-card-bg-image" src="{% if noticia.imagen_portada %}{{ noticia.imagen_portada.url }}{% else %}{% static 'Assets/header-recursos_1.webp' %}{% endif %}" alt="{{ noticia.titulo }}">
+                            
                             <div class="resource-card-overlay-content">
                                 <span class="resource-card-badge-pill">
                                     <span class="badge-pill-dot" style="background: #10b981; box-shadow: 0 0 8px #10b981;"></span> 
                                     {{ noticia.duracion_o_fecha|default:noticia.creado_en|date:'d M Y' }}
                                 </span>
-                                <h3 class="resource-card-title">{{ noticia.titulo }}</h3>
-                                <p class="resource-card-description">{{ noticia.descripcion|truncatechars:80 }}</p>
-                                <div class="resource-pills-container">
-                                    <span class="eco-pill-item">{{ noticia.etiqueta_badge|default:'Ecodren' }}</span>
+                                <div class="resource-card-body-text">
+                                    <h3 class="resource-card-title">{{ noticia.titulo }}</h3>
+                                    <p class="resource-card-description">{{ noticia.descripcion|truncatechars:80 }}</p>
+                                    <div class="resource-pills-container">
+                                        <span class="eco-pill-item">{{ noticia.etiqueta_badge|default:'Ecodren' }}</span>
+                                    </div>
                                 </div>
-                                {% if noticia.url_destino %}
-                                <a href="{{ noticia.url_destino }}" target="_blank" class="btn-resource-card-action" style="text-decoration: none;">
-                                    VER DETALLES <i class="fa-solid fa-arrow-right"></i>
-                                </a>
-                                {% else %}
-                                <button class="btn-resource-card-action">VER DETALLES <i class="fa-solid fa-arrow-right"></i></button>
-                                {% endif %}
+                                <div class="resource-card-hover-action">
+                                    {% if noticia.url_destino %}
+                                    <a href="{{ noticia.url_destino }}" target="_blank" class="btn-resource-card-action">
+                                        VER DETALLES <i class="fa-solid fa-arrow-right"></i>
+                                    </a>
+                                    {% else %}
+                                    <button type="button" class="btn-resource-card-action">
+                                        VER DETALLES <i class="fa-solid fa-arrow-right"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                         {% empty %}
                         <div class="radical-resource-card">
                             <img class="resource-card-bg-image" src="{% static 'Assets/header-recursos_1.webp' %}" alt="Ecodren">
                             <div class="resource-card-overlay-content">
-                                <span class="resource-card-badge-pill"><span class="badge-pill-dot" style="background: #10b981; box-shadow: 0 0 8px #10b981;"></span> 20 May 2024</span>
-                                <h3 class="resource-card-title">Ecodren amplía su línea de productos 2024</h3>
-                                <p class="resource-card-description">Nuevas soluciones para proyectos de drenaje más eficientes corporativos.</p>
-                                <div class="resource-pills-container">
-                                    <span class="eco-pill-item">Empresa</span>
-                                    <span class="eco-pill-item">Lanzamiento</span>
+                                <span class="resource-card-badge-pill"><span class="badge-pill-dot" style="background: #10b981; box-shadow: 0 0 8px #10b981;"></span> 20 May 2026</span>
+                                <div class="resource-card-body-text">
+                                    <h3 class="resource-card-title">Ecodren amplía su línea de productos 2026</h3>
+                                    <p class="resource-card-description">Nuevas soluciones para proyectos de drenaje más eficientes corporativos.</p>
+                                    <div class="resource-pills-container">
+                                        <span class="eco-pill-item">Empresa</span>
+                                        <span class="eco-pill-item">Lanzamiento</span>
+                                    </div>
                                 </div>
-                                <button class="btn-resource-card-action">VER DETALLES <i class="fa-solid fa-arrow-right"></i></button>
+                                <div class="resource-card-hover-action">
+                                    <button type="button" class="btn-resource-card-action">
+                                        VER DETALLES <i class="fa-solid fa-arrow-right"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         {% endfor %}
@@ -285,25 +305,24 @@
             <div class="download-cta-container">
                 <div class="download-cta-left">
                     <div class="download-square-icon">
-                        <i class="fa-solid fa-square-arrow-down"></i>
+                        <i class="fa-solid fa-file-arrow-down"></i>
                     </div>
                     <div class="download-cta-text">
                         <h3>¿Necesitas información técnica específica?</h3>
                         <p>Descarga fichas técnicas, manuales y catálogos de nuestros productos.</p>
                     </div>
                 </div>
-                <button class="btn-go-to-docs">
+                <button type="button" class="btn-go-to-docs">
                     Ir a Guías y Documentos <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
         </section>
 
-        <!-- SECCIÓN COMUNIDAD Y BENTO GRID DINÁMICO -->
         <section class="social-hub-section" id="comunidad">
             <div class="section-block-container" style="margin-bottom: 2.5rem;">
                 <span class="resources-tag" style="margin-top: 0;">Ecodren en los Medios</span>
                 <h2 class="comunidad-heading-title">Comunidad y Publicaciones Oficiales</h2>
-                <p class="comunidad-heading-desc">Sigue nuestras operaciones en campo, demostraciones de equipo en video y actualizaciones tecnológicas a través de nuestras redes oficiales. </p>
+                <p class="comunidad-heading-desc">Sigue nuestras operaciones en campo, demostraciones de equipo en video y actualizaciones tecnológicas a través de nuestras redes oficiales.</p>
             </div>
 
             <div class="premium-bento-grid">
@@ -338,11 +357,11 @@
                             <i class="fa-solid fa-star"></i>Destacado
                         </span>
                         <span class="bento-category-label">Noticias</span>
-                        <h3 class="bento-card-title">ED-17 operación en acción en Guadalajara</h3>
+                        <h3 class="bento-card-title">{{ post.titulo|default:'ED-17 operación en acción en Guadalajara' }}</h3>
                         <p class="bento-card-text">Conoce cómo nuestro equipo ED-17 realizó operaciones de desazolve de alto rendimiento en líneas de alta presión en Guadalajara, Jal.</p>
 
                         <div class="bento-meta-row">
-                            <span><i class="fa-regular fa-calendar"></i>15 de mayo, 2024</span>
+                            <span><i class="fa-regular fa-calendar"></i>15 de mayo, 2026</span>
                             <span><i class="fa-regular fa-clock"></i>6 min de lectura</span>
                         </div>
                         <span class="bento-action-link">Leer Publicacion <i class="fa-solid fa-arrow-right-long"></i></span>
@@ -368,9 +387,9 @@
                 </a>
                 <p>Maquinaria y refacciones especializadas para desazolvadores. Soluciones confiables para profesionales del drenaje.</p>
             </div>
-            <div><h4>Tienda</h4><ul><li><a href="{% url 'tienda' %}">Maquinaria</a></li><li><a href="{% url 'tienda' %}">Refacciones</a></li></ul></div>
-            <div><h4>Empresa</h4><ul><li><a href="{% url 'home' %}#por-que">Quiénes somos</a></li><li><a href="{% url 'recursos' %}">Recursos</a></li></ul></div>
-            <div><h4>Contacto</h4><ul><li><a href="{% url 'home' %}#contacto">Solicitar cotización</a></li><li><a href="#">+52 (55) XXX-XXXX</a></li></ul></div>
+            <div><h4>Tienda</h4><ul><li><a href="{% url 'maquinaria' %}">Equipos</a></li><li><a href="{% url 'tienda' %}">Refacciones</a></li><li><a href="{% url 'home' %}#contacto">Servicio técnico</a></li></ul></div>
+            <div><h4>Empresa</h4><ul><li><a href="{% url 'home' %}#por-que">Quiénes somos</a></li><li><a href="{% url 'recursos' %}">Recursos</a></li><li><a href="{% url 'home' %}#contacto">Trabaja con nosotros</a></li></ul></div>
+            <div><h4>Contacto</h4><ul><li><a href="{% url 'home' %}#contacto">Solicitar cotización</a></li><li><a href="#">+52 (55) XXX-XXXX</a></li><li><a href="#">ventas@ecodren.com</a></li></ul></div>
         </div>
         <div class="footer-corporate-brands">
             <span class="corporate-title">Una empresa de Equipos Hidromecánicos MC</span>
@@ -389,7 +408,7 @@
                 <div class="icon-circle"><i class="fab fa-instagram"></i></div>
                 <span class="social-text">@ecodren</span>
             </a>
-            <a href="https://www.linkedin.com/in/equipos-mc-770731114/?trk=nav_responsive_tab_profile" target="_blank" class="social-pill linkedin">
+            <a href="https://www.linkedin.com/in/equipos-mc-770731114/" target="_blank" class="social-pill linkedin">
                 <div class="icon-circle"><i class="fab fa-linkedin-in"></i></div>
                 <span class="social-text">Ecodren México</span>
             </a>
@@ -419,46 +438,129 @@
 
     <div id="modal-guias-docs" class="modal-overlay">
         <div class="modal-box modal-guias-box">
-            <button type="button" class="modal-close-btn" id="close-guias-modal">&times;</button>
-            <div class="modal-guias-header">
-                <span class="modal-guias-tag">Repositorio Técnico</span>
-                <h3>Guías y Documentos</h3>
-                <p>Selecciona la categoria de documentos que deseas consultar o descargar:</p>
-            </div>
-            <div class="modal-guias-grid">
-                <a href="#" class="guias-card-option">
-                    <div class="guias-icon-wrapper">
-                        <i class="fas fa-file-code"></i>
-                    </div>
-                    <div class="guias-option-info">
-                        <h4>Fichas Técnicas</h4>
-                        <p>Especificaciones y datos de equipos ED.</p>
-                    </div>
-                    <i class="fas fa-chevron-right guias-arrow"></i>
-                </a>
+            <button type="button" class="modal-close-btn" id="close-guias-modal" aria-label="Cerrar">&times;</button>
 
-                <a href="#" class="guias-card-option">
-                    <div class="guias-icon-wrapper">
-                        <i class="fas fa-book-open"></i>
-                    </div>
-                    <div class="guias-option-info">
-                        <h4>Manuales de Operación</h4>
-                        <p>Guías paso a paso para el uso seguro.</p>
-                    </div>
-                    <i class="fas fa-chevron-right guias-arrow"></i>
-                </a>
+            <div class="guias-panel active" id="panel-guias-menu">
+                <div class="modal-guias-header">
+                    <span class="modal-guias-tag">Repositorio Técnico</span>
+                    <h3>Guías y Documentos</h3>
+                    <p>Selecciona la categoría de documentos que deseas consultar o descargar:</p>
+                </div>
+                <div class="modal-guias-grid">
+                    <button type="button" class="guias-card-option" onclick="cambiarPanelGuias('fichas')">
+                        <div class="guias-icon-wrapper">
+                            <i class="fas fa-file-code"></i>
+                        </div>
+                        <div class="guias-option-info">
+                            <h4>Fichas Técnicas</h4>
+                            <p>Especificaciones y datos de equipos ED.</p>
+                        </div>
+                        <i class="fas fa-chevron-right guias-arrow"></i>
+                    </button>
 
-                <a href="#" class="guias-card-option">
-                    <div class="guias-icon-wrapper">
-                        <i class="fas fa-folder-open"></i>
-                    </div>
-                    <div class="guias-option-info">
-                        <h4>Catálogo de producto</h4>
-                        <p>Gama completa de soluciones Ecodren.</p>
-                    </div>
-                    <i class="fas fa-chevron-right guias-arrow"></i>
-                </a>
+                    <button type="button" class="guias-card-option" onclick="cambiarPanelGuias('manuales')">
+                        <div class="guias-icon-wrapper">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="guias-option-info">
+                            <h4>Manuales de Operación</h4>
+                            <p>Guías paso a paso para el uso seguro.</p>
+                        </div>
+                        <i class="fas fa-chevron-right guias-arrow"></i>
+                    </button>
+
+                    <button type="button" class="guias-card-option" onclick="cambiarPanelGuias('catalogos')">
+                        <div class="guias-icon-wrapper">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <div class="guias-option-info">
+                            <h4>Catálogo de productos</h4>
+                            <p>Gama completa de soluciones Ecodren.</p>
+                        </div>
+                        <i class="fas fa-chevron-right guias-arrow"></i>
+                    </button>
+                </div>
             </div>
+
+            <div class="guias-panel" id="panel-guias-fichas">
+                <button type="button" class="guias-btn-volver" onclick="volverMenuGuias()">
+                    <i class="fas fa-arrow-left"></i> Volver a categorías
+                </button>
+                <div class="modal-guias-header">
+                    <span class="modal-guias-tag">Especificaciones</span>
+                    <h3>Fichas Técnicas</h3>
+                    <p>Fichas operativas oficiales:</p>
+                </div>
+                <div class="guias-docs-scroll">
+                    <div class="guias-doc-item">
+                        <div class="doc-item-icon"><i class="fas fa-file-pdf"></i></div>
+                        <div class="doc-item-info">
+                            <h4>Ficha Técnica - Ecodren ED-17</h4>
+                            <p>Especificaciones de bomba, capacidad de 17 yd³ y sistema de vacío.</p>
+                        </div>
+                        <a href="#" class="btn-doc-download"><i class="fas fa-download"></i> PDF</a>
+                    </div>
+                    <div class="guias-doc-item">
+                        <div class="doc-item-icon"><i class="fas fa-file-pdf"></i></div>
+                        <div class="doc-item-info">
+                            <h4>Ficha Técnica - Ecodren ED-13</h4>
+                            <p>Capacidades intermedias de succión y presiones de 2,500 PSI.</p>
+                        </div>
+                        <a href="#" class="btn-doc-download"><i class="fas fa-download"></i> PDF</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="guias-panel" id="panel-guias-manuales">
+                <button type="button" class="guias-btn-volver" onclick="volverMenuGuias()">
+                    <i class="fas fa-arrow-left"></i> Volver a categorías
+                </button>
+                <div class="modal-guias-header">
+                    <span class="modal-guias-tag">Seguridad y Operación</span>
+                    <h3>Manuales de Operación</h3>
+                    <p>Guías paso a paso para operación y mantenimiento preventivo:</p>
+                </div>
+                <div class="guias-docs-scroll">
+                    <div class="guias-doc-item">
+                        <div class="doc-item-icon"><i class="fas fa-file-pdf"></i></div>
+                        <div class="doc-item-info">
+                            <h4>Manual de Operador - Equipos Hidroneumáticos ED</h4>
+                            <p>Procedimientos seguros de arranque, operación de carrete y purga.</p>
+                        </div>
+                        <a href="#" class="btn-doc-download"><i class="fas fa-download"></i> PDF</a>
+                    </div>
+                    <div class="guias-doc-item">
+                        <div class="doc-item-icon"><i class="fas fa-file-pdf"></i></div>
+                        <div class="doc-item-info">
+                            <h4>Guías de Mantenimiento Preventivo</h4>
+                            <p>Revisión periódica de mangueras hidráulicas, filtros y bombas.</p>
+                        </div>
+                        <a href="#" class="btn-doc-download"><i class="fas fa-download"></i> PDF</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="guias-panel" id="panel-guias-catalogos">
+                <button type="button" class="guias-btn-volver" onclick="volverMenuGuias()">
+                    <i class="fas fa-arrow-left"></i> Volver a categorías
+                </button>
+                <div class="modal-guias-header">
+                    <span class="modal-guias-tag">Catálogo Comercial</span>
+                    <h3>Catálogo de productos</h3>
+                    <p>Publicaciones ilustradas de refacciones, toberas, bombas, etc.</p>
+                </div>
+                <div class="guias-docs-scroll">
+                    <div class="guias-doc-item">
+                        <div class="doc-item-icon"><i class="fas fa-file-pdf"></i></div>
+                        <div class="doc-item-info">
+                            <h4>Catálogo General de Refacciones 2026</h4>
+                            <p>Gama completa de boquillas, pistones cerámicos y mangueras.</p>
+                        </div>
+                        <a href="#" class="btn-doc-download"><i class="fas fa-download"></i> PDF</a>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 

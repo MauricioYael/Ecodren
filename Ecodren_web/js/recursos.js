@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnDocs && modalGuias) {
         btnDocs.addEventListener('click', (e) => {
             e.preventDefault();
+            volverMenuGuias();
             modalGuias.classList.add('open');
         });
     }
@@ -192,6 +193,26 @@ window.scrollNoticiasDerecha = function() {
             left: distanciaScroll,
             behavior: 'smooth'
         });
+    }
+};
+
+window.cambiarPanelGuias = function(categoria) {
+    document.querySelectorAll('.guias-panel').forEach(panel => {
+        panel.classList.remove('active');
+    });
+    const panelDestino = document.getElementById('panel-guias-' + categoria);
+    if (panelDestino) {
+        panelDestino.classList.add('active');
+    }
+};
+
+window.volverMenuGuias = function() {
+    document.querySelectorAll('.guias-panel').forEach(panel => {
+        panel.classList.remove('active');
+    });
+    const panelMenu = document.getElementById('panel-guias-menu');
+    if (panelMenu) {
+        panelMenu.classList.add('active');
     }
 };
 

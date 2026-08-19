@@ -24,8 +24,31 @@
         <ul class="nav-center" id="navCenter">
             <li><a href="{% url 'home' %}#categorias">Ficha Técnica</a></li>
             <li><a href="{% url 'tienda' %}">Tienda</a></li>
-            <li><a href="{% url 'maquinaria' %}">Equipos</a></li>
+            <li class="mega-dropdown">
+                <a href="{% url 'maquinaria' %}">Equipos</a>
+                <div class="mega-menu">
+                    <div class="mega-menu-grid">
+                        <a href="{% url 'maquinaria' %}" class="machine-card">
+                            <img src="{% static 'Assets/afilial2_ecojet.webp' %}" alt="Ecojet">
+                            <span>Equipos de Presión</span>
+                        </a>
+                        <a href="{% url 'maquinaria' %}" class="machine-card">
+                            <img src="{% static 'Assets/afilial1_ecovac.webp' %}" alt="Ecovac">
+                            <span>Equipos de Vacio</span>
+                        </a>
+                        <a href="{% url 'maquinaria' %}" class="machine-card">
+                            <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren">
+                            <span>Equipos Mixtos</span>
+                        </a>
+                        <a href="{% url 'maquinaria' %}" class="machine-card">
+                            <img src="{% static 'Assets/afilial3_ecoclean.webp' %}" alt="Ecoclean">
+                            <span>Equipos de Vacio Seco</span>
+                        </a>
+                    </div>
+                </div>
+            </li>
             <li><a href="{% url 'recursos' %}" class="nav-active">Recursos</a></li>
+            <li><a href="{% url 'capacitaciones' %}">Capacitaciones</a></li>
             <li><a href="{% url 'home' %}#por-que">Nosotros</a></li>
         </ul>
         <div class="nav-right">
@@ -51,7 +74,7 @@
                                 Iniciar sesión
                             </button>
                             <button class="profile-item" onclick="openModal('register')">
-                                <svg viewBox="0 0 24 24"><path d="M15 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4-4 1.8-4 4 1.8 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/></svg>
+                                <svg viewBox="0 0 24 24"><path d="M15 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/></svg>
                                 Crear cuenta
                             </button>
                         </div>
@@ -65,21 +88,17 @@
                             </div>
                         </div>
                         <div class="profile-menu">
-                            <a href="#" class="profile-item">
+                            <a href="{% url 'perfil' %}" class="profile-item">
                                 <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.9 0 3.5 1.6 3.5 3.5S13.9 13 12 13s-3.5-1.6-3.5-3.5S10.1 6 12 6zm7 13H5v-.6c0-2 4-3.1 7-3.1s7 1.1 7 3.1V19z"/></svg>
-                                Mi perfíl
+                                Mi perfil
                             </a>
-                            <a href="#" class="profile-item">
+                            <a href="{% url 'perfil' %}?tab=pedidos" class="profile-item">
                                 <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.4-1.4L12 14.2l7.6-7.6L21 8l-9 9z"/></svg>
                                 Mis pedidos<span class="profile-badge">3</span>
                             </a>
-                            <a href="#" class="profile-item">
+                            <a href="{% url 'perfil' %}?tab=cotizaciones" class="profile-item">
                                 <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                                 Cotizaciones guardadas
-                            </a>
-                            <a href="#" class="profile-item">
-                                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/></svg>
-                                Configuración
                             </a>
                             <div class="profile-divider"></div>
                             <button class="profile-item danger" onclick="logOut()">
@@ -101,11 +120,12 @@
         <a href="{% url 'tienda' %}">Tienda</a>
         <a href="{% url 'maquinaria' %}">Equipos</a>
         <a href="{% url 'recursos' %}">Recursos</a>
+        <a href="{% url 'capacitaciones' %}">Capacitaciones</a>
         <a href="{% url 'home' %}#por-que">Nosotros</a>
         <a href="{% url 'home' %}#contacto" class="mobile-link" style="color: var(--eco-green); font-weight: 600;">Cotizar →</a>
     </div>
 
-    <main class="resources-main-content" style="padding-top: 4rem;">
+    <main class="resources-main-content" style="padding-top: 7rem;">
         <section class="social-hub-section">
             <div class="section-block-container" style="margin-bottom: 2rem;">
                 <span class="resources-tag">Catálogo Completo</span>
@@ -116,7 +136,7 @@
             <section class="resources-filter-bar-section publicaciones-filter-bar">
                 <div class="resources-filter-container">
                     <div class="filter-tabs-wrapper">
-                        <a href="{% url 'publicaciones' %}?cat=todos" class="filter-tab {% if cat_actual == 'todos' %}active{% endif %}" style="text-decoration: none;">
+                        <a href="{% url 'publicaciones' %}?cat=todos" class="filter-tab {% if cat_actual == 'todos' or not cat_actual %}active{% endif %}" style="text-decoration: none;">
                             <i class="fa-solid fa-table-cells-large"></i> Todos
                         </a>
                         <a href="{% url 'publicaciones' %}?cat=video" class="filter-tab {% if cat_actual == 'video' %}active{% endif %}" style="text-decoration: none;">
@@ -165,7 +185,7 @@
                         <p class="bento-card-text">Conoce cómo nuestro equipo ED-17 realizó operaciones de desazolve de alto rendimiento en líneas de alta presión en Guadalajara, Jal.</p>
 
                         <div class="bento-meta-row">
-                            <span><i class="fa-regular fa-calendar"></i>15 de mayo, 2024</span>
+                            <span><i class="fa-regular fa-calendar"></i>15 de mayo, 2026</span>
                             <span><i class="fa-regular fa-clock"></i>6 min de lectura</span>
                         </div>
                         <span class="bento-action-link">Leer Publicación <i class="fa-solid fa-arrow-right-long"></i></span>
@@ -202,9 +222,9 @@
                 </a>
                 <p>Maquinaria y refacciones especializadas para desazolvadores. Soluciones confiables para profesionales del drenaje.</p>
             </div>
-            <div><h4>Tienda</h4><ul><li><a href="{% url 'tienda' %}">Maquinaria</a></li><li><a href="{% url 'tienda' %}">Refacciones</a></li></ul></div>
-            <div><h4>Empresa</h4><ul><li><a href="{% url 'home' %}#por-que">Quiénes somos</a></li><li><a href="{% url 'recursos' %}">Recursos</a></li></ul></div>
-            <div><h4>Contacto</h4><ul><li><a href="{% url 'home' %}#contacto">Solicitar cotización</a></li><li><a href="#">+52 (55) XXX-XXXX</a></li></ul></div>
+            <div><h4>Tienda</h4><ul><li><a href="{% url 'maquinaria' %}">Equipos</a></li><li><a href="{% url 'tienda' %}">Refacciones</a></li><li><a href="{% url 'home' %}#contacto">Servicio técnico</a></li></ul></div>
+            <div><h4>Empresa</h4><ul><li><a href="{% url 'home' %}#por-que">Quiénes somos</a></li><li><a href="{% url 'recursos' %}">Recursos</a></li><li><a href="{% url 'home' %}#contacto">Trabaja con nosotros</a></li></ul></div>
+            <div><h4>Contacto</h4><ul><li><a href="{% url 'home' %}#contacto">Solicitar cotización</a></li><li><a href="#">+52 (55) XXX-XXXX</a></li><li><a href="#">ventas@ecodren.com</a></li></ul></div>
         </div>
         <div class="footer-corporate-brands">
             <span class="corporate-title">Una empresa de Equipos Hidromecánicos MC</span>
@@ -223,7 +243,7 @@
                 <div class="icon-circle"><i class="fab fa-instagram"></i></div>
                 <span class="social-text">@ecodren</span>
             </a>
-            <a href="https://www.linkedin.com/in/equipos-mc-770731114/?trk=nav_responsive_tab_profile" target="_blank" class="social-pill linkedin">
+            <a href="https://www.linkedin.com/in/equipos-mc-770731114/" target="_blank" class="social-pill linkedin">
                 <div class="icon-circle"><i class="fab fa-linkedin-in"></i></div>
                 <span class="social-text">Ecodren México</span>
             </a>

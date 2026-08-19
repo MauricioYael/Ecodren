@@ -199,6 +199,7 @@ class PublicacionRecurso(models.Model):
         ('ninguna', 'Ninguna / Web'),
     ]
 
+
     titulo = models.CharField(max_length=200, verbose_name="Título")
     descripcion = models.TextField(blank=True, null=True, verbose_name="Descripción corta")
     tipo = models.CharField(max_length=30, choices=TIPO_CHOICES, default='noticia', verbose_name="Tipo de contenido")
