@@ -12,6 +12,7 @@
     width: 100% !important;
     box-sizing: border-box !important;
     position: relative !important;
+    overflow: hidden;
 }
 
 .radical-dashboard-layout {
@@ -127,7 +128,7 @@
     align-items: center;
     justify-content: center;
     padding: 0;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 #mainMachineImage {
@@ -494,7 +495,7 @@
 }
 
 .radical-spec-strip-container {
-    grid-column: 1 / -1; 
+    grid-column: 1 / -1;    
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -503,11 +504,11 @@
     backdrop-filter: blur(20px) !important;
     -webkit-backdrop-filter: blur(20px) !important;
     border-radius: 20px;
-    padding: 1.5rem 2rem;
-    margin-top: 6rem !important; 
+    padding: 1.25rem 2rem;
+    margin-top: 1rem !important; 
     width: 100%;
     box-sizing: border-box;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    box-shadow:     0 20px 40px rgba(0,0,0,0.2);
 }
 
 .strip-spec-item {
@@ -802,13 +803,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 480px; 
-    height: 480px; 
+    min-height: 380px; 
+    height: 380px; 
 }
 
 .radical-slider-controls-row {
     position: absolute;
-    bottom: 65px !important; 
+    bottom: 10px !important; 
     left: 50%;
     transform: translateX(-50%);
     display: flex;
