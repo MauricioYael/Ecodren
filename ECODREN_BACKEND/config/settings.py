@@ -97,6 +97,40 @@ LOGIN_URL = 'home'
 LOGIN_REDIRECT_URL = 'perfil'
 LOGOUT_REDIRECT_URL = 'home'
 
+# ── CONFIGURACION DEL PROVEEDOR GOOGLE (OAuth 2.0) ─────────────────────────
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE':[
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,
+        'FETCH_USERINFO': True
+    }
+}
+
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+ACCOUNT_EMAIL_SUBJECT_PREFIX = '[ECODREN] '
+SOCIALACCOUNT_LOGIN_ON_GET = True
+# SERVICIO DE CORREO ELECTRONIO (SMTP)
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+    EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+    DEFAULT_FROM_EMAIL = f"ECODREN <{EMAIL_HOST_USER}>"
+
+
 # ── 6. ARCHIVOS ESTÁTICOS Y SUBIDOS (MEDIA) ─────────────────────────
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [

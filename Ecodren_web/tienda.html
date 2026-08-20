@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/tienda.css' %}">
 </head>
-<body>
+<body data-user-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}">
 
 <nav id="mainNav">
     <a href="{% url 'home' %}" class="nav-logo">
@@ -61,51 +61,59 @@
                 </svg>
             </button>
             <div class="profile-dropdown" id="profileDropdown">
-                <div id="guestState">
-                    <div style="padding:1.25rem 1.25rem 0.5rem">
-                        <p style="font-size:0.9rem;font-weight:600;margin-bottom:0.25rem">Bienvenido a Ecodren</p>
-                        <p style="font-size:0.8rem;color:var(--eco-gray)">Inicia sesión para ver tus pedidos</p>
-                    </div>
-                    <div class="profile-menu">
-                        <button class="profile-item" onclick="openModal('login')">
-                            <svg viewBox="0 0 24 24"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>
-                            Iniciar sesión
-                        </button>
-                        <button class="profile-item" onclick="openModal('register')">
-                            <svg viewBox="0 0 24 24"><path d="M15 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/></svg>
-                            Crear cuenta
-                        </button>
-                    </div>
-                </div>
-                <div id="userState" style="display:none">
-                    <div class="profile-header">
-                        <div class="profile-avatar" id="userAvatar">JD</div>
-                        <div>
-                            <div class="profile-name" id="userName">Juan Díaz</div>
-                            <div class="profile-email" id="userEmail">juan@empresa.com</div>
+                {% if user.is_authenticated %}
+                    <!-- Estado: Sesión Activa -->
+                    <div id="userState">
+                        <div class="profile-header">
+                            <div class="profile-avatar" style="background: var(--eco-green); color: #fff; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                                {{ user.first_name|default:user.email|slice:":2"|upper }}
+                            </div>
+                            <div>
+                                <div class="profile-name" style="font-weight: 600; font-size: 0.9rem; color: var(--eco-dark);">
+                                    {% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.email|truncatechars:18 }}{% endif %}
+                                </div>
+                                <div class="profile-email" style="font-size: 0.78rem; color: var(--eco-gray);">{{ user.email }}</div>
+                            </div>
+                        </div>
+                        <div class="profile-menu">
+                            <a href="{% url 'perfil' %}" class="profile-item">
+                                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.9 0 3.5 1.6 3.5 3.5S13.9 13 12 13s-3.5-1.6-3.5-3.5S10.1 6 12 6zm7 13H5v-.6c0-2 4-3.1 7-3.1s7 1.1 7 3.1V19z"/></svg>
+                                Mi perfil
+                            </a>
+                            <a href="{% url 'perfil' %}?tab=pedidos" class="profile-item">
+                                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.4-1.4L12 14.2l7.6-7.6L21 8l-9 9z"/></svg>
+                                Mis pedidos
+                            </a>
+                            <a href="{% url 'perfil' %}?tab=cotizaciones" class="profile-item">
+                                <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                                Cotizaciones guardadas
+                            </a>
+                            <div class="profile-divider"></div>
+                            <a href="{% url 'account_logout' %}" class="profile-item danger" style="text-decoration: none;">
+                                <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                                Cerrar sesión
+                            </a>
                         </div>
                     </div>
-                    <div class="profile-menu">
-                        <a href="{% url 'perfil' %}" class="profile-item">
-                            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.9 0 3.5 1.6 3.5 3.5S13.9 13 12 13s-3.5-1.6-3.5-3.5S10.1 6 12 6zm7 13H5v-.6c0-2 4-3.1 7-3.1s7 1.1 7 3.1V19z"/></svg>
-                            Mi perfil
-                        </a>
-                        <a href="{% url 'perfil' %}?tab=pedidos" class="profile-item">
-                            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.4-1.4L12 14.2l7.6-7.6L21 8l-9 9z"/></svg>
-                            Mis pedidos
-                            <span class="profile-badge">3</span>
-                        </a>
-                        <a href="{% url 'perfil' %}?tab=cotizaciones" class="profile-item">
-                            <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                            Cotizaciones guardadas
-                        </a>
-                        <div class="profile-divider"></div>
-                        <button class="profile-item danger" onclick="logOut()">
-                            <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
-                            Cerrar sesión
-                        </button>
+                {% else %}
+                    <!-- Estado: Invitado sin sesión -->
+                    <div id="guestState">
+                        <div style="padding:1.25rem 1.25rem 0.5rem">
+                            <p style="font-size:0.9rem;font-weight:600;margin-bottom:0.25rem">Bienvenido a Ecodren</p>
+                            <p style="font-size:0.8rem;color:var(--eco-gray)">Inicia sesión para ver tus pedidos</p>
+                        </div>
+                        <div class="profile-menu">
+                            <button class="profile-item" onclick="openModal('login')">
+                                <svg viewBox="0 0 24 24"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>
+                                Iniciar sesión
+                            </button>
+                            <button class="profile-item" onclick="openModal('register')">
+                                <svg viewBox="0 0 24 24"><path d="M15 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/></svg>
+                                Crear cuenta
+                            </button>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             </div>
         </div>
         <button class="hamburger" id="hamburger" aria-label="Menú">

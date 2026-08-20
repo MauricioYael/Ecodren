@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="{% static 'css/tienda.css' %}">
     <link rel="stylesheet" href="{% static 'css/perfil.css' %}">
 </head>
-<body class="profile-body">
+<body data-user-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}">
 
     <!-- NAV -->
     <nav id="mainNav" class="light scrolled profile-nav">

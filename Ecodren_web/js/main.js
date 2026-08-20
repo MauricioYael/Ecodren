@@ -2,14 +2,6 @@
    main.js — Arquitectura Global, Modales, Sesiones y Checkout Asíncrono
    ========================================================================== */
 
-let currentUser = null;
-try { 
-    currentUser = JSON.parse(localStorage.getItem('ecodren_user')) || null; 
-} catch (e) { 
-    localStorage.removeItem('ecodren_user'); 
-}
- 
-// ── 🛒 CONTADOR CARRITO GLOBAL (UNIFICADO) ─────────────────────────
 function actualizarContadorCarritoGlobal() {
     let carrito = [];
     try { 
@@ -35,7 +27,6 @@ function actualizarContadorCarritoGlobal() {
     }
 }
  
-// ── 🌊 NAV SCROLL CONTROL ───────────────────────────────────────────
 const nav = document.getElementById('mainNav');
 if (nav) {
     const hasHero = !!document.getElementById('hero3d');
@@ -45,7 +36,6 @@ if (nav) {
     }, { passive: true });
 }
  
-// ── 🍔 HAMBURGER MOBILE MENU ────────────────────────────────────────
 const hamburger  = document.getElementById('hamburger') || document.getElementById('hamburgerBtn');
 const mobileMenu = document.getElementById('mobileMenu');
 if (hamburger && mobileMenu) {
@@ -61,7 +51,6 @@ if (hamburger && mobileMenu) {
     );
 }
  
-// ── 👤 PROFILE DROPDOWN NAVIGATION ──────────────────────────────────
 const profileBtn      = document.getElementById('profileBtn');
 const profileDropdown = document.getElementById('profileDropdown');
 if (profileBtn && profileDropdown) {
@@ -73,7 +62,6 @@ if (profileBtn && profileDropdown) {
     profileDropdown.addEventListener('click', e => e.stopPropagation());
 }
  
-// ── 🖥️ MODAL ENGINE (SPA STANDARD) ──────────────────────────────────
 window.openModal = function(tab) {
     const overlay = document.getElementById('modalOverlay');
     if (!overlay) return;
@@ -117,23 +105,6 @@ if (modalOverlay) {
     modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
 }
  
-// ── 🧠 INYECCIÓN DINÁMICA DE PERFIL ─────────────────────────────────
-function updateUserUI() {
-    if (!currentUser) return;
-    ['#userName', '.profile-name'].forEach(sel =>
-        document.querySelectorAll(sel).forEach(el => { el.textContent = currentUser.name; })
-    );
-    ['#userEmail', '.profile-email', '#profileMainEmail'].forEach(sel =>
-        document.querySelectorAll(sel).forEach(el => { el.textContent = currentUser.email; })
-    );
-    ['#userAvatar', '.profile-avatar', '#profileMainAvatar', '#preview-avatar'].forEach(sel =>
-        document.querySelectorAll(sel).forEach(el => { el.textContent = currentUser.avatar || 'U'; })
-    );
-    document.getElementById('guestState') && (document.getElementById('guestState').style.display = 'none');
-    document.getElementById('userState')  && (document.getElementById('userState').style.display  = 'block');
-}
- 
-// ── 🔑 CONTROLADOR DE ACCESO (LOGIN DE USUARIO) ─────────────────────
 window.handleLogin = async function(e) {
     e.preventDefault();
     const email    = document.getElementById('loginEmail')?.value.trim().toLowerCase() ?? '';
@@ -150,25 +121,15 @@ window.handleLogin = async function(e) {
         if (btn) { btn.textContent = '⚠️ Datos incorrectos'; setTimeout(() => { btn.textContent = 'Iniciar sesión'; }, 2200); }
         return;
     }
-    currentUser = { 
-        name: found.name, 
-        email: found.email, 
-        avatar: found.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase(), 
-        role: 'Cliente' 
-    };
-    localStorage.setItem('ecodren_user', JSON.stringify(currentUser));
-    updateUserUI();
     closeModal();
     showToast('Bienvenido, ' + found.name.split(' ')[0] + '.', 'success');
-};
- 
-window.logOut = function() {
-    localStorage.removeItem('ecodren_user');
-    currentUser = null;
     location.reload();
 };
  
-// ── 📝 ALTA DE NUEVAS CUENTAS ───────────────────────────────────────
+window.logOut = function() {
+    window.location.href = "/accounts/logout/";
+};
+ 
 async function hashPassword(password) {
     const buffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password));
     return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2,'0')).join('');
@@ -220,7 +181,6 @@ window.handleRegister = function(event) {
     });
 };
  
-// ── 🛒 RENDERIZADOR DEL CARRITO GLOBAL (UNIFICADO) ────────────────────
 window.renderCartGlobal = function() {
     const container = document.getElementById('cartItems');
     const footer    = document.getElementById('cartFooter');
@@ -282,11 +242,12 @@ window.removeGlobalItem = function(id) {
     renderCartGlobal();
 };
  
-// ── 💳 GATEWAY DE ENLACE AL MODAL CHECKOUT ─────────────────────────
 window.handleCheckout = function() {
     const carrito = JSON.parse(localStorage.getItem('ecodren_cart') ?? '[]');
     if (carrito.length === 0) { showToast('Tu carrito está vacío.', 'error'); return; }
-    if (!currentUser) {
+    
+    const isAuthenticated = document.body.dataset.userAuth === 'true';
+    if (!isAuthenticated) {
         document.getElementById('cartSidebar')?.classList.remove('active','open');
         document.getElementById('cartOverlay')?.classList.remove('active','open');
         showToast('Inicia sesión para continuar.', 'info');
@@ -368,7 +329,6 @@ window.closeModalAndRedirect = function() {
     }, 300);
 };
  
-// Selector de pasarela de pago
 document.addEventListener('change', e => {
     if (e.target.name !== 'payMethod') return;
     document.querySelectorAll('.payment-method-option').forEach(opt => {
@@ -384,7 +344,6 @@ document.addEventListener('change', e => {
     }
 });
  
-// ── 🪐 SCROLL REVEAL ────────────────────────────────────────────
 const revealObserver = new IntersectionObserver(
     entries => entries.forEach(e => {
         if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); }
@@ -393,7 +352,6 @@ const revealObserver = new IntersectionObserver(
 );
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
  
-// ── 📝 FORMULARIOS ADICIONALES ──────────────────────────────────
 window.handleSubmit = function(e) {
     e.preventDefault();
     const btn = e.target.querySelector('.form-submit');
@@ -431,7 +389,6 @@ function inicializarInteraccionCarrito() {
     cartOverlay && (cartOverlay.onclick = cerrar);
 }
  
-// 🔥 SISTEMA DE TOAST NOTIFICATIONS INTEGRADO CON INTERACTIVIDAD GLASSMORPHISM
 window.showToast = function(mensaje, tipo = 'info') {
     let container = document.getElementById('toast-container');
     if (!container) {
@@ -462,7 +419,6 @@ window.showToast = function(mensaje, tipo = 'info') {
 };
  
 document.addEventListener('DOMContentLoaded', () => {
-    if (currentUser) updateUserUI();
     initFleetCarousel();
     inicializarInteraccionCarrito();
     actualizarContadorCarritoGlobal();
