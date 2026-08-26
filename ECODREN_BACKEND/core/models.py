@@ -368,3 +368,30 @@ class CotizacionGuardada(models.Model):
 
     def __str__(self):
         return f"{self.numero_cotizacion} - {self.usuario.username}"
+
+
+
+class SolicitudCotizacion(models.Model):
+    CATEGORIA = [
+        ('Maquinaria completa', 'Maquinaria completa'),
+        ('Refacciones específicas', 'Refacciones específicas'),
+        ('Servicio técnico', 'Servicio técnico'),
+        ('Otro', 'Otro'),
+    ]
+
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name ='solicitudes_cotizacion' )
+    nombre = models.CharField(max_length=150)
+    empresa = models.CharField(max_length=150, blank=True, null=True)
+    telefono= models.CharField(max_length=25, blank=True, null=True)
+    email = models.EmailField()
+    categoria = models.CharField(max_length=60, choices=CATEGORIA, blank=True, null=True)
+    detalles = models.TextField(blank=True, null=True)
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Solicitud de Cotizacion'
+        verbose_name_plural = 'Solicitudes de Cotizaciones'
+        ordering = ['-creado_en']
+
+    def __str__(self):
+        return f"Cotizacion #{self.id} - {self.nombre} ({self.email})"

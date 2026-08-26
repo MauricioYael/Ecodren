@@ -1,7 +1,3 @@
-/* ==========================================================================
-   main.js — Arquitectura Global, Modales, Sesiones y Checkout Asíncrono
-   ========================================================================== */
-
 function actualizarContadorCarritoGlobal() {
     let carrito = [];
     try { 
@@ -10,11 +6,11 @@ function actualizarContadorCarritoGlobal() {
         carrito = []; 
     }
  
-    const limpio = carrito.filter(i => i && i.qty > 0);
+    const limpio = carrito.filter(i => i && (i.qty || i.cantidad || 0) > 0);
     if (limpio.length !== carrito.length) {
         localStorage.setItem('ecodren_cart', JSON.stringify(limpio));
     }
-    const total = limpio.reduce((s, i) => s + i.qty, 0);
+    const total = limpio.reduce((s, i) => s + parseInt(i.qty || i.cantidad || 1, 10), 0);
     const el = document.getElementById('cartCount');
     if (!el) return;
     el.textContent = total;
@@ -180,7 +176,15 @@ window.handleRegister = function(event) {
         if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Crear cuenta'; }
     });
 };
- 
+
+function obtenerPrecioNumerico(val) {
+    if (typeof val === 'number') return isNaN(val) ? 0 : val;
+    if (!val) return 0;
+    const limpio = String(val).replace(/[^0-9.-]+/g, "");
+    const num = parseFloat(limpio);
+    return isNaN(num) ? 0 : num;
+}
+
 window.renderCartGlobal = function() {
     const container = document.getElementById('cartItems');
     const footer    = document.getElementById('cartFooter');
@@ -189,11 +193,11 @@ window.renderCartGlobal = function() {
  
     let carrito = [];
     try { 
-        carrito = JSON.parse(localStorage.getItem('ecodren_cart')) || []; 
+        carrito = JSON.parse(localStorage.getItem('ecodren_cart')) || [];
     } catch (e) { 
-        carrito = []; 
+        carrito = [];
     }
-    const limpio = carrito.filter(i => i && i.qty > 0);
+    const limpio = carrito.filter(i => i && (i.qty || i.cantidad || 0) > 0);
  
     if (limpio.length === 0) {
         container.innerHTML = `<div class="cart-empty"><span class="cart-empty-icon">🛒</span><p style="font-weight:600;margin-bottom:.5rem">Tu carrito está vacío</p><p style="font-size:.85rem;color:var(--eco-gray)">Agrega productos desde la tienda</p></div>`;
@@ -201,18 +205,20 @@ window.renderCartGlobal = function() {
     } else {
         let html = '', total = 0;
         limpio.forEach(item => {
-            total += item.precio * item.qty;
+            const precioNum = obtenerPrecioNumerico(item.precio || item.price || 0);
+            const cantidadNum = parseInt(item.qty || item.cantidad || 1, 10);
+            total += precioNum * cantidadNum;
             html += `
             <div class="cart-item" style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid #eee">
                 <div style="background:#f8f9fa;width:50px;height:50px;display:flex;align-items:center;justify-content:center;border-radius:8px;flex-shrink:0;overflow:hidden;">
-                    <img src="${item.imagen || item.img || 'Assets/logo_web_ecodren.png'}" alt="${item.nombre}" style="width:100%; height:100%; object-fit:contain; padding:4px;">
+                    <img src="${item.imagen || item.img || '/static/Assets/logo_web_ecodren.png'}" alt="${item.nombre || item.name || 'Producto'}" style="width:100%; height:100%; object-fit:contain; padding:4px;">
                 </div>
                 <div style="flex:1;min-width:0">
-                    <h4 style="margin:0;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.nombre}</h4>
-                    <div style="color:var(--eco-green);font-weight:600;font-size:.88rem">$${item.precio.toLocaleString('es-MX')} MXN</div>
+                    <h4 style="margin:0;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.nombre || item.name || 'Producto'}</h4>
+                    <div style="color:var(--eco-green);font-weight:600;font-size:.88rem">$${precioNum.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})} MXN</div>
                     <div style="display:flex;align-items:center;gap:.4rem;margin-top:.35rem">
                         <button onclick="changeGlobalQty('${item.id}',-1)" class="qty-btn">−</button>
-                        <span style="font-size:.85rem;min-width:20px;text-align:center">${item.qty}</span>
+                        <span style="font-size:.85rem;min-width:20px;text-align:center">${cantidadNum}</span>
                         <button onclick="changeGlobalQty('${item.id}',1)" class="qty-btn">+</button>
                     </div>
                 </div>
@@ -220,7 +226,7 @@ window.renderCartGlobal = function() {
             </div>`;
         });
         container.innerHTML = html;
-        if (totalEl) totalEl.textContent = `$${total.toLocaleString('es-MX')} MXN`;
+        if (totalEl) totalEl.textContent = `$${total.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})} MXN`;
         if (footer) footer.style.display = 'block';
     }
     actualizarContadorCarritoGlobal();
@@ -228,17 +234,25 @@ window.renderCartGlobal = function() {
  
 window.changeGlobalQty = function(id, d) {
     let carrito = JSON.parse(localStorage.getItem('ecodren_cart') ?? '[]');
-    const item  = carrito.find(i => i.id === id);
+    const item  = carrito.find(i => String(i.id) === String(id));
     if (!item) return;
-    item.qty += d;
-    if (item.qty < 1) carrito = carrito.filter(i => i.id !== id);
+    
+    let currentQty = parseInt(item.qty || item.cantidad || 1, 10);
+    currentQty += d;
+    item.qty = currentQty;
+    item.cantidad = currentQty;
+
+    if (currentQty < 1) {
+        carrito = carrito.filter(i => String(i.id) !== String(id));
+    }
+    
     localStorage.setItem('ecodren_cart', JSON.stringify(carrito));
     renderCartGlobal();
 };
  
 window.removeGlobalItem = function(id) {
     let carrito = JSON.parse(localStorage.getItem('ecodren_cart') ?? '[]');
-    localStorage.setItem('ecodren_cart', JSON.stringify(carrito.filter(i => i.id !== id)));
+    localStorage.setItem('ecodren_cart', JSON.stringify(carrito.filter(i => String(i.id) !== String(id))));
     renderCartGlobal();
 };
  
@@ -255,10 +269,14 @@ window.handleCheckout = function() {
         return;
     }
     
-    const total = carrito.reduce((s, i) => s + i.precio * i.qty, 0);
+    const total = carrito.reduce((s, i) => {
+        const precio = obtenerPrecioNumerico(i.precio || i.price || 0);
+        const qty = parseInt(i.qty || i.cantidad || 1, 10);
+        return s + (precio * qty);
+    }, 0);
     
     const el = document.getElementById('checkoutTotalDisplay');
-    if (el) el.textContent = `$${total.toLocaleString('es-MX')} MXN`;
+    if (el) el.textContent = `$${total.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})} MXN`;
     document.getElementById('cartSidebar')?.classList.remove('active','open');
     document.getElementById('cartOverlay')?.classList.remove('active','open');
     openModal('checkout');
@@ -331,16 +349,38 @@ window.closeModalAndRedirect = function() {
  
 document.addEventListener('change', e => {
     if (e.target.name !== 'payMethod') return;
+
     document.querySelectorAll('.payment-method-option').forEach(opt => {
-        opt.style.cssText = 'border-color:#ddd;background:transparent';
-        opt.querySelector('i') && (opt.querySelector('i').style.color = 'var(--eco-gray)');
-        opt.querySelector('span') && (opt.querySelector('span').style.color = 'var(--eco-gray)');
+        opt.style.borderColor = '#ddd';
+        opt.style.backgroundColor = 'transparent';
+        const icon = opt.querySelector('i');
+        const span = opt.querySelector('span');
+        if (icon) icon.style.color = 'var(--eco-gray)';
+        if (span) span.style.color = 'var(--eco-gray)';
     });
+
     const sel = e.target.closest('.payment-method-option');
     if (sel) {
-        sel.style.cssText = 'border-color:var(--eco-green);background:rgba(191,253,0,.05)';
-        sel.querySelector('i') && (sel.querySelector('i').style.color = 'var(--eco-dark)');
-        sel.querySelector('span') && (sel.querySelector('span').style.color = 'inherit');
+        sel.style.borderColor = 'var(--eco-green)';
+        sel.style.backgroundColor = 'rgba(191, 253, 0, 0.05)';
+        const icon = sel.querySelector('i');
+        const span = sel.querySelector('span');
+        if (icon) icon.style.color = 'var(--eco-dark)';
+        if (span) span.style.color = 'inherit';
+    }
+
+    const cardForm = document.getElementById('cardDetailsForm');
+    const speiInfo = document.getElementById('speiDetailsInfo');
+    const cardInputs = cardForm ? cardForm.querySelectorAll('input') : [];
+
+    if (e.target.value === 'transfer') {
+        if (cardForm) cardForm.style.display = 'none';
+        if (speiInfo) speiInfo.style.display = 'block';
+        cardInputs.forEach(input => input.removeAttribute('required'));
+    } else {
+        if (cardForm) cardForm.style.display = 'block';
+        if (speiInfo) speiInfo.style.display = 'none';
+        cardInputs.forEach(input => input.setAttribute('required', 'required'));
     }
 });
  
@@ -352,12 +392,44 @@ const revealObserver = new IntersectionObserver(
 );
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
  
-window.handleSubmit = function(e) {
+window.handleSubmit = async function(e) {
     e.preventDefault();
-    const btn = e.target.querySelector('.form-submit');
-    btn.textContent = '✅ ¡Mensaje enviado!';
+    const form = e.target;
+    const btn = form.querySelector('.form-submit');
+    const originalText = btn.textContent;
+    const formData = new FormData(form);
+
     btn.disabled = true;
-    setTimeout(() => { btn.textContent = 'Enviar cotización →'; btn.disabled = false; e.target.reset(); }, 3500);
+    btn.textContent = 'Enviando cotización...';
+
+    try {
+        const response = await fetch('/api/enviar-cotizacion/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'ok') {
+            btn.textContent = '✅ ¡Enviada!';
+            showToast(data.mensaje, 'success');
+            form.reset();
+        } else {
+            showToast(data.mensaje || 'Ocurrió un error al procesar tu solicitud.', 'error');
+            btn.textContent = originalText;
+        }
+    } catch (error) {
+        showToast('Error de conexión con el servidor.', 'error');
+        btn.textContent = originalText;
+    } finally {
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.textContent = originalText;
+        }, 3500);
+    }
 };
  
 function initFleetCarousel() {

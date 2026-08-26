@@ -152,13 +152,13 @@
                                 <span>Respuesta en menos de 2 horas</span>
                             </div>
                         </a>
-                        <button onclick="mostrarManualTecnico()" class="support-menu-item btn-inline-support">
+                        <a href="{% url 'recursos' %}?openDocs=true#zona-descargas" class="support-menu-item btn-inline-support" style="text-decoration: none;">
                             <i class="fa-solid fa-book" style="color: #bffd00;"></i>
                             <div>
                                 <strong>Manuales Técnicos</strong>
                                 <span>Descargar guías de desazolve</span>
                             </div>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </aside>
@@ -169,7 +169,7 @@
                 <div class="profile-pane active" id="pane-datos">
                     <div class="welcome-operational-header">
                         <div class="welcome-text-side">
-                            <span class="welcome-tagline">Bienvenido, {{ request.user.first_name|default:request.user.username }}</span>
+                            <span class="welcome-tagline">Bienvenido, <strong id="displayWelcomeName">{% if request.user.first_name %}{{ request.user.first_name }}{% else %}{{ request.user.username }}{% endif %}</strong></span>
                             <h1>Información Operativa Corporativa</h1>
                             <p>Administra la información de tu empresa y mantén tus datos actualizados para una mejor experiencia</p>
                         </div>
@@ -178,52 +178,63 @@
                         </div>
                     </div>
 
-                    <div class="operational-horizontal-row">
-                        <div class="operational-col-item">
-                            <div class="col-item-icon"><i class="fa-solid fa-user"></i></div>
-                            <h4>Nombre Completo</h4>
-                            <p class="profile-name">{{ request.user.get_full_name|default:"No especificado" }}</p>
+                    <form id="form-datos-empresa" onsubmit="guardarDatosOperativos(event)">
+                        {% csrf_token %}
+                        <div class="operational-header-actions" style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                            <button type="button" class="btn-toggle-edit-mode" id="btnToggleEdit" onclick="toggleModoEdicion()">
+                                <i class="fa-solid fa-pen-to-square"></i> <span>Editar Información</span>
+                            </button>
                         </div>
-                        <div class="operational-col-item">
-                            <div class="col-item-icon"><i class="fa-solid fa-building"></i></div>
-                            <h4>Razón Social</h4>
-                            <p>Servicios Hidráulicos del centro</p>
-                        </div>
-                        <div class="operational-col-item">
-                            <div class="col-item-icon"><i class="fa-solid fa-envelope"></i></div>
-                            <h4>Correo Electrónico</h4>
-                            <p class="highlight-green profile-email" id="userEmail">{{ request.user.email|default:"contacto@empresa.com" }}</p>
-                        </div>
-                        <div class="operational-col-item">
-                            <div class="col-item-icon"><i class="fa-solid fa-phone"></i></div>
-                            <h4>Teléfono Operativo</h4>
-                            <p class="highlight-green">+52 55 XXXX XXXX</p>
-                        </div>
-                    </div>
 
-                    <div class="operational-address-block">
-                        <div class="address-icon-box"><i class="fa-solid fa-location-dot"></i></div>
-                        <div class="address-text-box">
-                            <h4>Dirección de Entrega Principal</h4>
-                            <p>Av. Central #123, Col. Industrial, C.P. 12345 <br>Ciudad de México, México</p>
+                        <div class="operational-horizontal-row">
+                            <div class="operational-col-item">
+                                <div class="col-item-icon"><i class="fa-solid fa-user"></i></div>
+                                <h4>Nombre Completo</h4>
+                                <input type="text" id="inputNombreCompleto" class="operational-inline-input" value="{% if request.user.get_full_name %}{{ request.user.get_full_name }}{% else %}{{ request.user.username }}{% endif %}" placeholder="Tu nombre completo" readonly required>
+                            </div>
+                            <div class="operational-col-item">
+                                <div class="col-item-icon"><i class="fa-solid fa-building"></i></div>
+                                <h4>Razón Social</h4>
+                                <input type="text" id="inputRazonSocial" class="operational-inline-input" value="Servicios Hidráulicos del Centro S.A." placeholder="Nombre de empresa" readonly>
+                            </div>
+                            <div class="operational-col-item">
+                                <div class="col-item-icon"><i class="fa-solid fa-envelope"></i></div>
+                                <h4>Correo Electrónico</h4>
+                                <input type="email" id="inputEmailOperativo" class="operational-inline-input highlight-green" value="{% if request.user.email %}{{ request.user.email }}{% else %}contacto@empresa.com{% endif %}" placeholder="correo@empresa.com" readonly required>
+                            </div>
+                            <div class="operational-col-item">
+                                <div class="col-item-icon"><i class="fa-solid fa-phone"></i></div>
+                                <h4>Teléfono Operativo</h4>
+                                <input type="tel" id="inputTelefonoOperativo" class="operational-inline-input highlight-green" value="+52 55 1234 5678" placeholder="+52 55 XXXX XXXX" readonly>
+                            </div>
                         </div>
-                        <div class="address-action-box">
-                            <button class="btn-address-edit-inline"><i class="fa-solid fa-pen"></i> Editar</button>
-                        </div>
-                    </div>
 
-                    <div class="operational-security-banner">
-                        <div class="security-shield-icon"><i class="fa-solid fa-shield"></i></div>
-                        <div class="security-banner-text">
-                            <h4>Tu información está protegida</h4>
-                            <p>Utilizamos los más altos estándares de seguridad para proteger tus datos y garantizar privacidad</p>
+                        <div class="operational-address-block">
+                            <div class="address-icon-box"><i class="fa-solid fa-location-dot"></i></div>
+                            <div class="address-text-box" style="flex: 1;">
+                                <h4>Dirección de Entrega Principal</h4>
+                                <input type="text" id="inputDireccionPrincipal" class="operational-inline-input" style="width: 100%; margin-top: 4px; text-align: left;" value="Av. Central #123, Col. Industrial, C.P. 12345, Ciudad de México" placeholder="Calle, Número, Colonia, C.P., Ciudad" readonly>
+                            </div>
+                            <div class="address-action-box">
+                                <button type="button" class="btn-address-edit-inline" onclick="habilitarYFocarDireccion()"><i class="fa-solid fa-pen"></i> Editar</button>
+                            </div>
                         </div>
-                        <div class="security-lock-watermark"><i class="fa-solid fa-lock"></i></div>
-                    </div>
 
-                    <div class="operational-submit-container">
-                        <button class="btn-save-operational-changes"><i class="fa-solid fa-floppy-disk"></i> Guardar Cambios</button>
-                    </div>
+                        <div class="operational-security-banner">
+                            <div class="security-shield-icon"><i class="fa-solid fa-shield"></i></div>
+                            <div class="security-banner-text">
+                                <h4>Tu información está protegida</h4>
+                                <p>Utilizamos los más altos estándares de seguridad para proteger tus datos y garantizar privacidad</p>
+                            </div>
+                            <div class="security-lock-watermark"><i class="fa-solid fa-lock"></i></div>
+                        </div>
+
+                        <div class="operational-submit-container" id="containerSaveBtn" style="display: none;">
+                            <button type="submit" class="btn-save-operational-changes" id="btnSaveOperational">
+                                <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
                 </div>
 
                 <!-- 📦 PANEL 2: HISTORIAL DE PEDIDOS -->
@@ -270,24 +281,23 @@
                         <p>Consulta las configuraciones de equipos de alta presión y presupuestos aprobados para tu comercio.</p>
                     </div>
                     <div class="company-data-grid">
+                        {% for cot in cotizaciones %}
                         <div class="company-card">
                             <div class="company-card-icon"><i class="fa-solid fa-file-contract"></i></div>
                             <div class="company-card-info">
                                 <label>No. Cotización / Vigencia</label>
-                                <p>COT-2026-042 (Vence: 30 Jul 2026)</p>
-                                <label style="margin-top: 8px !important;">Equipo Solicitado</label>
-                                <p style="font-size: 0.9rem; color: #475569;">Sistema Hidrojet Ecodren Industrial</p>
+                                <p>COT-{{ cot.id|stringformat:"04d" }} ({{ cot.creado_en|date:"d M Y" }})</p>
+                                <label style="margin-top: 8px !important;">Categoria / Requerimiento</label>
+                                <p style="font-size: 0.9rem; color: #475569;">
+                                    <strong>{{ cot.categoria|default:"General" }}</strong> - {{ cot.detalles|default:"Sin detalles adicionales" }}
+                                </p>
                             </div>
                         </div>
-                        <div class="company-card">
-                            <div class="company-card-icon"><i class="fa-solid fa-headset"></i></div>
-                            <div class="company-card-info">
-                                <label>Asesor Técnico Asignado</label>
-                                <p>Ing. Roberto Martínez</p>
-                                <label style="margin-top: 8px !important;">Tipo de Operación</label>
-                                <p style="font-size: 0.9rem; color: #475569;">Soporte Comercial Directo</p>
-                            </div>
+                        {% empty %}
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--eco-gray);">
+                            <p>No tienes cotizaciones registradas actualmente.</p>
                         </div>
+                        {% endfor %}
                     </div>
                 </div>
 

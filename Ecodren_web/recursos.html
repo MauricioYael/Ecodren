@@ -1,4 +1,5 @@
 {% load static %}
+{% load socialaccount %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -63,7 +64,6 @@
                 </button>
                 <div class="profile-dropdown" id="profileDropdown">
                     {% if user.is_authenticated %}
-                        <!-- Estado: Sesión Activa -->
                         <div id="userState">
                             <div class="profile-header">
                                 <div class="profile-avatar" style="background: var(--eco-green); color: #fff; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">
@@ -97,7 +97,6 @@
                             </div>
                         </div>
                     {% else %}
-                        <!-- Estado: Invitado sin sesión -->
                         <div id="guestState">
                             <div style="padding:1.25rem 1.25rem 0.5rem">
                                 <p style="font-size:0.9rem;font-weight:600;margin-bottom:0.25rem">Bienvenido a Ecodren</p>
@@ -433,19 +432,194 @@
         </div>
     </footer>
 
+    <!-- SIDEBAR DEL CARRITO GLOBAL -->
     <div class="cart-overlay" id="cartOverlay"></div>
-    <div class="cart-sidebar" id="cartSidebar" style="padding: 1.5rem 2rem; box-sizing: border-box;">
-        <div class="cart-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eaeaea; padding-bottom: 1rem; margin-bottom: 1rem;">
-            <h2 style="font-size: 1.2rem; margin: 0; color: #333; display: flex; align-items: center; gap: 0.5rem;">🛒 Tu carrito</h2>
-            <button class="cart-close" id="cartClose" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #666; padding: 0; line-height: 1;">×</button>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-head">
+            <h3>🛒 Tu carrito</h3>
+            <button class="cart-close" id="cartClose">×</button>
         </div>
-        <div class="cart-items" id="cartItems"></div>
-        <div class="cart-footer" id="cartFooter" style="display: none;">
-            <div class="cart-total-row"><span>Total</span><strong id="cartTotal">$0 MXN</strong></div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty">
+                <span class="cart-empty-icon">🛒</span>
+                <p style="font-weight:600;margin-bottom:0.5rem">Tu carrito está vacío</p>
+                <p style="font-size:0.85rem;color:var(--eco-gray)">Agrega productos desde la tienda</p>
+            </div>
+        </div>
+        <div class="cart-footer" id="cartFooter" style="display:none">
+            <div class="cart-total-row">
+                <span>Total</span>
+                <strong id="cartTotal">$0 MXN</strong>
+            </div>
             <button class="checkout-btn" onclick="handleCheckout()">Proceder al pago →</button>
         </div>
     </div>
 
+    <!-- MODAL GLOBAL (LOGIN / REGISTER / FORGET / CHECKOUT) -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box" style="max-width: 420px; width: 90%;">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            
+            <div class="modal-tabs">
+                <button class="modal-tab active" onclick="switchTab('login')">Iniciar sesión</button>
+                <button class="modal-tab" onclick="switchTab('register')">Crear cuenta</button>
+            </div>
+            
+            <div class="modal-panel active" id="panel-login">
+                <h3>Bienvenido de vuelta</h3>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="mform-group">
+                        <label>Correo electrónico</label>
+                        <input type="email" id="loginEmail" placeholder="correo@empresa.com" required style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div class="mform-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" class="mform-submit">Iniciar sesión</button>
+                    <p style="text-align:center; margin-top:0.8rem; margin-bottom:0; font-size:0.8rem;">
+                        <a href="#" onclick="event.preventDefault(); openForgetPanel();" style="color:var(--eco-green); text-decoration:none;">¿Olvidaste tu contraseña?</a>
+                    </p>                    
+                </form>
+
+                <div style="display: flex; align-items: center; gap: 10px; margin: 1.25rem 0 0.85rem;">
+                    <hr style="flex: 1; border: 0; border-top: 1px solid #e2e8f0;">
+                    <span style="font-size: 0.75rem; color: var(--eco-gray);"> o continua con</span>
+                    <hr style="flex: 1; border: 0; border-top: 1px solid #e2e8f0;">
+                </div>
+                <a href="{% provider_login_url 'google' %}" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 0.65rem; border: 1px solid #e2e8f0; border-radius: 50px; background: #fff; color: #1a2226; text-decoration: none; font-weight: 600; font-size: 0.88rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: background 0.2s ease;">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px; height: 18px;">
+                    Continuar con Google
+                </a>
+            </div>
+
+            <div class="modal-panel" id="panel-forget">
+                <h3>¿Olvidaste tu contraseña?</h3>
+                <p style="font-size:.88rem; color:var(--eco-gray); margin-bottom: 1.5rem; line-height: 1.4;">
+                    Ingresa tu correo electrónico registrado y te enviaremos las instrucciones para restablecerla.
+                </p>
+                <form id="forgetForm" onsubmit="handleForgetPassword(event)">
+                    <div class="mform-group">
+                        <label>Correo electrónico corporativo</label>
+                        <input type="email" id="forgetEmail" placeholder="correo@empresa.com" required style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" class="mform-submit">Enviar enlace de recuperación</button>
+                    <p style="text-align:center; margin-top:.8rem; margin-bottom:0; font-size:.8rem">
+                        <a href="#" onclick="event.preventDefault(); switchTab('login');" style="color:var(--eco-green); text-decoration: none; font-weight: 600;">
+                            ← Volver al inicio de sesión
+                        </a>
+                    </p>
+                </form>
+            </div>
+
+            <div class="modal-panel" id="panel-register">
+                <h3>Crea tu cuenta</h3>
+                <form id="registerForm" onsubmit="handleRegister(event)">
+                    <div class="mform-group">
+                        <label>Nombre completo *</label>
+                        <input type="text" id="regName" placeholder="Juan Díaz" required style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div class="mform-group">
+                        <label>Empresa</label>
+                        <input type="text" id="regCompany" placeholder="Nombre de empresa" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div class="mform-group">
+                        <label>Correo electrónico *</label>
+                        <input type="email" id="regEmail" placeholder="correo@empresa.com" required style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div class="mform-group">
+                        <label>Contraseña *</label>
+                        <input type="password" id="regPassword" placeholder="Mínimo 8 caracteres" required style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div class="mform-group">
+                        <label>Confirmar contraseña *</label>
+                        <input type="password" id="regConfirmPassword" placeholder="Repite tu contraseña" required style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div style="display: flex; gap: 0.4rem; align-items: flex-start; margin: 0.6rem 0;">
+                        <input type="checkbox" id="regTerms" required style="cursor: pointer; margin-top:2px;">
+                        <label for="regTerms" style="font-size: 0.75rem; color: var(--eco-gray); line-height: 1.2; cursor: pointer;">
+                            Acepto los <a href="#" style="color: var(--eco-green); text-decoration: none; font-weight: 600;">Términos y Privacidad</a>.
+                        </label>
+                    </div>
+                    <div id="registerErrorMsg" style="color: #c0392b; font-size: 0.78rem; margin-bottom: 0.5rem; display: none; font-weight: 500;"></div>
+                    <button type="submit" class="mform-submit" id="regSubmitBtn">Crear cuenta</button>
+                </form>
+            </div>
+
+            <div class="modal-panel" id="panel-checkout">
+                <div style="text-align:center; margin-bottom: 1rem;">
+                    <h3 style="margin-bottom:0.2rem; font-size: 1.3rem;">Finalizar Compra</h3>
+                    <p style="font-size:0.8rem; color:var(--eco-gray); margin-bottom: 0;">Elige un método de pago corporativo seguro</p>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.03); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); padding: 0.8rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+                        <span style="font-size:0.85rem; color:var(--eco-gray);">Total a pagar:</span>
+                        <strong style="font-size:1.05rem; color:var(--eco-green);" id="checkoutTotalDisplay">$0 MXN</strong>
+                    </div>
+                    <div style="font-size:0.7rem; color:var(--eco-gray);"><i class="fas fa-shield-alt"></i> Transacción cifrada SSL (256-bit)</div>
+                </div>
+
+                <form id="checkoutForm" onsubmit="processSimulatedPayment(event)">
+                    <div style="display:flex; gap:0.5rem; margin-bottom: 1rem;" id="paymentMethodSelectors">
+                        <label class="payment-method-option active-method" style="flex:1; text-align:center; padding:0.6rem; border:1.5px solid var(--eco-green); background: rgba(191, 253, 0, 0.05); border-radius:8px; cursor:pointer; transition:all 0.3s;">
+                            <input type="radio" name="payMethod" value="card" checked style="display:none;">
+                            <i class="fas fa-credit-card" style="font-size:1.2rem; margin-bottom:0.3rem; display:block;"></i>
+                            <span style="font-size:0.75rem; font-weight:600;">Tarjeta</span>
+                        </label>
+                        <label class="payment-method-option" style="flex:1; text-align:center; padding:0.6rem; border:1px solid #ddd; border-radius:8px; cursor:pointer; transition:all 0.3s;">
+                            <input type="radio" name="payMethod" value="transfer" style="display:none;">
+                            <i class="fas fa-university" style="font-size:1.2rem; margin-bottom:0.3rem; display:block; color:var(--eco-gray);"></i>
+                            <span style="font-size:0.75rem; font-weight:600; color:var(--eco-gray);">SPEI</span>
+                        </label>
+                    </div>
+
+                    <div id="cardDetailsForm">
+                        <div class="mform-group" style="margin-bottom: 0.8rem;">
+                            <label style="font-size: 0.8rem; margin-bottom: 0.2rem;">Titular de la tarjeta</label>
+                            <input type="text" placeholder="Nombre como aparece en la tarjeta" required style="width: 100%; box-sizing: border-box; padding: 0.55rem; font-size: 0.85rem;">
+                        </div>
+                        <div class="mform-group" style="margin-bottom: 0.8rem;">
+                            <label style="font-size: 0.8rem; margin-bottom: 0.2rem;">Número de tarjeta</label>
+                            <input type="text" placeholder="0000 0000 0000 0000" maxlength="19" required style="width: 100%; box-sizing: border-box; padding: 0.55rem; font-size: 0.85rem;">
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                            <div class="mform-group" style="margin-bottom: 0;">
+                                <label style="font-size: 0.8rem; margin-bottom: 0.2rem;">Vencimiento</label>
+                                <input type="text" placeholder="MM/AA" maxlength="5" required style="width: 100%; box-sizing: border-box; padding: 0.55rem; font-size: 0.85rem;">
+                            </div>
+                            <div class="mform-group" style="margin-bottom: 0;">
+                                <label style="font-size: 0.8rem; margin-bottom: 0.2rem;">CVC / CVV</label>
+                                <input type="password" placeholder="123" maxlength="4" required style="width: 100%; box-sizing: border-box; padding: 0.55rem; font-size: 0.85rem;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="speiDetailsInfo" style="display: none; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                        <p style="margin: 0 0 0.5rem; font-size: 0.85rem; font-weight: 600; color: #1e293b;">Datos para transferencia SPEI:</p>
+                        <div style="font-size: 0.8rem; color: #475569; line-height: 1.6;">
+                            <div><strong>Banco:</strong> BBVA México</div>
+                            <div><strong>Beneficiario:</strong> Equipos Hidromecánicos MC</div>
+                            <div><strong>CLABE Interbancaria:</strong> 012180001234567890</div>
+                            <div><strong>Concepto:</strong> <span style="color: var(--eco-green); font-weight: 600;">COMPRA-ECODREN</span></div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="mform-submit" style="margin-top:1rem; padding: 0.6rem; font-size: 0.9rem; width: 100%;">
+                        <i class="fas fa-lock"></i> Confirmar y Pagar
+                    </button>
+                    <p style="text-align:center; margin-top:0.8rem; margin-bottom:0; font-size:0.75rem">
+                        <a href="#" onclick="event.preventDefault(); closeModal();" style="color:var(--eco-gray); text-decoration: none; font-weight: 600;">
+                            Cancelar y seguir comprando
+                        </a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE GUÍAS Y DOCUMENTOS -->
     <div id="modal-guias-docs" class="modal-overlay">
         <div class="modal-box modal-guias-box">
             <button type="button" class="modal-close-btn" id="close-guias-modal" aria-label="Cerrar">&times;</button>

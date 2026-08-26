@@ -1502,6 +1502,87 @@ nav.light .hamburger span { background: var(--eco-dark); }
     to {opacity: 1;}
 }
 
+.operational-inline-input {
+    width: 100%;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 6px  8px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--eco-dark);
+    font-family: 'Raleway', sans-serif;
+    transition: all 0.2s ease;
+    outline: none;
+    text-align: center;
+}
+.operational-inline-input:focus {
+    background: #ffffff;
+    border-color: var(--eco-green);
+    box-shadow: 0 0 0 3px rgba(15,84,41,0.12);
+}
+.operational-inline-input:hover {
+    background: rgba(15,84,41,0.04);
+    border-color: rgba(15,84,41,0.2);
+}
+.operational-inline-input.highlight_green {
+    color: var(--eco-green);
+    font-weight: 600;
+}
+.operational-address-block .operational-inline-input {
+    text-align: left;
+}
+
+/* Botón para alternar modo edición */
+.btn-toggle-edit-mode {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 84, 41, 0.08);
+    color: var(--eco-green, #0f5429);
+    border: 1px solid rgba(15, 84, 41, 0.2);
+    border-radius: 50px;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn-toggle-edit-mode:hover {
+    background: var(--eco-green, #0f5429);
+    color: #ffffff;
+}
+
+.btn-toggle-edit-mode.active-edit {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+/* Inputs en modo solo lectura (Aspecto de texto limpio) */
+.operational-inline-input[readonly] {
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    cursor: default;
+}
+
+/* Inputs en modo editable */
+.operational-inline-input:not([readonly]) {
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 84, 41, 0.25) !important;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: text;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.operational-inline-input:not([readonly]):focus {
+    border-color: var(--eco-green, #0f5429) !important;
+    box-shadow: 0 0 0 3px rgba(15, 84, 41, 0.12) !important;
+}
+
 
 /* ==========================================================================
    📱 DISPOSITIVOS MÓVILES (MAX-WIDTH: 768PX) MEDIA-QUERY CALIBRADA

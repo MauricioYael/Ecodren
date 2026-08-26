@@ -2,72 +2,8 @@ let carrito = JSON.parse(localStorage.getItem('ecodren_cart')) || [];
 
 window.guardarYActualizarCarrito = function () {
     localStorage.setItem('ecodren_cart', JSON.stringify(carrito));
-
-    const cartCountEl = document.getElementById('cartCount');
-    const cartItemsContainer = document.getElementById('cartItems');
-    const cartFooter = document.getElementById('cartFooter');
-    const cartTotalEl = document.getElementById('cartTotal');
-
-    const totalCount = carrito.reduce((acc, item) => acc + item.cantidad, 0);
-    if (cartCountEl) {
-        cartCountEl.textContent = totalCount;
-        cartCountEl.setAttribute('data-count', totalCount);
-    }
-    if (totalCount > 0) {
-        cartCountEl.style.display = 'flex';
-        cartCountEl.style.transform = 'scale(1.3)';
-        setTimeout(() => {
-            cartCountEl.style.transform = 'scale(1)';
-        }, 200); 
-    } else {
-        cartCountEl.style.display = 'none';
-    }
-
-    if (!cartItemsContainer) return;
-
-    if (carrito.length === 0) {
-        cartItemsContainer.innerHTML = `
-            <div class="cart-empty" style="text-align:center; padding: 2rem 1rem;">
-                <span class="cart-empty-icon" style="font-size:2.5rem; display:block; margin-bottom:.5rem;">🛒</span>
-                <p style="font-weight:600; margin-bottom:.25rem; color:#0a1a0f;">Tu carrito está vacío</p>
-                <p style="font-size:.85rem; color:#6b7280;">Agrega productos desde la tienda</p>
-            </div>`;
-        if (cartFooter) cartFooter.style.display = 'none';
-    } else {
-        let html = '';
-        let total = 0;
-
-        carrito.forEach(item => {
-            const subtotal = item.precio * item.cantidad;
-            total += subtotal;
-
-            const imgHtml = item.imagen 
-                ? `<img src="${item.imagen}" style="width:48px; height:48px; object-fit:contain; border-radius:6px; margin-right:0.8rem; background:#f8fafc; border:1px solid #e2e8f0;">`
-                : `<div style="width:48px; height:48px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; border-radius:6px; margin-right:0.8rem; font-size:1.2rem; color:#1a6b3c;">🔩</div>`;
-
-            html += `
-                <div class="cart-item-row" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.8rem; padding-bottom:0.8rem; border-bottom:1px solid #f1f5f9;">
-                    <div style="display:flex; align-items:center; flex:1; min-width:0;">
-                        ${imgHtml}
-                        <div style="flex:1; min-width:0; padding-right:0.5rem;">
-                            <strong style="font-size:0.85rem; display:block; line-height:1.2; margin-bottom:0.2rem; color:#0a1a0f; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.nombre}</strong>
-                            <span style="font-size:0.78rem; color:#6b7280;">
-                                ${item.cantidad} x ${item.precio > 0 ? '$' + item.precio.toLocaleString('es-MX') + ' MXN' : 'Cotización'}
-                            </span>
-                        </div>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:0.6rem;">
-                        <strong style="font-weight:700; font-size:0.88rem; color:#0a1a0f;">
-                            ${item.precio > 0 ? '$' + subtotal.toLocaleString('es-MX') : '-'}
-                        </strong>
-                        <button onclick="window.eliminarDelCarrito('${item.id}')" style="background:none; border:none; color:#ef4444; font-size:1.2rem; cursor:pointer; padding:0 0.2rem;" title="Eliminar">&times;</button>
-                    </div>
-                </div>`;
-        });
-
-        cartItemsContainer.innerHTML = html;
-        if (cartTotalEl) cartTotalEl.textContent = `$${total.toLocaleString('es-MX')} MXN`;
-        if (cartFooter) cartFooter.style.display = 'block';
+    if (typeof window.renderCartGlobal === 'function') {
+        window.renderCartGlobal();
     }
 };
 
@@ -76,43 +12,38 @@ window.agregarAlCarrito = function (id, nombre, precio, imagen) {
     const precioNum = parseFloat(precioLimpio) || 0;
     const itemId = String(id);
 
-    const itemExistente = carrito.find(item => item.id === itemId);
+    carrito = JSON.parse(localStorage.getItem('ecodren_cart')) || [];
+    const itemExistente = carrito.find(item => String(item.id) === itemId);
 
     if (itemExistente) {
-        itemExistente.cantidad += 1;
+        const cantActual = parseInt(itemExistente.qty || itemExistente.cantidad || 1, 10);
+        itemExistente.qty = cantActual + 1;
+        itemExistente.cantidad = itemExistente.qty;
     } else {
         carrito.push({
             id: itemId,
             nombre: nombre,
             precio: precioNum,
             imagen: imagen || '',
+            qty: 1,
             cantidad: 1
         });
     }
 
-    window.guardarYActualizarCarrito();
-    window.mostrarNotificacion(`¡${nombre} agregado al carrito!`);
+    localStorage.setItem('ecodren_cart', JSON.stringify(carrito));
+    
+    if (typeof window.renderCartGlobal === 'function') {
+        window.renderCartGlobal();
+    }
+    if (typeof window.showToast === 'function') {
+        window.showToast(`¡${nombre} agregado al carrito!`, 'success');
+    }
 };
 
 window.eliminarDelCarrito = function (id) {
-    carrito = carrito.filter(item => item.id !== String(id));
-    window.guardarYActualizarCarrito();
-};
-
-window.mostrarNotificacion = function(mensaje) {
-    let toast = document.getElementById('ecoToast');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'ecoToast';
-        document.body.appendChild(toast);
+    if (typeof window.removeGlobalItem === 'function') {
+        window.removeGlobalItem(id);
     }
-
-    toast.innerHTML = `<i class="fas fa-check-circle"></i> <span>${mensaje}</span>`;
-    toast.classList.add('show');
-
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 2500);
 };
 
 window.abrirModalDetalle = function (id, nombre, categoria, precio, stock, descripcion, imagenUrl, sku, especificaciones) {
@@ -191,11 +122,9 @@ window.changeModalQty = function (delta) {
     qtyEl.textContent = val;
 };
 
-// ── FILTROS Y BÚSQUEDA DINÁMICA ──────────────────────────────────────
 window.aplicarFiltros = function () {
     const urlParams = new URLSearchParams(window.location.search);
     
-    // 1. Filtro de búsqueda
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         const query = searchInput.value.trim();
@@ -206,7 +135,6 @@ window.aplicarFiltros = function () {
         }
     }
 
-    // 2. Filtro de disponibilidad
     const filterStock = document.getElementById('filterStock');
     if (filterStock) {
         if (filterStock.checked) {
@@ -216,7 +144,6 @@ window.aplicarFiltros = function () {
         }
     }
 
-    // 3. Ordenamiento
     const sortSelect = document.getElementById('sortSelect');
     if (sortSelect && sortSelect.value !== 'default') {
         urlParams.set('sort', sortSelect.value);
@@ -224,7 +151,6 @@ window.aplicarFiltros = function () {
         urlParams.delete('sort');
     }
 
-    // 4. 🚀 Filtro de precio máximo
     const priceRange = document.getElementById('priceRange');
     if (priceRange) {
         const valorPrecio = parseInt(priceRange.value, 10);
@@ -239,7 +165,9 @@ window.aplicarFiltros = function () {
 };
 
 window.abrirCarrito = function () {
-    window.guardarYActualizarCarrito();
+    if (typeof window.renderCartGlobal === 'function') {
+        window.renderCartGlobal();
+    }
     const cartSidebar = document.getElementById('cartSidebar');
     const cartOverlay = document.getElementById('cartOverlay');
     if (cartSidebar) cartSidebar.classList.add('open');
@@ -254,15 +182,9 @@ window.cerrarCarrito = function () {
 };
 
 document.addEventListener('DOMContentLoaded', function () {
-    window.guardarYActualizarCarrito();
-
-    const cartNavBtn = document.getElementById('cartNavBtn');
-    const cartClose = document.getElementById('cartClose');
-    const cartOverlay = document.getElementById('cartOverlay');
-
-    if (cartNavBtn) cartNavBtn.addEventListener('click', window.abrirCarrito);
-    if (cartClose) cartClose.addEventListener('click', window.cerrarCarrito);
-    if (cartOverlay) cartOverlay.addEventListener('click', window.cerrarCarrito);
+    if (typeof window.renderCartGlobal === 'function') {
+        window.renderCartGlobal();
+    }
 
     const productModalClose = document.getElementById('productModalClose');
     const productModalOverlay = document.getElementById('productModalOverlay');
@@ -303,7 +225,6 @@ document.addEventListener('DOMContentLoaded', function () {
         filterStock.addEventListener('change', window.aplicarFiltros);
     }
 
-    // ── 🚀 CONTROL DEL SLIDER DE PRECIO MÁXIMO ───────────────────────
     const priceRange = document.getElementById('priceRange');
     const priceLabel = document.getElementById('priceLabel');
 
@@ -316,12 +237,10 @@ document.addEventListener('DOMContentLoaded', function () {
             priceLabel.textContent = `$${parseInt(precioGuardado, 10).toLocaleString('es-MX')}`;
         }
 
-        // Actualizar el número en pantalla en tiempo real al mover la barra
         priceRange.addEventListener('input', function () {
             priceLabel.textContent = `$${parseInt(this.value, 10).toLocaleString('es-MX')}`;
         });
 
-        // Aplicar el filtro al soltar el ratón o terminar de deslizar
         priceRange.addEventListener('change', window.aplicarFiltros);
     }
 
@@ -358,7 +277,6 @@ document.addEventListener('DOMContentLoaded', function () {
     viewGrid?.addEventListener('click', () => setViewMode('grid'));
     viewList?.addEventListener('click', () => setViewMode('list'));
 
-    // Delegación centralizada de clics para productos
     document.addEventListener('click', function (e) {
         const btnAdd = e.target.closest('.btn-add-cart');
         if (btnAdd) {

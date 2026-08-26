@@ -5,8 +5,13 @@ from django.contrib.auth.decorators import login_required
 from .models import (
     Producto, Categoria, Maquinaria, PublicacionRecurso, 
     DocumentoTecnico, CapacitacionImpartida, CursoDisponible,
-    PerfilEmpresa, DireccionEntrega, Pedido, CotizacionGuardada
+    PerfilEmpresa, DireccionEntrega, Pedido, CotizacionGuardada,
+    SolicitudCotizacion
 )
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST    
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 def index(request):
@@ -49,7 +54,7 @@ def tienda(request):
     elif orden == 'nombre':
         productos = productos.order_by('nombre')
     elif orden == 'nuevo':
-        producto = productos.order_by('-creado_en')
+        productos = productos.order_by('-creado_en')
 
     context = {
         'categorias': categorias,
@@ -106,7 +111,6 @@ def recursos(request):
     noticias = PublicacionRecurso.objects.filter(activo=True, tipo='noticia')
     comunidad_bento = PublicacionRecurso.objects.filter(activo=True, tipo='redes')
 
-    # Documentos técnicos para el modal de descarga
     doc_ficha = DocumentoTecnico.objects.filter(activo=True, categoria='ficha').first()
     doc_manual = DocumentoTecnico.objects.filter(activo=True, categoria='manual').first()
     doc_catalogo = DocumentoTecnico.objects.filter(activo=True, categoria='catalogo').first()
@@ -152,7 +156,9 @@ def perfil_view(request):
     perfil, _ = PerfilEmpresa.objects.get_or_create(usuario=request.user)
     direcciones = DireccionEntrega.objects.filter(usuario=request.user)
     pedidos = Pedido.objects.filter(usuario=request.user)
-    cotizaciones = CotizacionGuardada.objects.filter(usuario=request.user)
+    
+    # 🟢 Se obtienen las solicitudes reales asociadas al usuario autenticado
+    cotizaciones = SolicitudCotizacion.objects.filter(usuario=request.user)
 
     context = {
         'perfil': perfil,
@@ -161,3 +167,57 @@ def perfil_view(request):
         'cotizaciones': cotizaciones,
     }
     return render(request, 'perfil.html', context)
+
+
+@require_POST
+def enviar_cotizacion(request):
+    nombre = request.POST.get('nombre', '').strip()
+    empresa = request.POST.get('empresa', '').strip()
+    telefono = request.POST.get('telefono', '').strip()
+    email = request.POST.get('email', '').strip()
+    categoria = request.POST.get('categoria', '').strip()
+    detalles = request.POST.get('detalles', '').strip()
+
+    if not nombre or not email:
+        return JsonResponse({'status': 'error', 'mensaje': 'El nombre y correo electrónico son requeridos'})
+
+    usuario_activo = request.user if request.user.is_authenticated else None
+    cotizacion = SolicitudCotizacion.objects.create(
+        usuario=usuario_activo,
+        nombre=nombre,
+        empresa=empresa,
+        telefono=telefono,
+        email=email,
+        categoria=categoria,
+        detalles=detalles
+    )
+
+    asunto_cliente = "Hemos recibido tu solicitud de cotización | ECODREN"
+    mensaje_cliente = (
+        f"Hola {nombre},\n\n"
+        f"Hemos recibido con éxito tu solicitud de cotización (Folio: #COT-{cotizacion.id:04d}).\n\n"
+        f"Resumen de tu solicitud:\n"
+        f"• Categoría: {categoria or 'General'}\n"
+        f"• Empresa: {empresa or 'Particular'}\n"
+        f"• Teléfono de contacto: {telefono or 'No proporcionado'}\n"
+        f"• Requerimiento: {detalles or 'Sin detalles adicionales'}\n\n"
+        f"Uno de nuestros asesores comerciales y técnicos de Equipos MC se comunicará contigo en breve.\n\n"
+        f"Atentamente,\n"
+        f"Equipo ECODREN México"
+    )
+
+    try: 
+        send_mail(
+            asunto_cliente,
+            mensaje_cliente,
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+            fail_silently=False,
+        )
+    except Exception as e:
+        print(f"Error al enviar correo: {e}")
+
+    return JsonResponse({
+        'status': 'ok',
+        'mensaje': '¡Cotización enviada con éxito! Te hemos enviado un correo con los detalles.'
+    })

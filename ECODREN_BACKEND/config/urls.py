@@ -16,6 +16,9 @@ urlpatterns = [
     path('capacitaciones/', views.capacitaciones, name='capacitaciones'),
     path('perfil/', views.perfil_view, name='perfil'),
 
+    #endpoint de cotizacion
+    path('api/enviar-cotizacion/', views.enviar_cotizacion, name='enviar_cotizacion'),
+    
     # Rutas de autenticación (allauth)
     path('accounts/', include('allauth.urls')),
 ]

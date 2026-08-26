@@ -1,5 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
- 
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('openDocs') === 'true') {
+        const modalGuias = document.getElementById('modal-guias-docs');
+        const secDescargas = document.getElementById('zona-descargas');
+
+        if (secDescargas) {
+            secDescargas.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        if (modalGuias) {
+            if (typeof volverMenuGuias === 'function') volverMenuGuias();
+            setTimeout(() => {
+                modalGuias.classList.add('open');
+            }, 300);
+        }
+    }
+    
     const filterTabs = document.querySelectorAll('.filter-tab');
     const secVideos   = document.getElementById('sec-videos');
     const secNoticias = document.getElementById('sec-noticias');

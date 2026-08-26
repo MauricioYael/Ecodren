@@ -491,25 +491,41 @@
             </div>
             <div class="form-card reveal reveal-delay-1">
                 <form onsubmit="handleSubmit(event)">
+                    {% csrf_token %}
                     <div class="form-row">
-                        <div class="form-group"><label>Nombre</label><input type="text" placeholder="Tu nombre" required></div>
-                        <div class="form-group"><label>Empresa</label><input type="text" placeholder="Nombre de empresa"></div>
+                        <div class="form-group">
+                            <label>Nombre</label>
+                            <input type="text" name="nombre" placeholder="Tu nombre" value="{% if user.is_authenticated %}{{ user.get_full_name }}{% endif %}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Empresa</label>
+                            <input type="text" name="empresa" placeholder="Nombre de empresa">
+                        </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group"><label>Teléfono</label><input type="tel" placeholder="+52 (55) XXXX-XXXX"></div>
-                        <div class="form-group"><label>Email</label><input type="email" placeholder="correo@empresa.com" required></div>
+                        <div class="form-group">
+                            <label>Teléfono</label>
+                            <input type="tel" name="telefono" placeholder="+52 (55) XXXX-XXXX">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" name="email" placeholder="correo@empresa.com" value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" required>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>¿Qué necesitas?</label>
-                        <select>
+                        <select name="categoria">
                             <option value="">Selecciona una categoría</option>
-                            <option>Maquinaria completa</option>
-                            <option>Refacciones específicas</option>
-                            <option>Servicio técnico</option>
-                            <option>Otro</option>
+                            <option value="Maquinaria completa">Maquinaria completa</option>
+                            <option value="Refacciones específicas">Refacciones específicas</option>
+                            <option value="Servicio técnico">Servicio técnico</option>
+                            <option value="Otro">Otro</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>Detalles adicionales</label><textarea placeholder="Describe el equipo o refacción que necesitas..."></textarea></div>
+                    <div class="form-group">
+                        <label>Detalles adicionales</label>
+                        <textarea name="detalles" placeholder="Describe el equipo o refacción que necesitas..."></textarea>
+                    </div>
                     <button type="submit" class="form-submit">Enviar cotización →</button>
                 </form>
             </div>
@@ -722,6 +738,16 @@
                                 <label style="font-size: 0.8rem; margin-bottom: 0.2rem;">CVC / CVV</label>
                                 <input type="password" placeholder="123" maxlength="4" required style="width: 100%; box-sizing: border-box; padding: 0.55rem; font-size: 0.85rem;">
                             </div>
+                        </div>
+                    </div>
+
+                    <div id="speiDetailsInfo" style="display: none; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                        <p style="margin: 0 0 0.5rem; font-size: 0.85rem; font-weight: 600; color: #1e293b;">Datos para transferencia SPEI:</p>
+                        <div style="font-size: 0.8rem; color: #475569; line-height: 1.6;">
+                            <div><strong>Banco:</strong> BBVA México</div>
+                            <div><strong>Beneficiario:</strong> Equipos Hidromecánicos MC</div>
+                            <div><strong>CLABE Interbancaria:</strong> 012180001234567890</div>
+                            <div><strong>Concepto:</strong> <span style="color: var(--eco-green); font-weight: 600;">COMPRA-ECODREN</span></div>
                         </div>
                     </div>
 

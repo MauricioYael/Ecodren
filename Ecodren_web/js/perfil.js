@@ -1,4 +1,91 @@
+// ── 💾 PERSISTENCIA Y CARGA DE DATOS OPERATIVOS ───────────────────
+function cargarDatosOperativosGuardados() {
+    const saved = localStorage.getItem('ecodren_perfil_datos');
+    if (!saved) return;
+    try {
+        const data = JSON.parse(saved);
+        if (data.nombre) {
+            const inputNombre = document.getElementById('inputNombreCompleto');
+            const userNameEl = document.getElementById('userName');
+            const welcomeEl = document.getElementById('displayWelcomeName');
+            const avatarEl = document.getElementById('userAvatar');
+            if (inputNombre) inputNombre.value = data.nombre;
+            if (userNameEl) userNameEl.innerText = data.nombre;
+            if (welcomeEl) welcomeEl.innerText = data.nombre.split(' ')[0];
+            if (avatarEl) avatarEl.innerText = data.nombre.charAt(0).toUpperCase();
+        }
+        if (data.razon) {
+            const inputRazon = document.getElementById('inputRazonSocial');
+            if (inputRazon) inputRazon.value = data.razon;
+        }
+        if (data.email) {
+            const inputEmail = document.getElementById('inputEmailOperativo');
+            const userEmailEl = document.getElementById('userEmail');
+            if (inputEmail) inputEmail.value = data.email;
+            if (userEmailEl) userEmailEl.innerText = data.email;
+        }
+        if (data.telefono) {
+            const inputTel = document.getElementById('inputTelefonoOperativo');
+            if (inputTel) inputTel.value = data.telefono;
+        }
+        if (data.direccion) {
+            const inputDir = document.getElementById('inputDireccionPrincipal');
+            if (inputDir) inputDir.value = data.direccion;
+        }
+    } catch (e) {
+        console.error("Error al cargar datos operativos:", e);
+    }
+}
+
+window.guardarDatosOperativos = function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSaveOperational');
+    const originalContent = btn ? btn.innerHTML : '';
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+    }
+
+    const perfilData = {
+        nombre: document.getElementById('inputNombreCompleto')?.value.trim() || '',
+        razon: document.getElementById('inputRazonSocial')?.value.trim() || '',
+        email: document.getElementById('inputEmailOperativo')?.value.trim() || '',
+        telefono: document.getElementById('inputTelefonoOperativo')?.value.trim() || '',
+        direccion: document.getElementById('inputDireccionPrincipal')?.value.trim() || ''
+    };
+
+    localStorage.setItem('ecodren_perfil_datos', JSON.stringify(perfilData));
+
+    setTimeout(() => {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> ¡Guardado!';
+            btn.style.background = 'var(--eco-green, #0f5429)';
+        }
+
+        // Actualizar datos visibles en tiempo real
+        cargarDatosOperativosGuardados();
+
+        if (typeof showToast === 'function') {
+            showToast('Información operativa actualizada con éxito.', 'success');
+        } else {
+            alert("✅ Información corporativa actualizada con éxito.");
+        }
+
+        setTimeout(() => {
+            if (btn) {
+                btn.innerHTML = originalContent;
+                btn.style.background = '';
+            }
+        }, 2200);
+    }, 600);
+};
+
 document.addEventListener('DOMContentLoaded', () => {
+
+    // Cargar datos operativos guardados al iniciar
+    cargarDatosOperativosGuardados();
 
     // ── 🚀 DETECTOR DE RUTAS E INYECCIÓN DIRECTA DESDE EL NAV ──────────
     setTimeout(() => {
@@ -6,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let activeParam = urlParams.get('tab') || urlParams.get('pane');
 
         if (activeParam) {
-            // Normalización estricta de variables de navegación
             if (activeParam === 'preferencias') activeParam = 'configuracion';
 
             const targetButton = document.querySelector(`.sidebar-menu-item[data-pane="${activeParam}"]`);
@@ -78,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const formManageAddress = document.getElementById('form-manage-address');
     const addressCardsList = document.getElementById('address-cards-list');
 
-    // Campos del formulario
+    // Campos del formulario de dirección
     const addressIdField = document.getElementById('address-id-field');
     const addressNameInput = document.getElementById('address-name');
     const addressStreetInput = document.getElementById('address-street');
@@ -91,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnToggleAddressForm && addressFormContainer) {
         btnToggleAddressForm.addEventListener('click', () => {
             resetAddressForm();
-            addressFormTitle.innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Agregar Nueva Dirección`;
+            if (addressFormTitle) addressFormTitle.innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Agregar Nueva Dirección`;
             addressFormContainer.classList.toggle('active');
         });
     }
@@ -104,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Resetear formulario
     function resetAddressForm() {
         if (formManageAddress) formManageAddress.reset();
         if (addressIdField) addressIdField.value = '';
@@ -123,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const city = addressCityInput.value;
 
             if (id) {
-                // Modo Edición: Buscar la tarjeta existente por su data-id
                 const existingCard = document.querySelector(`.operational-address-block[data-id="${id}"]`);
                 if (existingCard) {
                     existingCard.querySelector('.card-title-data').innerText = name;
@@ -131,7 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert("✅ Dirección actualizada correctamente.");
                 }
             } else {
-                // Modo Creación: Generar una nueva tarjeta dinámica con un ID basado en timestamps
                 const newId = Date.now();
                 const newCardHTML = `
                     <div class="operational-address-block" data-id="${newId}">
@@ -152,22 +235,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             addressFormContainer.classList.remove('active');
             resetAddressForm();
-            attachAddressEvents(); // Re-vincular eventos a los nuevos botones creados
+            attachAddressEvents();
         });
     }
 
-    // Vincular funciones de Editar y Eliminar de las tarjetas
     function attachAddressEvents() {
-        // Evento Editar
         document.querySelectorAll('.btn-address-edit-inline').forEach(btn => {
             btn.onclick = function(e) {
                 e.preventDefault();
                 const card = btn.closest('.operational-address-block');
-                const id = card.dataset.id;
-                const name = card.querySelector('.card-title-data').innerText;
+                if (!card || !card.dataset.id) return;
                 
-                // Mapeo simple de datos del string
-                const descRaw = card.querySelector('.card-desc-data').innerHTML;
+                const id = card.dataset.id;
+                const name = card.querySelector('.card-title-data')?.innerText || '';
+                
+                const descRaw = card.querySelector('.card-desc-data')?.innerHTML || '';
                 const parts = descRaw.split('<br>');
                 const line1 = parts[0] || '';
                 const line2 = parts[1] || '';
@@ -180,33 +262,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cp = line1SubParts[1] || '';
                 const city = line2.replace(', México', '');
 
-                // Cargar datos en el formulario
-                addressIdField.value = id;
-                addressNameInput.value = name;
-                addressStreetInput.value = street;
-                addressColonyInput.value = colony;
-                addressCpInput.value = cp;
-                addressCityInput.value = city;
+                if (addressIdField) addressIdField.value = id;
+                if (addressNameInput) addressNameInput.value = name;
+                if (addressStreetInput) addressStreetInput.value = street;
+                if (addressColonyInput) addressColonyInput.value = colony;
+                if (addressCpInput) addressCpInput.value = cp;
+                if (addressCityInput) addressCityInput.value = city;
 
-                addressFormTitle.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Editar Ubicación Existente`;
-                addressFormContainer.classList.add('active');
-                addressFormContainer.scrollIntoView({ behavior: 'smooth' });
+                if (addressFormTitle) addressFormTitle.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Editar Ubicación Existente`;
+                if (addressFormContainer) {
+                    addressFormContainer.classList.add('active');
+                    addressFormContainer.scrollIntoView({ behavior: 'smooth' });
+                }
             };
         });
 
-        // Evento Eliminar
         document.querySelectorAll('.btn-address-delete-inline').forEach(btn => {
             btn.onclick = function(e) {
                 e.preventDefault();
                 if (confirm("🗑️ ¿Estás seguro de que deseas eliminar esta dirección de despacho?")) {
                     const card = btn.closest('.operational-address-block');
-                    card.remove();
+                    if (card) card.remove();
                 }
             };
         });
     }
 
-    // Inicializar eventos de direcciones por primera vez
     attachAddressEvents();
 
     // ── 🔒 GESTIÓN DE SEGURIDAD Y PREFERENCIAS GENERALES ──────────────
@@ -223,13 +304,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             alert("🔒 Seguridad Ecodren: Contraseña corporativa actualizada con éxito.");
             formPassword.reset();
-        });
-    }
-
-    const btnSaveOperational = document.querySelector('.btn-save-operational-changes');
-    if (btnSaveOperational) {
-        btnSaveOperational.addEventListener('click', () => {
-            alert("💼 Datos Generales de la Empresa sincronizados correctamente.");
         });
     }
 });
@@ -258,12 +332,132 @@ document.addEventListener('click', () => {
     }
 });
 
-window.mostrarManualTecnico = function() {
-    alert("📚 Descarga iniciada: Carpeta de Manuales Técnicos y Diagramas Ecodren 2026.");
-};
-
 window.confirmDeleteAccount = function() {
     if (confirm("🚨 ALERTA CRÍTICA: ¿Estás seguro de querer dar de baja esta cuenta? Se perderán todos tus pedimentos logísticos.")) {
         alert("Solicitud de desactivación enviada a revisión con el administrador de Equipos MC.");
     }
+};
+
+let modoEdicionActivo = false;
+
+window.toggleModoEdicion = function() {
+    modoEdicionActivo = !modoEdicionActivo;
+    const inputs = document.querySelectorAll('#form-datos-empresa .operational-inline-input');
+    const btnToggle = document.getElementById('btnToggleEdit');
+    const containerSave = document.getElementById('containerSaveBtn');
+
+    if (modoEdicionActivo) {
+        // Habilitar edición
+        inputs.forEach(input => input.removeAttribute('readonly'));
+        if (btnToggle) {
+            btnToggle.classList.add('active-edit');
+            btnToggle.innerHTML = '<i class="fa-solid fa-xmark"></i> <span>Cancelar</span>';
+        }
+        if (containerSave) containerSave.style.display = 'block';
+        document.getElementById('inputNombreCompleto')?.focus();
+    } else {
+        // Deshabilitar edición / Restaurar valores guardados
+        inputs.forEach(input => input.setAttribute('readonly', 'readonly'));
+        if (btnToggle) {
+            btnToggle.classList.remove('active-edit');
+            btnToggle.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> <span>Editar Información</span>';
+        }
+        if (containerSave) containerSave.style.display = 'none';
+        cargarDatosOperativosGuardados();
+    }
+};
+
+window.habilitarYFocarDireccion = function() {
+    if (!modoEdicionActivo) {
+        window.toggleModoEdicion();
+    }
+    const inputDir = document.getElementById('inputDireccionPrincipal');
+    if (inputDir) {
+        inputDir.focus();
+        inputDir.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+};
+
+function cargarDatosOperativosGuardados() {
+    const saved = localStorage.getItem('ecodren_perfil_datos');
+    if (!saved) return;
+    try {
+        const data = JSON.parse(saved);
+        if (data.nombre) {
+            const inputNombre = document.getElementById('inputNombreCompleto');
+            const userNameEl = document.getElementById('userName');
+            const welcomeEl = document.getElementById('displayWelcomeName');
+            const avatarEl = document.getElementById('userAvatar');
+            if (inputNombre) inputNombre.value = data.nombre;
+            if (userNameEl) userNameEl.innerText = data.nombre;
+            if (welcomeEl) welcomeEl.innerText = data.nombre.split(' ')[0];
+            if (avatarEl) avatarEl.innerText = data.nombre.charAt(0).toUpperCase();
+        }
+        if (data.razon) {
+            const inputRazon = document.getElementById('inputRazonSocial');
+            if (inputRazon) inputRazon.value = data.razon;
+        }
+        if (data.email) {
+            const inputEmail = document.getElementById('inputEmailOperativo');
+            const userEmailEl = document.getElementById('userEmail');
+            if (inputEmail) inputEmail.value = data.email;
+            if (userEmailEl) userEmailEl.innerText = data.email;
+        }
+        if (data.telefono) {
+            const inputTel = document.getElementById('inputTelefonoOperativo');
+            if (inputTel) inputTel.value = data.telefono;
+        }
+        if (data.direccion) {
+            const inputDir = document.getElementById('inputDireccionPrincipal');
+            if (inputDir) inputDir.value = data.direccion;
+        }
+    } catch (e) {
+        console.error("Error al cargar datos operativos:", e);
+    }
+}
+
+window.guardarDatosOperativos = function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSaveOperational');
+    const originalContent = btn ? btn.innerHTML : '';
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+    }
+
+    const perfilData = {
+        nombre: document.getElementById('inputNombreCompleto')?.value.trim() || '',
+        razon: document.getElementById('inputRazonSocial')?.value.trim() || '',
+        email: document.getElementById('inputEmailOperativo')?.value.trim() || '',
+        telefono: document.getElementById('inputTelefonoOperativo')?.value.trim() || '',
+        direccion: document.getElementById('inputDireccionPrincipal')?.value.trim() || ''
+    };
+
+    localStorage.setItem('ecodren_perfil_datos', JSON.stringify(perfilData));
+
+    setTimeout(() => {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> ¡Guardado!';
+            btn.style.background = 'var(--eco-green, #0f5429)';
+        }
+
+        // Bloquear de nuevo los inputs a modo solo lectura
+        window.toggleModoEdicion();
+        cargarDatosOperativosGuardados();
+
+        if (typeof showToast === 'function') {
+            showToast('Información operativa actualizada con éxito.', 'success');
+        } else {
+            alert("✅ Información corporativa actualizada con éxito.");
+        }
+
+        setTimeout(() => {
+            if (btn) {
+                btn.innerHTML = originalContent;
+                btn.style.background = '';
+            }
+        }, 2000);
+    }, 500);
 };
