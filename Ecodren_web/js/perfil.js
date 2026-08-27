@@ -37,7 +37,7 @@ function cargarDatosOperativosGuardados() {
     }
 }
 
-window.guardarDatosOperativos = function(e) {
+window.guardarDatosOperativos = async function(e) {
     e.preventDefault();
     const btn = document.getElementById('btnSaveOperational');
     const originalContent = btn ? btn.innerHTML : '';
@@ -55,31 +55,57 @@ window.guardarDatosOperativos = function(e) {
         direccion: document.getElementById('inputDireccionPrincipal')?.value.trim() || ''
     };
 
-    localStorage.setItem('ecodren_perfil_datos', JSON.stringify(perfilData));
+    try {
+        const response = await fetch('/api/actualizar-perfil/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+            },
+            body: JSON.stringify(perfilData)
+        });
 
-    setTimeout(() => {
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-check"></i> ¡Guardado!';
-            btn.style.background = 'var(--eco-green, #0f5429)';
-        }
+        const resData = await response.json();
 
-        // Actualizar datos visibles en tiempo real
-        cargarDatosOperativosGuardados();
+        if (response.ok && resData.status === 'ok') {
+            const userNameEl = document.getElementById('userName');
+            const welcomeEl = document.getElementById('displayWelcomeName');
+            const avatarEl = document.getElementById('userAvatar');
+            const userEmailEl = document.getElementById('userEmail');
 
-        if (typeof showToast === 'function') {
-            showToast('Información operativa actualizada con éxito.', 'success');
+            if (userNameEl) userNameEl.innerText = resData.nombre;
+            if (welcomeEl) welcomeEl.innerText = resData.nombre.split(' ')[0];
+            if (avatarEl) avatarEl.innerText = resData.nombre.charAt(0).toUpperCase();
+            if (userEmailEl) userEmailEl.innerText = resData.email;
+
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> ¡Guardado!';
+                btn.style.background = 'var(--eco-green, #0f5429)';
+            }
+
+            window.toggleModoEdicion();
+
+            if (typeof showToast === 'function') {
+                showToast(resData.mensaje, 'success');
+            } else {
+                alert("✅ " + resData.mensaje);
+            }
         } else {
-            alert("✅ Información corporativa actualizada con éxito.");
+            alert("❌ Error: " + (resData.mensaje || 'No se pudo actualizar'));
+            if (btn) btn.disabled = false;
         }
-
+    } catch (err) {
+        alert("❌ Error de conexión al guardar los datos en MySQL.");
+        if (btn) btn.disabled = false;
+    } finally {
         setTimeout(() => {
             if (btn) {
                 btn.innerHTML = originalContent;
                 btn.style.background = '';
             }
         }, 2200);
-    }, 600);
+    }
 };
 
 document.addEventListener('DOMContentLoaded', () => {

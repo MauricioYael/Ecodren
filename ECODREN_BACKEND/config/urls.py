@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from core import views
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -15,6 +16,8 @@ urlpatterns = [
     path('publicaciones/', views.publicaciones, name='publicaciones'),
     path('capacitaciones/', views.capacitaciones, name='capacitaciones'),
     path('perfil/', views.perfil_view, name='perfil'),
+    path("api/actualizar-perfil/", views.actualizar_datos_perfil, name="actualizar_perfil"),
+    path('api/crear-pedido/', views.registrar_pedido_checkout, name='crear_pedido'),
 
     #endpoint de cotizacion
     path('api/enviar-cotizacion/', views.enviar_cotizacion, name='enviar_cotizacion'),

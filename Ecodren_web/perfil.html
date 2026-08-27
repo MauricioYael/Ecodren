@@ -195,7 +195,7 @@
                             <div class="operational-col-item">
                                 <div class="col-item-icon"><i class="fa-solid fa-building"></i></div>
                                 <h4>Razón Social</h4>
-                                <input type="text" id="inputRazonSocial" class="operational-inline-input" value="Servicios Hidráulicos del Centro S.A." placeholder="Nombre de empresa" readonly>
+                                <input type="text" id="inputRazonSocial" class="operational-inline-input" value="{{ request.user.perfil_empresa.razon_social|default:'Servicios Hidráulicos del Centro S.A.' }}" placeholder="Nombre de empresa" readonly>
                             </div>
                             <div class="operational-col-item">
                                 <div class="col-item-icon"><i class="fa-solid fa-envelope"></i></div>
@@ -205,7 +205,7 @@
                             <div class="operational-col-item">
                                 <div class="col-item-icon"><i class="fa-solid fa-phone"></i></div>
                                 <h4>Teléfono Operativo</h4>
-                                <input type="tel" id="inputTelefonoOperativo" class="operational-inline-input highlight-green" value="+52 55 1234 5678" placeholder="+52 55 XXXX XXXX" readonly>
+                                <input type="tel" id="inputTelefonoOperativo" class="operational-inline-input highlight-green" value="{{ request.user.perfil_empresa.telefono_operativo|default:'+52 55 1234 5678' }}" placeholder="+52 55 XXXX XXXX" readonly>
                             </div>
                         </div>
 
@@ -213,7 +213,7 @@
                             <div class="address-icon-box"><i class="fa-solid fa-location-dot"></i></div>
                             <div class="address-text-box" style="flex: 1;">
                                 <h4>Dirección de Entrega Principal</h4>
-                                <input type="text" id="inputDireccionPrincipal" class="operational-inline-input" style="width: 100%; margin-top: 4px; text-align: left;" value="Av. Central #123, Col. Industrial, C.P. 12345, Ciudad de México" placeholder="Calle, Número, Colonia, C.P., Ciudad" readonly>
+                                <input type="text" id="inputDireccionPrincipal" class="operational-inline-input" style="width: 100%; margin-top: 4px; text-align: left;" value="{{ request.user.perfil_empresa.direccion_principal|default:'Av. Central #123, Col. Industrial, C.P. 12345, Ciudad de México' }}" placeholder="Calle, Número, Colonia, C.P., Ciudad" readonly>
                             </div>
                             <div class="address-action-box">
                                 <button type="button" class="btn-address-edit-inline" onclick="habilitarYFocarDireccion()"><i class="fa-solid fa-pen"></i> Editar</button>
@@ -255,20 +255,33 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for pedido in pedidos %}
                                 <tr>
-                                    <td><strong>#EC-2026-9821</strong></td>
-                                    <td>12 Jun 2026</td>
-                                    <td>Tobera Industrial 3D Premium × 1</td>
-                                    <td>$4,500 MXN</td>
-                                    <td><span class="badge-table status-envio">En Aduana / Puerto</span></td>
+                                    <td><strong>{{ pedido.codigo_pedido }}</strong></td>
+                                    <td>{{ pedido.fecha_operacion|date:"d M Y" }}</td>
+                                    <td>{{ pedido.equipo_insumo }}</td>
+                                    <td>${{ pedido.total|floatformat:2 }} MXN</td>
+                                    <td>
+                                        {% if pedido.estatus == 'entregado' %}
+                                            <span class="badge-table status-entregado">Liberado / Entregado</span>
+                                        {% elif pedido.estatus == 'aduana' %}
+                                            <span class="badge-table status-envio">En Aduana / Puerto</span>
+                                        {% elif pedido.estatus == 'cancelado' %}
+                                            <span class="badge-table status-cancelado" style="background: #fee2e2; color: #dc2626;">Cancelado</span>
+                                        {% else %}
+                                            <span class="badge-table status-proceso" style="background: #fef3c7; color: #d97706;">En Preparación</span>
+                                        {% endif %}
+                                    </td>
                                 </tr>
+                                {% empty %}
                                 <tr>
-                                    <td><strong>#EC-2026-9745</strong></td>
-                                    <td>28 May 2026</td>
-                                    <td>Manguera Hidrojet Reforzada 3/4" × 1</td>
-                                    <td>$7,500 MXN</td>
-                                    <td><span class="badge-table status-entregado">Liberado / Entregado</span></td>
+                                    <td colspan="5" style="text-align: center; padding: 2.5rem 1rem; color: var(--eco-gray);">
+                                        <i class="fa-solid fa-box-open" style="font-size: 2.2rem; display: block; margin-bottom: 0.8rem; opacity: 0.5;"></i>
+                                        <strong>No tienes pedidos registrados todavía.</strong>
+                                        <p style="font-size: 0.85rem; margin-top: 0.3rem;">Tus compras realizadas en la tienda aparecerán aquí automáticamente.</p>
+                                    </td>
                                 </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>

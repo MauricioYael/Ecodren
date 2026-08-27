@@ -25,14 +25,14 @@ function actualizarContadorCarritoGlobal() {
  
 const nav = document.getElementById('mainNav');
 if (nav) {
-    const hasHero = !!document.getElementById('hero3d');
+    const hasHero = !document.getElementById('hero3d');
     window.addEventListener('scroll', () => {
         nav.classList.toggle('scrolled', window.scrollY > 40);
         if (hasHero) nav.classList.toggle('light', window.scrollY > window.innerHeight - 80);
     }, { passive: true });
 }
  
-const hamburger  = document.getElementById('hamburger') || document.getElementById('hamburgerBtn');
+const hamburger = document.getElementById('hamburger') || document.getElementById('hamburgerBtn');
 const mobileMenu = document.getElementById('mobileMenu');
 if (hamburger && mobileMenu) {
     hamburger.addEventListener('click', () => {
@@ -47,7 +47,7 @@ if (hamburger && mobileMenu) {
     );
 }
  
-const profileBtn      = document.getElementById('profileBtn');
+const profileBtn = document.getElementById('profileBtn');
 const profileDropdown = document.getElementById('profileDropdown');
 if (profileBtn && profileDropdown) {
     profileBtn.addEventListener('click', e => {
@@ -195,7 +195,7 @@ window.renderCartGlobal = function() {
     try { 
         carrito = JSON.parse(localStorage.getItem('ecodren_cart')) || [];
     } catch (e) { 
-        carrito = [];
+        carrito = []; 
     }
     const limpio = carrito.filter(i => i && (i.qty || i.cantidad || 0) > 0);
  
@@ -282,61 +282,109 @@ window.handleCheckout = function() {
     openModal('checkout');
 };
  
-window.processSimulatedPayment = function(e) {
+window.processSimulatedPayment = async function(e) {
     e.preventDefault();
     
-    const totalPagar = document.getElementById('checkoutTotalDisplay')?.innerText || "$0 MXN";
-    const numeroTicket = "EC-" + Math.floor(100000 + Math.random() * 900000);
-    
-    const modalBox = document.querySelector('#modalOverlay .modal-box');
-    if (!modalBox) return;
+    let carrito = [];
+    try {
+        carrito = JSON.parse(localStorage.getItem('ecodren_cart')) || [];
+    } catch (err) {
+        carrito = [];
+    }
 
+    if (carrito.length === 0) {
+        showToast('Tu carrito está vacío.', 'error');
+        return;
+    }
+
+    const totalCalculado = carrito.reduce((acc, item) => {
+        const precio = obtenerPrecioNumerico(item.precio || item.price || 0);
+        const qty = parseInt(item.qty || item.cantidad || 1, 10);
+        return acc + (precio * qty);
+    }, 0);
+
+    const totalPagar = `$${totalCalculado.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})} MXN`;
+    const modalBox = document.querySelector('#modalOverlay .modal-box');
     const btn = e.target.querySelector('button[type="submit"]');
+
     if (btn) {
-        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Validando Transacción Comercial...';
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Procesando Orden en Servidor...';
         btn.disabled = true;
     }
 
-    setTimeout(() => {
-        if (btn) {
-            btn.innerHTML = '<i class="fas fa-check"></i> ¡Pago Autorizado!';
-            btn.style.background = 'var(--eco-green, #0f5429)';
-        }
+    try {
+        const response = await fetch('/api/crear-pedido/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken') || document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+            },
+            body: JSON.stringify({
+                items: carrito,
+                total: totalCalculado
+            })
+        });
 
-        setTimeout(() => {
+        const data = await response.json();
+
+        if (response.ok && data.status === 'ok') {
+            const numeroTicket = data.codigo_pedido || ("EC-" + Math.floor(100000 + Math.random() * 900000));
+            
             localStorage.removeItem('ecodren_cart');
             actualizarContadorCarritoGlobal();
 
-            modalBox.innerHTML = `
-                <div class="checkout-success-wrapper">
-                    <div class="success-icon-animated">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <h3>¡Pago Autorizado!</h3>
-                    <p>Tu orden ha sido procesada de forma segura por el departamento de aduanas y logística de Ecodren.</p>
-                    
-                    <div class="order-meta-box">
-                        <div class="order-meta-row">
-                            <span>No. Pedimento / Ticket:</span>
-                            <strong>${numeroTicket}</strong>
-                        </div>
-                        <div class="order-meta-row">
-                            <span>Monto Liquidado:</span>
-                            <strong style="color: #0f5429;">${totalPagar}</strong>
-                        </div>
-                        <div class="order-meta-row">
-                            <span>Estatus de Despacho:</span>
-                            <strong style="color: #e85c1a;">Preparando Envío</strong>
-                        </div>
-                    </div>
+            if (btn) {
+                btn.innerHTML = '<i class="fas fa-check"></i> ¡Pago Autorizado!';
+                btn.style.background = 'var(--eco-green, #0f5429)';
+            }
 
-                    <button class="mform-submit" onclick="closeModalAndRedirect();" style="margin-top: 0; padding: 0.85rem; width: 100%;">
-                        Volver a la Operación <i class="fas fa-arrow-right" style="margin-left: 6px;"></i>
-                    </button>
-                </div>
-            `;
-        }, 1200);
-    }, 2000);
+            setTimeout(() => {
+                if (modalBox) {
+                    modalBox.innerHTML = `
+                        <div class="checkout-success-wrapper">
+                            <div class="success-icon-animated">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h3>¡Pago Autorizado!</h3>
+                            <p>Tu orden ha sido registrada en el sistema de logística de Ecodren y guardada en tu historial.</p>
+                            
+                            <div class="order-meta-box">
+                                <div class="order-meta-row">
+                                    <span>No. Pedimento / Ticket:</span>
+                                    <strong>${numeroTicket}</strong>
+                                </div>
+                                <div class="order-meta-row">
+                                    <span>Monto Liquidado:</span>
+                                    <strong style="color: #0f5429;">${totalPagar}</strong>
+                                </div>
+                                <div class="order-meta-row">
+                                    <span>Estatus de Despacho:</span>
+                                    <strong style="color: #e85c1a;">En Preparación</strong>
+                                </div>
+                            </div>
+
+                            <button class="mform-submit" onclick="closeModalAndRedirect();" style="margin-top: 0; padding: 0.85rem; width: 100%;">
+                                Ver Mi Historial de Pedidos <i class="fas fa-arrow-right" style="margin-left: 6px;"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+            }, 900);
+        } else {
+            showToast(data.mensaje || 'Error al procesar el pedido.', 'error');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Proceder al Pago Seguro';
+            }
+        }
+    } catch (error) {
+        console.error("Error al registrar pedido:", error);
+        showToast('Error de conexión con el servidor de pagos.', 'error');
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = 'Proceder al Pago Seguro';
+        }
+    }
 };
 
 window.closeModalAndRedirect = function() {

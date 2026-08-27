@@ -1,13 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # ==============================================================================
 # 1. TIENDA Y REFACCIONES
 # ==============================================================================
 
 class Categoria(models.Model):
-    """Categorías de productos y refacciones en tienda (ej. Boquillas, Mangueras, Bombas)"""
     nombre = models.CharField(max_length=100, unique=True, verbose_name="Nombre de la Categoría")
     descripcion = models.TextField(blank=True, null=True, verbose_name="Descripción")
     creado_en = models.DateTimeField(auto_now_add=True)
@@ -22,7 +22,6 @@ class Categoria(models.Model):
 
 
 class Producto(models.Model):
-    """Catálogo de refacciones, insumos y accesorios de tienda"""
     categoria = models.ForeignKey(
         Categoria, 
         on_delete=models.PROTECT, 
@@ -47,7 +46,6 @@ class Producto(models.Model):
     disponible = models.BooleanField(default=True, verbose_name="¿Disponible para venta/cotización?")
     imagen = models.ImageField(upload_to='productos/', blank=True, null=True, verbose_name="Imagen Principal")
     
-    # Ficha técnica individual de la refacción (si el fabricante la provee)
     ficha_tecnica = models.FileField(
         upload_to='fichas_tecnicas_refacciones/', 
         blank=True, 
@@ -55,7 +53,6 @@ class Producto(models.Model):
         verbose_name="Ficha Técnica de Refacción (PDF)"
     )
 
-    # 🚀 Relación con Maquinarias compatibles
     maquinarias_compatibles = models.ManyToManyField(
         'Maquinaria', 
         blank=True, 
@@ -80,7 +77,6 @@ class Producto(models.Model):
 # ==============================================================================
 
 class Maquinaria(models.Model):
-    """Equipos hidromecánicos y desazolvadoras industriales"""
     LINEAS_MARCA = [
         ('ecojet', 'Ecojet — Equipos de Presión'),
         ('ecovac', 'Ecovac — Equipos de Vacío'),
@@ -93,20 +89,17 @@ class Maquinaria(models.Model):
     categoria_equipo = models.CharField(max_length=20, choices=LINEAS_MARCA, default='ecodren', verbose_name="Línea / Marca")
     tagline = models.TextField(help_text="Descripción corta del equipo")
     
-    # Especificaciones visuales para el configurador
     capacidad = models.CharField(max_length=50, help_text="Ej: 17 m³")
     presion = models.CharField(max_length=50, help_text="Ej: 3000 PSI")
     succion = models.CharField(max_length=50, default="Alto vacío", blank=True, null=True)
     peso = models.CharField(max_length=50, default="19,500 Kg", blank=True, null=True)
     tipo_trabajo = models.CharField(max_length=50, default="Industrial", blank=True, null=True)
     
-    # Campos numéricos auxiliares para ordenamiento y filtrado técnico
     capacidad_m3 = models.DecimalField(max_digits=6, decimal_places=2, default=0.00, verbose_name="Capacidad numérica (m³)")
     presion_psi = models.PositiveIntegerField(default=0, verbose_name="Presión numérica (PSI)")
 
     recomendado = models.BooleanField(default=False, verbose_name="¿Equipo Destacado?")
     
-    # Ficha técnica oficial del equipo industrial
     ficha_tecnica_pdf = models.FileField(
         upload_to='fichas_tecnicas_equipos/',
         blank=True,
@@ -199,7 +192,6 @@ class PublicacionRecurso(models.Model):
         ('ninguna', 'Ninguna / Web'),
     ]
 
-
     titulo = models.CharField(max_length=200, verbose_name="Título")
     descripcion = models.TextField(blank=True, null=True, verbose_name="Descripción corta")
     tipo = models.CharField(max_length=30, choices=TIPO_CHOICES, default='noticia', verbose_name="Tipo de contenido")
@@ -225,7 +217,6 @@ class PublicacionRecurso(models.Model):
 
 
 class DocumentoTecnico(models.Model):
-    """Repositorio de PDFs descargables desde el modal de Recursos"""
     CATEGORIAS_DOC = [
         ('ficha', 'Ficha Técnica General'),
         ('manual', 'Manual de Operación'),
@@ -294,20 +285,33 @@ class CursoDisponible(models.Model):
 # ==============================================================================
 
 class PerfilEmpresa(models.Model):
-    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
-    razon_social = models.CharField(max_length=200, default="Servicios Hidráulicos del Centro", verbose_name="Razón Social")
-    telefono = models.CharField(max_length=30, default="+52 55 XXXX XXXX", verbose_name="Teléfono Operativo")
-    direccion_principal = models.TextField(
-        default="Av. Central #123, Col. Industrial, C.P. 12345, Ciudad de México", 
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil_empresa')
+    razon_social = models.CharField(max_length=200, blank=True, null=True, default="Servicios Hidráulicos del Centro S.A.", verbose_name="Razón Social")
+    telefono_operativo = models.CharField(max_length=50, blank=True, null=True, default="+52 55 1234 5678", verbose_name="Teléfono Operativo")
+    direccion_principal = models.CharField(
+        max_length=300, 
+        blank=True, 
+        null=True, 
+        default="Av. Central #123, Col. Industrial, C.P. 12345, Ciudad de México",
         verbose_name="Dirección de Entrega Principal"
     )
+    actualizado_en = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Perfil de Empresa"
         verbose_name_plural = "Perfiles de Empresa"
 
     def __str__(self):
-        return f"{self.usuario.username} - {self.razon_social}"
+        return f"{self.user.username} - {self.razon_social}"
+
+
+@receiver(post_save, sender=User)
+def crear_o_guardar_perfil_empresa(sender, instance, created, **kwargs):
+    if created:
+        PerfilEmpresa.objects.create(user=instance)
+    else:
+        PerfilEmpresa.objects.get_or_create(user=instance)
+        instance.perfil_empresa.save()
 
 
 class DireccionEntrega(models.Model):
@@ -370,7 +374,6 @@ class CotizacionGuardada(models.Model):
         return f"{self.numero_cotizacion} - {self.usuario.username}"
 
 
-
 class SolicitudCotizacion(models.Model):
     CATEGORIA = [
         ('Maquinaria completa', 'Maquinaria completa'),
@@ -379,19 +382,19 @@ class SolicitudCotizacion(models.Model):
         ('Otro', 'Otro'),
     ]
 
-    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name ='solicitudes_cotizacion' )
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='solicitudes_cotizacion')
     nombre = models.CharField(max_length=150)
     empresa = models.CharField(max_length=150, blank=True, null=True)
-    telefono= models.CharField(max_length=25, blank=True, null=True)
+    telefono = models.CharField(max_length=25, blank=True, null=True)
     email = models.EmailField()
     categoria = models.CharField(max_length=60, choices=CATEGORIA, blank=True, null=True)
     detalles = models.TextField(blank=True, null=True)
     creado_en = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'Solicitud de Cotizacion'
+        verbose_name = 'Solicitud de Cotización'
         verbose_name_plural = 'Solicitudes de Cotizaciones'
         ordering = ['-creado_en']
 
     def __str__(self):
-        return f"Cotizacion #{self.id} - {self.nombre} ({self.email})"
+        return f"Cotización #{self.id} - {self.nombre} ({self.email})"

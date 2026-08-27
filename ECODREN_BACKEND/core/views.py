@@ -1,4 +1,5 @@
 import json
+import random
 from django.shortcuts import render
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
@@ -153,12 +154,13 @@ def capacitaciones(request):
 
 @login_required
 def perfil_view(request):
-    perfil, _ = PerfilEmpresa.objects.get_or_create(usuario=request.user)
+    # 🟢 Se usa 'user' para coincidir con la definición de PerfilEmpresa en models.py
+    perfil, _ = PerfilEmpresa.objects.get_or_create(user=request.user)
     direcciones = DireccionEntrega.objects.filter(usuario=request.user)
-    pedidos = Pedido.objects.filter(usuario=request.user)
     
-    # 🟢 Se obtienen las solicitudes reales asociadas al usuario autenticado
-    cotizaciones = SolicitudCotizacion.objects.filter(usuario=request.user)
+    # 🟢 Pedidos ordenados cronológicamente (más recientes primero)
+    pedidos = Pedido.objects.filter(usuario=request.user).order_by('-fecha_operacion')
+    cotizaciones = SolicitudCotizacion.objects.filter(usuario=request.user).order_by('-creado_en')
 
     context = {
         'perfil': perfil,
@@ -221,3 +223,76 @@ def enviar_cotizacion(request):
         'status': 'ok',
         'mensaje': '¡Cotización enviada con éxito! Te hemos enviado un correo con los detalles.'
     })
+
+
+@login_required
+@require_POST
+def actualizar_datos_perfil(request):
+    try: 
+        data = json.loads(request.body)
+        user = request.user
+
+        nombre_completo = data.get('nombre', '').strip()
+        if nombre_completo:
+            partes = nombre_completo.split(' ', 1)
+            user.first_name = partes[0]
+            user.last_name = partes[1] if len(partes) > 1 else ''
+
+        email = data.get('email', '').strip()
+        if email:
+            user.email = email
+        user.save()
+
+        perfil, _ = PerfilEmpresa.objects.get_or_create(user=user)
+        perfil.razon_social = data.get('razon', '').strip()
+        perfil.telefono_operativo = data.get('telefono', '').strip()
+        perfil.direccion_principal = data.get('direccion', '').strip()
+        perfil.save()
+
+        return JsonResponse({
+            'status': 'ok',
+            'mensaje': 'Datos guardados correctamente en la base de datos.',
+            'nombre': user.get_full_name() or user.username,
+            'email': user.email
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'mensaje': str(e)}, status=400)
+
+
+@login_required
+@require_POST
+def registrar_pedido_checkout(request):
+    try:
+        data = json.loads(request.body)
+        items = data.get('items', [])
+        total = float(data.get('total', 0))
+
+        if not items:
+            return JsonResponse({'status': 'error', 'mensaje': 'El carrito está vacío'}, status=400)
+
+        # Folio único de pedido
+        codigo = f"#EC-2026-{random.randint(1000, 9999)}"
+
+        # Resumen de artículos adquiridos
+        resumen_productos = ", ".join([
+            f"{item.get('nombre', 'Producto')} × {item.get('qty', item.get('cantidad', 1))}" 
+            for item in items
+        ])
+        if len(resumen_productos) > 250:
+            resumen_productos = resumen_productos[:247] + "..."
+
+        pedido = Pedido.objects.create(
+            usuario=request.user,
+            codigo_pedido=codigo,
+            equipo_insumo=resumen_productos,
+            total=total,
+            estatus='proceso'
+        )
+
+        return JsonResponse({
+            'status': 'ok',
+            'mensaje': 'Pedido registrado con éxito.',
+            'codigo_pedido': pedido.codigo_pedido
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'mensaje': str(e)}, status=400)

@@ -3,7 +3,8 @@ from .models import (
     Categoria, Producto, Maquinaria, ImagenMaquinaria, 
     Equipamento, AccesorioExtra, PuntoDestacado, PublicacionRecurso,
     DocumentoTecnico, CapacitacionImpartida, CursoDisponible,
-    PerfilEmpresa, DireccionEntrega, Pedido, CotizacionGuardada
+    PerfilEmpresa, DireccionEntrega, Pedido, CotizacionGuardada,
+    SolicitudCotizacion
 )
 
 # ── INLINES DE MAQUINARIA ───────────────────────────────────────────
@@ -27,7 +28,6 @@ class PuntoDestacadoInLine(admin.TabularInline):
 
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
-    # 'nombre' o 'codigo_sku' como link principal; los editables permiten cambios directos en tabla
     list_display = ('codigo_sku', 'nombre', 'categoria', 'precio_base', 'stock', 'disponible', 'actualizado_en')
     list_display_links = ('codigo_sku', 'nombre')
     list_editable = ('precio_base', 'stock', 'disponible')
@@ -93,8 +93,8 @@ class CursoDisponibleAdmin(admin.ModelAdmin):
 
 @admin.register(PerfilEmpresa)
 class PerfilEmpresaAdmin(admin.ModelAdmin):
-    list_display = ('usuario', 'razon_social', 'telefono')
-    search_fields = ('usuario__username', 'usuario__email', 'razon_social')
+    list_display = ('user', 'razon_social', 'telefono_operativo', 'actualizado_en')
+    search_fields = ('user__username', 'user__email', 'razon_social', 'telefono_operativo')
 
 
 @admin.register(DireccionEntrega)
@@ -116,3 +116,10 @@ class PedidoAdmin(admin.ModelAdmin):
 class CotizacionGuardadaAdmin(admin.ModelAdmin):
     list_display = ('numero_cotizacion', 'usuario', 'equipo_solicitado', 'vigencia')
     search_fields = ('numero_cotizacion', 'usuario__username')
+
+
+@admin.register(SolicitudCotizacion)
+class SolicitudCotizacionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'nombre', 'empresa', 'email', 'categoria', 'creado_en')
+    list_filter = ('categoria', 'creado_en')
+    search_fields = ('nombre', 'empresa', 'email', 'detalles')
