@@ -55,11 +55,12 @@
             <span class="cart-count" id="cartCount">0</span>
         </button>
         <div class="profile-wrap" id="profileWrap">
-            <button class="profile-btn" id="profileBtn" aria-label="Perfil de usuario">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
-                </svg>
-            </button>
+                <button class="profile-btn" id="profileBtn" aria-label="Perfil de usuario" style="overflow: hidden; padding: 0; display: flex; align-items: center; justify-content: center;">
+                    <svg id="navProfileSvg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 18px; height: 18px;">
+                        <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                    </svg>
+                    <img id="navProfileImg" src="" alt="Perfil" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                </button>
             <div class="profile-dropdown" id="profileDropdown">
                 {% if user.is_authenticated %}
                     <!-- Estado: Sesión Activa -->
@@ -355,21 +356,21 @@
 <div class="cart-overlay" id="cartOverlay"></div>
 <div class="cart-sidebar" id="cartSidebar">
     <div class="cart-head">
-        <h3>🛒 Tu carrito</h3>
-        <button class="cart-close" id="cartClose">×</button>
-    </div>
-    <div class="cart-items" id="cartItems">
-        <div class="cart-empty">
-            <span class="cart-empty-icon">🛒</span>
-            <p style="font-weight:600;margin-bottom:.5rem">Tu carrito está vacío</p>
-            <p style="font-size:.85rem;color:var(--eco-gray)">Agrega productos desde el catálogo</p>
-        </div>
-    </div>
-    <div class="cart-footer" id="cartFooter" style="display:none">
-        <div class="cart-total-row"><span>Total</span><strong id="cartTotal">$0</strong></div>
-        <button class="checkout-btn" onclick="handleCheckout()">Proceder al pago →</button>
-    </div>
-</div>
+            <h3>🛒 Tu carrito</h3>
+                    <button class="cart-close" id="cartClose">×</button>
+                        </div>
+                            <div class="cart-items" id="cartItems">
+                                    <div class="cart-empty">
+                                                <span class="cart-empty-icon">🛒</span>
+                                                            <p style="font-weight:600;margin-bottom:.5rem">Tu carrito está vacío</p>
+                                                                        <p style="font-size:.85rem;color:var(--eco-gray)">Agrega productos desde el catálogo</p>
+                                                                                </div>
+                                                                                    </div>
+                                                                                        <div class="cart-footer" id="cartFooter" style="display:none">
+                                                                                                <div class="cart-total-row"><span>Total</span><strong id="cartTotal">$0</strong></div>
+                                                                                                        <button class="checkout-btn" onclick="handleCheckout()">Proceder al pago →</button>
+                                                                                                            </div>
+                                                                                                            </div>>
 
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal-box" style="max-width: 420px; width: 90%;">

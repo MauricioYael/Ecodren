@@ -537,11 +537,35 @@ window.showToast = function(mensaje, tipo = 'info') {
         setTimeout(() => toast.remove(), 300);
     }, 3800);
 };
+
+function cargarAvatarGlobal() {
+    const savedAvatar = localStorage.getItem('ecodren_user_avatar');
+    if (!savedAvatar) return;
+
+    const navSvg = document.getElementById('navProfileSvg');
+    const navImg = document.getElementById('navProfileImg');
+    const navBtn = document.getElementById('profileBtn') || document.getElementById('navProfileBtn');
+    const dropdownAvatar = document.querySelector('#userState .profile-avatar');
+
+    if (navImg) {
+        navImg.src = savedAvatar;
+        navImg.style.display = 'block';
+        if (navSvg) navSvg.style.display = 'none';
+        if (navBtn) navBtn.style.border = '1.5px solid var(--eco-lime, #bffd00)';
+    }
+
+    if (dropdownAvatar) {
+        dropdownAvatar.innerHTML = `<img src="${savedAvatar}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+        dropdownAvatar.style.background = 'transparent';
+        dropdownAvatar.style.overflow = 'hidden';
+    }
+}
  
 document.addEventListener('DOMContentLoaded', () => {
     initFleetCarousel();
     inicializarInteraccionCarrito();
     actualizarContadorCarritoGlobal();
+    cargarAvatarGlobal();
 });
 
 function getCookie(name) {

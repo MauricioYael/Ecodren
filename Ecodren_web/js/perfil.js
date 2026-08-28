@@ -1,4 +1,3 @@
-// ── 💾 PERSISTENCIA Y CARGA DE DATOS OPERATIVOS ───────────────────
 function cargarDatosOperativosGuardados() {
     const saved = localStorage.getItem('ecodren_perfil_datos');
     if (!saved) return;
@@ -12,7 +11,9 @@ function cargarDatosOperativosGuardados() {
             if (inputNombre) inputNombre.value = data.nombre;
             if (userNameEl) userNameEl.innerText = data.nombre;
             if (welcomeEl) welcomeEl.innerText = data.nombre.split(' ')[0];
-            if (avatarEl) avatarEl.innerText = data.nombre.charAt(0).toUpperCase();
+            if (avatarEl && !localStorage.getItem('ecodren_user_avatar')) {
+                avatarEl.innerText = data.nombre.charAt(0).toUpperCase();
+            }
         }
         if (data.razon) {
             const inputRazon = document.getElementById('inputRazonSocial');
@@ -75,8 +76,12 @@ window.guardarDatosOperativos = async function(e) {
 
             if (userNameEl) userNameEl.innerText = resData.nombre;
             if (welcomeEl) welcomeEl.innerText = resData.nombre.split(' ')[0];
-            if (avatarEl) avatarEl.innerText = resData.nombre.charAt(0).toUpperCase();
+            if (avatarEl && !localStorage.getItem('ecodren_user_avatar')) {
+                avatarEl.innerText = resData.nombre.charAt(0).toUpperCase();
+            }
             if (userEmailEl) userEmailEl.innerText = resData.email;
+
+            localStorage.setItem('ecodren_perfil_datos', JSON.stringify(perfilData));
 
             if (btn) {
                 btn.disabled = false;
@@ -108,12 +113,182 @@ window.guardarDatosOperativos = async function(e) {
     }
 };
 
+let modoEdicionActivo = false;
+
+window.toggleModoEdicion = function() {
+    modoEdicionActivo = !modoEdicionActivo;
+    const inputs = document.querySelectorAll('#form-datos-empresa .operational-inline-input');
+    const btnToggle = document.getElementById('btnToggleEdit');
+    const containerSave = document.getElementById('containerSaveBtn');
+
+    if (modoEdicionActivo) {
+        inputs.forEach(input => input.removeAttribute('readonly'));
+        if (btnToggle) {
+            btnToggle.classList.add('active-edit');
+            btnToggle.innerHTML = '<i class="fa-solid fa-xmark"></i> <span>Cancelar</span>';
+        }
+        if (containerSave) containerSave.style.display = 'block';
+        document.getElementById('inputNombreCompleto')?.focus();
+    } else {
+        inputs.forEach(input => input.setAttribute('readonly', 'readonly'));
+        if (btnToggle) {
+            btnToggle.classList.remove('active-edit');
+            btnToggle.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> <span>Editar Información</span>';
+        }
+        if (containerSave) containerSave.style.display = 'none';
+        cargarDatosOperativosGuardados();
+    }
+};
+
+window.habilitarYFocarDireccion = function() {
+    if (!modoEdicionActivo) {
+        window.toggleModoEdicion();
+    }
+    const inputDir = document.getElementById('inputDireccionPrincipal');
+    if (inputDir) {
+        inputDir.focus();
+        inputDir.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+};
+
+window.togglePaymentForm = function() {
+    const formBox = document.getElementById('payment-form-container');
+    if (!formBox) return;
+    const isActive = formBox.classList.toggle('active');
+    if (isActive) {
+        document.getElementById('form-manage-payment')?.reset();
+        window.cambiarTipoMetodoForm('card');
+        formBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+};
+
+window.cambiarTipoMetodoForm = function(tipo) {
+    const rowCard = document.getElementById('row-card-fields');
+    const rowSpei = document.getElementById('row-spei-field');
+    const inputNum = document.getElementById('payment-number');
+    const inputExp = document.getElementById('payment-expiry');
+    const inputClabe = document.getElementById('payment-clabe');
+    const lblTitle = document.getElementById('lbl-payment-title');
+
+    if (tipo === 'spei') {
+        if (rowCard) rowCard.style.display = 'none';
+        if (rowSpei) rowSpei.style.display = 'block';
+        if (lblTitle) lblTitle.textContent = 'Banco / Nombre del Beneficiario';
+        inputNum?.removeAttribute('required');
+        inputExp?.removeAttribute('required');
+        inputClabe?.setAttribute('required', 'required');
+    } else {
+        if (rowCard) rowCard.style.display = 'grid';
+        if (rowSpei) rowSpei.style.display = 'none';
+        if (lblTitle) lblTitle.textContent = 'Identificador / Nombre en la Tarjeta';
+        inputNum?.setAttribute('required', 'required');
+        inputExp?.setAttribute('required', 'required');
+        inputClabe?.removeAttribute('required');
+    }
+};
+
+window.guardarNuevoMetodoPago = function(event) {
+    event.preventDefault();
+    const tipo = document.getElementById('payment-type').value;
+    const titulo = document.getElementById('payment-title').value.trim();
+    const grid = document.getElementById('payment-methods-grid');
+    const newId = Date.now();
+
+    let iconHtml = '<i class="fa-solid fa-credit-card"></i>';
+    let infoHtml = '';
+
+    if (tipo === 'spei') {
+        const clabe = document.getElementById('payment-clabe').value.trim();
+        const ultimosDigitos = clabe.slice(-4) || '••••';
+        iconHtml = '<i class="fa-solid fa-wallet"></i>';
+        infoHtml = `
+            <label>${titulo || 'Transferencia Interbancaria (SPEI)'}</label>
+            <p>Transferencia Interbancaria (SPEI)</p>
+            <label style="margin-top: 4px;">CLABE Registrada: •••• ${ultimosDigitos}</label>
+        `;
+    } else {
+        const tarjeta = document.getElementById('payment-number').value.trim();
+        const vencimiento = document.getElementById('payment-expiry').value.trim();
+        const ultimosDigitos = tarjeta.slice(-4) || '••••';
+        iconHtml = '<i class="fa-solid fa-credit-card"></i>';
+        infoHtml = `
+            <label>${titulo || 'Tarjeta de Crédito / Débito'}</label>
+            <p>•••• •••• •••• ${ultimosDigitos}</p>
+            <label style="margin-top: 4px; color: #10b981; font-weight: 700;">Vence: ${vencimiento}</label>
+        `;
+    }
+
+    const cardElement = document.createElement('div');
+    cardElement.className = 'swipe-container-wrapper';
+    cardElement.setAttribute('data-payment-id', newId);
+    cardElement.innerHTML = `
+        <div class="company-card payment-swipe-card">
+            <div class="company-card-icon">${iconHtml}</div>
+            <div class="company-card-info">
+                ${infoHtml}
+            </div>
+            <div class="desktop-card-actions">
+                <button type="button" class="btn-action-delete" title="Eliminar" onclick="eliminarMetodoPago('${newId}')"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+    `;
+
+    if (grid) grid.appendChild(cardElement);
+    window.togglePaymentForm();
+
+    if (typeof showToast === 'function') {
+        showToast('Método de pago registrado con éxito.', 'success');
+    } else {
+        alert("✅ Método de pago guardado.");
+    }
+};
+
+window.eliminarMetodoPago = function(id) {
+    const card = document.querySelector(`.swipe-container-wrapper[data-payment-id="${id}"]`);
+    if (card) {
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.9)';
+        card.style.transition = 'all 0.25s ease';
+        setTimeout(() => {
+            card.remove();
+            if (typeof showToast === 'function') {
+                showToast('Método de pago eliminado.', 'info');
+            }
+        }, 250);
+    }
+};
+
+window.toggleSupportMenu = function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const triggerCard = document.getElementById('btn-support-trigger');
+    const floatingMenu = document.getElementById('supportFloatingMenu');
+
+    if (triggerCard && floatingMenu) {
+        triggerCard.classList.toggle('open-active');
+        floatingMenu.classList.toggle('open');
+    }
+};
+
+window.confirmDeleteAccount = function() {
+    if (confirm("🚨 ALERTA CRÍTICA: ¿Estás seguro de querer dar de baja esta cuenta? Se perderán todos tus pedimentos logísticos.")) {
+        alert("Solicitud de desactivación enviada a revisión con el administrador de Equipos MC.");
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-
-    // Cargar datos operativos guardados al iniciar
     cargarDatosOperativosGuardados();
+    cargarAvatarGuardado();
 
-    // ── 🚀 DETECTOR DE RUTAS E INYECCIÓN DIRECTA DESDE EL NAV ──────────
+    const btnAddPayment = document.getElementById('btn-add-payment');
+    if (btnAddPayment) {
+        btnAddPayment.onclick = function(e) {
+            e.preventDefault();
+            window.togglePaymentForm();
+        };
+    }
+
     setTimeout(() => {
         const urlParams = new URLSearchParams(window.location.search);
         let activeParam = urlParams.get('tab') || urlParams.get('pane');
@@ -137,7 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 100);
 
-    // ── 💻 MANEJO DE PESTAÑAS (ESCRITORIO & MÓVIL) ────────────────────
     const menuButtons = document.querySelectorAll('.sidebar-menu-item');
     menuButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -150,7 +324,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetPane = document.getElementById(`pane-${paneId}`);
             if (targetPane) targetPane.classList.add('active');
 
-            // Cierre automático del menú móvil al seleccionar
             const accordionMenu = document.getElementById('accordionMenu');
             const mobileMenuTrigger = document.getElementById('mobileMenuTrigger');
             if (accordionMenu && accordionMenu.classList.contains('open')) {
@@ -162,7 +335,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ── 📱 ACORDEÓN DESPLEGABLE PARA CELULARES ────────────────────────
     const mobileMenuTrigger = document.getElementById('mobileMenuTrigger');
     const accordionMenu = document.getElementById('accordionMenu');
 
@@ -181,16 +353,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (mobileMenuTrigger) mobileMenuTrigger.classList.remove('open');
             }
         }
+
+        const triggerCard = document.getElementById('btn-support-trigger');
+        const floatingMenu = document.getElementById('supportFloatingMenu');
+        if (floatingMenu && floatingMenu.classList.contains('open')) {
+            if (!e.target.closest('.sidebar-support-wrapper')) {
+                floatingMenu.classList.remove('open');
+                if (triggerCard) triggerCard.classList.remove('open-active');
+            }
+        }
     });
 
-    // ── 📍 SISTEMA COMPLETO E INTERACTIVO DE DIRECCIONES (CRUD) ───────
     const btnToggleAddressForm = document.getElementById('btn-toggle-address-form');
     const addressFormContainer = document.getElementById('address-form-container');
     const btnCancelAddress = document.getElementById('btn-cancel-address');
     const formManageAddress = document.getElementById('form-manage-address');
     const addressCardsList = document.getElementById('address-cards-list');
 
-    // Campos del formulario de dirección
     const addressIdField = document.getElementById('address-id-field');
     const addressNameInput = document.getElementById('address-name');
     const addressStreetInput = document.getElementById('address-street');
@@ -199,7 +378,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const addressCityInput = document.getElementById('address-city');
     const addressFormTitle = document.getElementById('address-form-title');
 
-    // Abrir formulario para agregar nueva dirección
     if (btnToggleAddressForm && addressFormContainer) {
         btnToggleAddressForm.addEventListener('click', () => {
             resetAddressForm();
@@ -208,7 +386,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Cancelar formulario
     if (btnCancelAddress && addressFormContainer) {
         btnCancelAddress.addEventListener('click', () => {
             addressFormContainer.classList.remove('active');
@@ -221,7 +398,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (addressIdField) addressIdField.value = '';
     }
 
-    // Procesar alta o edición de dirección
     if (formManageAddress) {
         formManageAddress.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -316,7 +492,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     attachAddressEvents();
 
-    // ── 🔒 GESTIÓN DE SEGURIDAD Y PREFERENCIAS GENERALES ──────────────
     const formPassword = document.getElementById('form-password');
     if (formPassword) {
         formPassword.addEventListener('submit', (e) => {
@@ -334,156 +509,169 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ── 📞 CONTROL GLOBAL DEL MENÚ FLOTANTE DE SOPORTE ────────────────────
-window.toggleSupportMenu = function(event) {
-    event.preventDefault();
-    event.stopPropagation();
+let rawImageSrc = '';
+let cropState = { scale: 1, x: 0, y: 0 };
+let isDragging = false;
+let startPos = { x: 0, y: 0 };
 
-    const triggerCard = document.getElementById('btn-support-trigger');
-    const floatingMenu = document.getElementById('supportFloatingMenu');
+window.manejarSubidaAvatar = function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-    if (triggerCard && floatingMenu) {
-        triggerCard.classList.toggle('open-active');
-        floatingMenu.classList.toggle('open');
+    if (!file.type.startsWith('image/')) {
+        alert('Por favor selecciona un archivo de imagen válido.');
+        return;
     }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        rawImageSrc = e.target.result;
+        abrirModalCrop(rawImageSrc);
+    };
+    reader.readAsDataURL(file);
+    event.target.value = '';
 };
 
-document.addEventListener('click', () => {
-    const triggerCard = document.getElementById('btn-support-trigger');
-    const floatingMenu = document.getElementById('supportFloatingMenu');
+function abrirModalCrop(src) {
+    const modal = document.getElementById('modal-crop-avatar');
+    const previewImg = document.getElementById('avatarCropPreview');
+    const slider = document.getElementById('avatarZoomSlider');
 
-    if (floatingMenu && floatingMenu.classList.contains('open')) {
-        floatingMenu.classList.remove('open');
-        if (triggerCard) triggerCard.classList.remove('open-active');
-    }
-});
+    cropState = { scale: 1, x: 0, y: 0 };
+    if (slider) slider.value = 1;
 
-window.confirmDeleteAccount = function() {
-    if (confirm("🚨 ALERTA CRÍTICA: ¿Estás seguro de querer dar de baja esta cuenta? Se perderán todos tus pedimentos logísticos.")) {
-        alert("Solicitud de desactivación enviada a revisión con el administrador de Equipos MC.");
+    if (previewImg) {
+        previewImg.src = src;
+        previewImg.onload = function() {
+            const aspect = previewImg.naturalWidth / previewImg.naturalHeight;
+            if (aspect >= 1) {
+                previewImg.style.height = '220px';
+                previewImg.style.width = 'auto';
+            } else {
+                previewImg.style.width = '220px';
+                previewImg.style.height = 'auto';
+            }
+            actualizarTransformacionPreview();
+        };
     }
+
+    if (modal) modal.classList.add('modal-active');
+    iniciarEventosDrag();
+}
+
+window.cerrarModalCrop = function() {
+    const modal = document.getElementById('modal-crop-avatar');
+    if (modal) modal.classList.remove('modal-active');
 };
 
-let modoEdicionActivo = false;
-
-window.toggleModoEdicion = function() {
-    modoEdicionActivo = !modoEdicionActivo;
-    const inputs = document.querySelectorAll('#form-datos-empresa .operational-inline-input');
-    const btnToggle = document.getElementById('btnToggleEdit');
-    const containerSave = document.getElementById('containerSaveBtn');
-
-    if (modoEdicionActivo) {
-        // Habilitar edición
-        inputs.forEach(input => input.removeAttribute('readonly'));
-        if (btnToggle) {
-            btnToggle.classList.add('active-edit');
-            btnToggle.innerHTML = '<i class="fa-solid fa-xmark"></i> <span>Cancelar</span>';
-        }
-        if (containerSave) containerSave.style.display = 'block';
-        document.getElementById('inputNombreCompleto')?.focus();
-    } else {
-        // Deshabilitar edición / Restaurar valores guardados
-        inputs.forEach(input => input.setAttribute('readonly', 'readonly'));
-        if (btnToggle) {
-            btnToggle.classList.remove('active-edit');
-            btnToggle.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> <span>Editar Información</span>';
-        }
-        if (containerSave) containerSave.style.display = 'none';
-        cargarDatosOperativosGuardados();
-    }
-};
-
-window.habilitarYFocarDireccion = function() {
-    if (!modoEdicionActivo) {
-        window.toggleModoEdicion();
-    }
-    const inputDir = document.getElementById('inputDireccionPrincipal');
-    if (inputDir) {
-        inputDir.focus();
-        inputDir.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-};
-
-function cargarDatosOperativosGuardados() {
-    const saved = localStorage.getItem('ecodren_perfil_datos');
-    if (!saved) return;
-    try {
-        const data = JSON.parse(saved);
-        if (data.nombre) {
-            const inputNombre = document.getElementById('inputNombreCompleto');
-            const userNameEl = document.getElementById('userName');
-            const welcomeEl = document.getElementById('displayWelcomeName');
-            const avatarEl = document.getElementById('userAvatar');
-            if (inputNombre) inputNombre.value = data.nombre;
-            if (userNameEl) userNameEl.innerText = data.nombre;
-            if (welcomeEl) welcomeEl.innerText = data.nombre.split(' ')[0];
-            if (avatarEl) avatarEl.innerText = data.nombre.charAt(0).toUpperCase();
-        }
-        if (data.razon) {
-            const inputRazon = document.getElementById('inputRazonSocial');
-            if (inputRazon) inputRazon.value = data.razon;
-        }
-        if (data.email) {
-            const inputEmail = document.getElementById('inputEmailOperativo');
-            const userEmailEl = document.getElementById('userEmail');
-            if (inputEmail) inputEmail.value = data.email;
-            if (userEmailEl) userEmailEl.innerText = data.email;
-        }
-        if (data.telefono) {
-            const inputTel = document.getElementById('inputTelefonoOperativo');
-            if (inputTel) inputTel.value = data.telefono;
-        }
-        if (data.direccion) {
-            const inputDir = document.getElementById('inputDireccionPrincipal');
-            if (inputDir) inputDir.value = data.direccion;
-        }
-    } catch (e) {
-        console.error("Error al cargar datos operativos:", e);
+function actualizarTransformacionPreview() {
+    const previewImg = document.getElementById('avatarCropPreview');
+    if (previewImg) {
+        previewImg.style.transform = `translate(calc(-50% + ${cropState.x}px), calc(-50% + ${cropState.y}px)) scale(${cropState.scale})`;
     }
 }
 
-window.guardarDatosOperativos = function(e) {
-    e.preventDefault();
-    const btn = document.getElementById('btnSaveOperational');
-    const originalContent = btn ? btn.innerHTML : '';
+function iniciarEventosDrag() {
+    const viewport = document.getElementById('avatarCropViewport');
+    const slider = document.getElementById('avatarZoomSlider');
+    if (!viewport) return;
 
-    if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
-    }
-
-    const perfilData = {
-        nombre: document.getElementById('inputNombreCompleto')?.value.trim() || '',
-        razon: document.getElementById('inputRazonSocial')?.value.trim() || '',
-        email: document.getElementById('inputEmailOperativo')?.value.trim() || '',
-        telefono: document.getElementById('inputTelefonoOperativo')?.value.trim() || '',
-        direccion: document.getElementById('inputDireccionPrincipal')?.value.trim() || ''
+    slider.oninput = function() {
+        cropState.scale = parseFloat(this.value);
+        actualizarTransformacionPreview();
     };
 
-    localStorage.setItem('ecodren_perfil_datos', JSON.stringify(perfilData));
+    function start(e) {
+        isDragging = true;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        startPos = { x: clientX - cropState.x, y: clientY - cropState.y };
+    }
 
-    setTimeout(() => {
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-check"></i> ¡Guardado!';
-            btn.style.background = 'var(--eco-green, #0f5429)';
-        }
+    function move(e) {
+        if (!isDragging) return;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        cropState.x = clientX - startPos.x;
+        cropState.y = clientY - startPos.y;
+        actualizarTransformacionPreview();
+    }
 
-        // Bloquear de nuevo los inputs a modo solo lectura
-        window.toggleModoEdicion();
-        cargarDatosOperativosGuardados();
+    function end() {
+        isDragging = false;
+    }
 
-        if (typeof showToast === 'function') {
-            showToast('Información operativa actualizada con éxito.', 'success');
-        } else {
-            alert("✅ Información corporativa actualizada con éxito.");
-        }
+    viewport.onmousedown = start;
+    window.onmousemove = move;
+    window.onmouseup = end;
 
-        setTimeout(() => {
-            if (btn) {
-                btn.innerHTML = originalContent;
-                btn.style.background = '';
-            }
-        }, 2000);
-    }, 500);
+    viewport.ontouchstart = start;
+    window.ontouchmove = move;
+    window.ontouchend = end;
+}
+
+window.guardarRecorteAvatar = function() {
+    const previewImg = document.getElementById('avatarCropPreview');
+    if (!previewImg) return;
+
+    const canvas = document.createElement('canvas');
+    const size = 300;
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+
+    const viewportSize = 220;
+    const factorCanvas = size / viewportSize;
+
+    const renderedW = previewImg.offsetWidth * cropState.scale * factorCanvas;
+    const renderedH = previewImg.offsetHeight * cropState.scale * factorCanvas;
+
+    const centerX = (size / 2) + (cropState.x * factorCanvas);
+    const centerY = (size / 2) + (cropState.y * factorCanvas);
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.clip();
+
+    ctx.drawImage(previewImg, centerX - (renderedW / 2), centerY - (renderedH / 2), renderedW, renderedH);
+    ctx.restore();
+
+    const croppedBase64 = canvas.toDataURL('image/png');
+    aplicarAvatarUsuario(croppedBase64);
+    localStorage.setItem('ecodren_user_avatar', croppedBase64);
+
+    cerrarModalCrop();
+
+    if (typeof showToast === 'function') {
+        showToast('Foto de perfil recortada y actualizada con éxito.', 'success');
+    } else {
+        alert('✅ Foto de perfil actualizada.');
+    }
 };
+
+function aplicarAvatarUsuario(imageSrc) {
+    const userAvatarEl = document.getElementById('userAvatar');
+    if (userAvatarEl && imageSrc) {
+        userAvatarEl.innerHTML = `<img src="${imageSrc}" alt="Avatar de usuario" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;">`;
+    }
+
+    const navSvg = document.getElementById('navProfileSvg');
+    const navImg = document.getElementById('navProfileImg');
+    const navBtn = document.getElementById('navProfileBtn') || document.getElementById('profileBtn');
+
+    if (navImg && imageSrc) {
+        navImg.src = imageSrc;
+        navImg.style.display = 'block';
+        if (navSvg) navSvg.style.display = 'none';
+        if (navBtn) navBtn.style.border = '1.5px solid var(--eco-lime, #bffd00)';
+    }
+}
+
+function cargarAvatarGuardado() {
+    const savedAvatar = localStorage.getItem('ecodren_user_avatar');
+    if (savedAvatar) {
+        aplicarAvatarUsuario(savedAvatar);
+    }
+}

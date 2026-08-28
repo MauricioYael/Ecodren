@@ -61,10 +61,11 @@
             </button>
 
             <div class="profile-wrap" id="profileWrap">
-                <button class="profile-btn" id="profileBtn" aria-label="Perfil de usuario">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <button class="profile-btn" id="profileBtn" aria-label="Perfil de usuario" style="overflow: hidden; padding: 0; display: flex; align-items: center; justify-content: center;">
+                    <svg id="navProfileSvg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 18px; height: 18px;">
                         <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
                     </svg>
+                    <img id="navProfileImg" src="" alt="Perfil" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                 </button>
                 <div class="profile-dropdown" id="profileDropdown">
                     {% if user.is_authenticated %}
@@ -130,11 +131,13 @@
     </nav>
 
     <div class="mobile-menu" id="mobileMenu">
-        <a href="#categorias" class="mobile-link">Ficha Técnica</a>
+        <a href="{% url 'home' %}#categorias" class="mobile-link">Ficha Técnica</a>
         <a href="{% url 'tienda' %}" class="mobile-link">Tienda</a>
-        <a href="#maquinaria" class="mobile-link">Equipos</a>
-        <a href="#por-que" class="mobile-link">Nosotros</a>
-        <a href="#contacto" class="mobile-link" style="color:var(--eco-green);font-weight:600">Cotizar →</a>
+        <a href="{% url 'maquinaria' %}" class="mobile-link">Equipos</a>
+        <a href="{% url 'recursos' %}" class="mobile-link">Recursos</a>
+        <a href="{% url 'capacitaciones' %}" class="mobile-link">Capacitaciones</a>
+        <a href="{% url 'home' %}#por-que"  class="mobile-link">Nosotros</a>
+        <a href="{% url 'home' %}#contacto" class="mobile-link" style="color:var(--eco-green);font-weight:600">Cotizar →</a>
     </div>
 
     <div class="hero-3d" id="hero3d">

@@ -9,7 +9,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Sans:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
@@ -18,7 +18,6 @@
 </head>
 <body data-user-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}">
 
-    <!-- NAV -->
     <nav id="mainNav" class="light scrolled profile-nav">
         <a href="{% url 'home' %}" class="nav-logo">
             <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren Logo" class="web-logo">
@@ -60,10 +59,11 @@
             <button class="cart-nav-btn" id="cartNavBtn">🛒</button>
             
             <div class="profile-wrap">
-                <a href="{% url 'perfil' %}" class="profile-btn active" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: inherit;">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="width:18px; height:18px;">
+                <a href="{% url 'perfil' %}" class="profile-btn active" id="navProfileBtn" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: inherit; overflow: hidden; padding: 0;">
+                    <svg id="navProfileSvg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="width:18px; height:18px;">
                         <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
                     </svg>
+                    <img id="navProfileImg" src="" alt="Perfil" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                 </a>
             </div>
 
@@ -91,7 +91,10 @@
                         <div class="profile-avatar-letters profile-avatar" id="userAvatar">
                             {{ request.user.first_name|slice:":1"|default:request.user.username|slice:":1"|upper }}
                         </div>
-                        <button class="avatar-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                        <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" onchange="manejarSubidaAvatar(event)">
+                        <button type="button" class="avatar-edit-btn" onclick="document.getElementById('avatarFileInput').click()">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
                     </div>
                     <h2 class="profile-user-name" id="userName">
                         {{ request.user.get_full_name|default:request.user.username }}
@@ -165,7 +168,6 @@
 
             <section class="profile-content-area">
 
-                <!-- 🟢 PANEL 1: DATOS GENERALES -->
                 <div class="profile-pane active" id="pane-datos">
                     <div class="welcome-operational-header">
                         <div class="welcome-text-side">
@@ -189,23 +191,31 @@
                         <div class="operational-horizontal-row">
                             <div class="operational-col-item">
                                 <div class="col-item-icon"><i class="fa-solid fa-user"></i></div>
-                                <h4>Nombre Completo</h4>
-                                <input type="text" id="inputNombreCompleto" class="operational-inline-input" value="{% if request.user.get_full_name %}{{ request.user.get_full_name }}{% else %}{{ request.user.username }}{% endif %}" placeholder="Tu nombre completo" readonly required>
+                                <div class="col-item-text-wrap">
+                                    <h4>Nombre Completo</h4>
+                                    <input type="text" id="inputNombreCompleto" class="operational-inline-input" value="{% if request.user.get_full_name %}{{ request.user.get_full_name }}{% else %}{{ request.user.username }}{% endif %}" placeholder="Tu nombre completo" readonly required>
+                                </div>
                             </div>
                             <div class="operational-col-item">
                                 <div class="col-item-icon"><i class="fa-solid fa-building"></i></div>
-                                <h4>Razón Social</h4>
-                                <input type="text" id="inputRazonSocial" class="operational-inline-input" value="{{ request.user.perfil_empresa.razon_social|default:'Servicios Hidráulicos del Centro S.A.' }}" placeholder="Nombre de empresa" readonly>
+                                <div class="col-item-text-wrap">
+                                    <h4>Razón Social</h4>
+                                    <input type="text" id="inputRazonSocial" class="operational-inline-input" value="{{ request.user.perfil_empresa.razon_social|default:'Servicios Hidráulicos del Centro S.A.' }}" placeholder="Nombre de empresa" readonly>
+                                </div>
                             </div>
                             <div class="operational-col-item">
                                 <div class="col-item-icon"><i class="fa-solid fa-envelope"></i></div>
-                                <h4>Correo Electrónico</h4>
-                                <input type="email" id="inputEmailOperativo" class="operational-inline-input highlight-green" value="{% if request.user.email %}{{ request.user.email }}{% else %}contacto@empresa.com{% endif %}" placeholder="correo@empresa.com" readonly required>
+                                <div class="col-item-text-wrap">
+                                    <h4>Correo Electrónico</h4>
+                                    <input type="email" id="inputEmailOperativo" class="operational-inline-input highlight-green" value="{% if request.user.email %}{{ request.user.email }}{% else %}contacto@empresa.com{% endif %}" placeholder="correo@empresa.com" readonly required>
+                                </div>
                             </div>
                             <div class="operational-col-item">
                                 <div class="col-item-icon"><i class="fa-solid fa-phone"></i></div>
-                                <h4>Teléfono Operativo</h4>
-                                <input type="tel" id="inputTelefonoOperativo" class="operational-inline-input highlight-green" value="{{ request.user.perfil_empresa.telefono_operativo|default:'+52 55 1234 5678' }}" placeholder="+52 55 XXXX XXXX" readonly>
+                                <div class="col-item-text-wrap">
+                                    <h4>Teléfono Operativo</h4>
+                                    <input type="tel" id="inputTelefonoOperativo" class="operational-inline-input highlight-green" value="{{ request.user.perfil_empresa.telefono_operativo|default:'+52 55 1234 5678' }}" placeholder="+52 55 XXXX XXXX" readonly>
+                                </div>
                             </div>
                         </div>
 
@@ -237,7 +247,6 @@
                     </form>
                 </div>
 
-                <!-- 📦 PANEL 2: HISTORIAL DE PEDIDOS -->
                 <div class="profile-pane" id="pane-pedidos">
                     <div class="pane-header">
                         <h3>Historial de Pedidos y Logística</h3>
@@ -287,7 +296,6 @@
                     </div>
                 </div>
 
-                <!-- 📑 PANEL 3: COTIZACIONES -->
                 <div class="profile-pane" id="pane-cotizaciones">
                     <div class="pane-header">
                         <h3>Cotizaciones y Pedimentos Guardados</h3>
@@ -300,7 +308,7 @@
                             <div class="company-card-info">
                                 <label>No. Cotización / Vigencia</label>
                                 <p>COT-{{ cot.id|stringformat:"04d" }} ({{ cot.creado_en|date:"d M Y" }})</p>
-                                <label style="margin-top: 8px !important;">Categoria / Requerimiento</label>
+                                <label style="margin-top: 8px;">Categoria / Requerimiento</label>
                                 <p style="font-size: 0.9rem; color: #475569;">
                                     <strong>{{ cot.categoria|default:"General" }}</strong> - {{ cot.detalles|default:"Sin detalles adicionales" }}
                                 </p>
@@ -314,58 +322,85 @@
                     </div>
                 </div>
 
-                <!-- 💳 PANEL 4: MÉTODOS DE PAGO -->
                 <div class="profile-pane" id="pane-pagos">
                     <div class="pane-header payment-pane-header">
                         <div class="header-text-side">
                             <h3>Métodos de Pago</h3>
                             <p>Admstra las tarjetas de crédito, débito o cuentas bancarias ligadas a cuenta comercial.</p>
                         </div>
-                        <button class="btn-add-payment-method" id="btn-add-payment"><i class="fa-solid fa-plus"></i> Agregar Método</button>
+                        <button class="btn-add-payment-method" id="btn-add-payment">
+                            <i class="fa-solid fa-plus"></i> Agregar Método
+                        </button>
                     </div>
 
-                    <div class="company-data-grid text-left">
-                        <div class="swipe-container-wrapper">
-                            <div class="company-card payment-swiper-card" data-card-id="1">
-                                <div class="company-card-icon" style="color: #0a3d2f;"><i class="fa-solid fa-credit-card"></i></div>
+                    <div class="address-form-box" id="payment-form-container">
+                        <h4><i class="fa-solid fa-credit-card"></i> Registrar Nuevo Método de Pago</h4>
+                        <form id="form-manage-payment" onsubmit="guardarNuevoMetodoPago(event)">
+                            <div class="profile-form-group">
+                                <label for="payment-type">Tipo de Método</label>
+                                <select id="payment-type" class="profile-select-field" onchange="cambiarTipoMetodoForm(this.value)" required>
+                                    <option value="card" selected>Tarjeta de Crédito / Débito</option>
+                                    <option value="spei">Transferencia Interbancaria (SPEI / CLABE)</option>
+                                </select>
+                            </div>
+
+                            <div class="profile-form-group">
+                                <label for="payment-title" id="lbl-payment-title">Identificador / Nombre en la Tarjeta</label>
+                                <input type="text" id="payment-title" placeholder="Ej. Tarjeta Corporativa Operaciones" required>
+                            </div>
+                            <div class="address-form-grid-row" id="row-card-fields">
+                                <div class="profile-form-group">
+                                    <label for="payment-number">Numero de Tarjeta (16 dígitos)</label>
+                                    <input type="text" id="payment-number" maxlength="19" placeholder="•••• •••• •••• 1234" required>
+                                </div>
+                                <div class="profile-form-group">
+                                    <label for="payment-expiry">Fecha de Vencimiento (MM/AA)</label>
+                                    <input type="text" id="payment-expiry" maxlength="5" placeholder="12/28" required>
+                                </div>
+                            </div>
+
+                            <div class="profile-form-group" id="row-spei-field" style="display: none;">
+                                <label for="payment-clabe">Clabe Interbancaria (18 dígitos)</label>
+                                <input type="text" id="payment-clabe" maxlength="18" placeholder="01218000123457890">
+                            </div>
+                            <div class="address-form-buttons">
+                                <button type="button" class="btn-address-cancel" onclick="togglePaymentForm()">Cancelar</button>
+                                <button type="submit" class="profile-submit-btn" style="margin-top: 0;">Guardar Método</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="company-data-grid text-left" id="payment-methods-grid">
+                        <div class="swipe-container-wrapper" data-payment-id="1">
+                            <div class="company-card payment-swipe-card">
+                                <div class="company-card-icon"><i class="fa-solid fa-credit-card"></i></div>
                                 <div class="company-card-info">
                                     <label>Tarjeta de Crédito Principal</label>
                                     <p>•••• •••• •••• 4321</p>
                                     <label style="margin-top: 4px; color: #10b981; font-weight: 700;">Vence: 12/29</label>
                                 </div>
-                                <div class="desktop-cart-actions">
-                                    <button class="btn-action-edit" title="Modificar"><i class="fa-solid fa-pen"></i></button>
-                                    <button class="btn-action-delete" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                                <div class="desktop-card-actions">
+                                    <button type="button" class="btn-action-delete" title="Eliminar" onclick="eliminarMetodoPago('1')"><i class="fa-solid fa-trash"></i></button>
                                 </div>
-                            </div>
-                            <div class="swipe-behind-actions">
-                                <button class="swipe-btn-edit"><i class="fa-solid fa-pen"></i></button>
-                                <button class="swipe-btn-delete"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
 
-                        <div class="swipe-container-wrapper">
-                            <div class="company-card payment-swipe-card" data-card-id="2">
-                                <div class="company-card-icon" style="color: #0a3d2f;"><i class="fa-solid fa-wallet"></i></div>
+                        <div class="swipe-container-wrapper" data-payment-id="2">
+                            <div class="company-card payment-swipe-card">
+                                <div class="company-card-icon"><i class="fa-solid fa-wallet"></i></div>
                                 <div class="company-card-info">
                                     <label>Método Alternativo</label>
                                     <p>Transferencia Interbancaria (SPEI)</p>
-                                    <label style="margin-top: 4px;">Clabe Registrada</label>
+                                    <label style="margin-top: 4px;">CLABE Registrada: •••• 5678</label>
                                 </div>
                                 <div class="desktop-card-actions">
-                                    <button class="btn-action-edit" title="Modificar"><i class="fa-solid fa-pen"></i></button>
-                                    <button class="btn-action-delete" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                                    <button type="button" class="btn-action-delete" title="Eliminar" onclick="eliminarMetodoPago('2')"><i class="fa-solid fa-trash"></i></button>
                                 </div>
-                            </div>
-                            <div class="swipe-behind-actions">
-                                <button class="swipe-btn-edit"><i class="fa-solid fa-pen"></i></button>
-                                <button class="swipe-btn-delete"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 📍 PANEL 5: DIRECCIONES GUARDADAS -->
                 <div class="profile-pane" id="pane-direcciones">
                     <div class="pane-header address-header-flex">
                         <div class="header-text">
@@ -441,7 +476,6 @@
                     </div>
                 </div>
 
-                <!-- ⚙️ PANEL 6: PREFERENCIAS / CONFIGURACIÓN -->
                 <div class="profile-pane" id="pane-configuracion">
                     <div class="pane-header">
                         <h3>Preferencias y Seguridad del Perfil</h3>
@@ -456,7 +490,7 @@
                             <label style="margin-bottom: 0.5rem;">Tema del sistema</label>
                             <div class="theme-switch-wrapper">
                                 <label class="theme-switch-container" for="theme-toggle-checkbox">
-                                    <input type="checkbox" id="theme-toggle-checkbox" onchange="typeof toggleThemeSelector === 'function' ? toggleThemeSelector() : console.log('Cambio de tema visualizado')">
+                                    <input type="checkbox" id="theme-toggle-checkbox" onchange="typeof toggleThemeSelector === 'function' ? toggleThemeSelector() : console.log('Tema cambiado')">
 
                                     <div class="theme-switch-slider">
                                         <span class="switch-text-mode text-day"> Día</span>
@@ -498,7 +532,7 @@
                                     <input type="password" id="confirm-password" placeholder="Repite tu contraseña" required> 
                                 </div>
                             </div>
-                            <button type="submit" class="profile-submit-btn" style="margin-top: 1rem !important;">Actualizar Credenciales</button>
+                            <button type="submit" class="profile-submit-btn" style="margin-top: 1rem;">Actualizar Credenciales</button>
                         </form>
                     </div>
 
@@ -613,6 +647,29 @@
             </div>
         </div>
     </footer>
+
+    <div class="custom-modal-overlay" id="modal-crop-avatar">
+        <div class="custom-modal-box" style="max-width: 440px;">
+            <h3>Ajustar Foto de Perfil</h3>
+            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Arrastra para mover la imagen y usa el deslizador para el zoom.</p>
+
+            <div class="avatar-crop-viewport" id="avatarCropViewport">
+                <img id="avatarCropPreview" src="" alt="Previsualización">
+            </div>
+
+            <div class="avatar-crop-controls">
+                <label for="avatarZoomSlider"><i class="fa-solid fa-magnifying-glass-plus"></i> Zoom</label>
+                <input type="range" id="avatarZoomSlider" min="1" max="3" step="0.05" value="1">
+            </div>
+
+            <div class="modal-divider" style="margin: 1.25rem 0;"></div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" class="btn-address-cancel" onclick="cerrarModalCrop()">Cancelar</button>
+                <button type="button" class="profile-submit-btn" style="margin-top: 0; padding: 0.75rem 1.8rem;" onclick="guardarRecorteAvatar()">Guardar Foto</button>
+            </div>
+        </div>
+    </div>
 
     <script src="{% static 'js/perfil.js' %}"></script>
 </body>
