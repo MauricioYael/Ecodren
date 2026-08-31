@@ -518,7 +518,7 @@
     font-family: 'Raleway', sans-serif;
     font-size: 0.78rem;
     font-weight: 800;
-    color: #65a30d;
+    color: #475569;
 }
 
 .cap-btn-enroll {
@@ -854,4 +854,246 @@
     font-size: 0.62rem;
     color: #64748b;
     font-weight: 600;
+}
+
+@media (max-width: 992px) {
+    .cap-main-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    .cap-diploma-banner-card {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 2rem;
+    }
+}
+@media (max-width: 780px) {
+    .capacitaciones-hero-section {
+        padding: calc(var(--nav-h, 72px) + 1.5rem) 1.25rem 4rem 1.25rem;
+        background-position: 75% center;
+    }
+    .capacitaciones-hero-text h1{
+        font-size: 2.1rem;
+        line-height: 1.15;
+    }
+    .capacitaciones-hero-text p {
+        font-size: 0.88rem;
+        margin-bottom: 1.5rem;
+    }
+    .capacitaciones-search-wrapper {
+        max-width: 100%;
+    }
+    .capacitaciones-features-grid {
+        grid-template-columns: repeat(2,1fr);
+        gap: 0.6rem 1rem;
+        margin-top: 1rem;
+        padding-top: 0.85rem;
+        max-width: 100%;
+    }
+    .cap-subnav-section {
+        padding: 0.75rem 1rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    -cap-subnav-section::-webkit-scrollbar {
+        display: none;
+    }
+    .cap-subnav-container {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 0.75rem;
+        width: max-content;
+    }
+    .cap-tab-btn {
+        padding: 0.5rem 0.9rem;
+        font-size: 0.78rem;
+        white-space: nowrap;
+    }
+    .cap-tab-btn.active::after {
+        bottom: -0.75rem;
+    }
+    .cap-main-section {
+        padding: 2rem 1rem;
+    }
+    .cap-cards-track {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        gap: 1rem;
+        padding-bottom: 0.5rem;
+        scrollbar-width: none;
+    }
+    .cap-cards-track::-webkit-scrollbar {
+        display: none;
+    }
+    .cap-exp-card {
+        flex: 0 0 78%;
+        min-width: 240px;
+        scroll-snap-align: start;
+    }
+    .cap-carousel-arrow {
+        display: none;
+    }
+    .cap-carousel-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+    .cap-course-thumb {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 0.6rem;
+    }
+    .cap-diploma-section {
+        padding: 1 rem 1rem 3.5rem 1rem;
+    }
+    .cap-diploma-banner-card {
+        padding: 1.5rem 1.25rem;
+    }
+    .cap-diploma-info-col h2 {
+        font-size: 1.45rem;
+    }
+
+    .cap-diploma-meta-pills {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .cap-diploma-buttons-group {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .cap-btn-download-glow,
+    .cap-btn-history-outline {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .cap-certificate-pass-card {
+        max-width: 100%;
+    }
+    .cap-feature-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.45rem;
+    }
+    .cap-feature-icon {
+        font-size: 1.05rem;
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+    .cap-feature-info h3 {
+        font-size: 0.85rem;
+        margin: 0;
+        line-height: 1.15;
+    }
+    .cap-courses-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .cap-course-card {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 0.75rem 0.85rem;
+        gap: 0.75rem;
+        box-sizing: border-box;
+        width: 100%;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .cap-course-thumb {
+        width: 65px;
+        min-width: 65px;
+        height: 55px;
+        border-radius: 8px;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .cap-course-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    .cap-course-info {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .cap-course-info h3 {
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+        line-height: 1.25;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .cap-course-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        font-size: 0.68rem;
+        color: #64748b;
+    }
+    .cap-course-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .cap-course-action {
+        width: auto;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 4px;
+        border-top: none;
+        padding-top: 0;
+        flex-shrink: 0;
+    }
+    .cap-course-price {
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: #475569;
+        line-height: 1;
+    }
+    .cap-btn-enroll {
+        all: unset;
+        background: var(--eco-lime);
+        border: 1px solid var(--eco-lime);
+        color: #021510;
+        border-radius: 50px;
+        font-family: 'Raleway', sans-serif;
+        font-size: 0.68rem;
+        font-weight: 800;
+        cursor: pointer;
+        align-items: center;
+        display: inline-flex;
+        gap: 4px;
+        box-sizing: border-box;
+        white-space:nowrap;
+        box-shadow: 0 2px 6px rgba(191, 253, 0, 0.25);
+    }
 }

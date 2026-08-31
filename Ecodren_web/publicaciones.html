@@ -135,90 +135,88 @@
         <a href="{% url 'home' %}#contacto" class="mobile-link" style="color: var(--eco-green); font-weight: 600;">Cotizar →</a>
     </div>
 
-    <main class="resources-main-content" style="padding-top: 7rem;">
-        <section class="social-hub-section">
-            <div class="section-block-container" style="margin-bottom: 2rem;">
-                <span class="resources-tag">Catálogo Completo</span>
-                <h1 class="comunidad-heading-title" style="font-size: 2.5rem;">Todas las publicaciones</h1>
-                <p class="comunidad-heading-desc">Explora el archivo completo de noticias, casos de éxito, lanzamientos y contenido en redes sociales.</p>
-            </div>
-
-            <section class="resources-filter-bar-section publicaciones-filter-bar">
-                <div class="resources-filter-container">
-                    <div class="filter-tabs-wrapper">
-                        <a href="{% url 'publicaciones' %}?cat=todos" class="filter-tab {% if cat_actual == 'todos' or not cat_actual %}active{% endif %}" style="text-decoration: none;">
-                            <i class="fa-solid fa-table-cells-large"></i> Todos
-                        </a>
-                        <a href="{% url 'publicaciones' %}?cat=video" class="filter-tab {% if cat_actual == 'video' %}active{% endif %}" style="text-decoration: none;">
-                            <i class="fa-solid fa-circle-play"></i> Videos
-                        </a>
-                        <a href="{% url 'publicaciones' %}?cat=noticia" class="filter-tab {% if cat_actual == 'noticia' %}active{% endif %}" style="text-decoration: none;">
-                            <i class="fa-solid fa-newspaper"></i> Noticias
-                        </a>
-                    </div>
+    <main class="resources-main-content">
+        <!-- Hero de Publicaciones -->
+        <section class="resources-hero-section publicaciones-hero">
+            <div class="resources-hero-container">
+                <div class="resources-hero-text">
+                    <span class="resources-tag">CATÁLOGO COMPLETO</span>
+                    <h1>Todas las publicaciones</h1>
+                    <p>Explora el archivo completo de noticias operativas, casos de éxito, lanzamientos y cobertura en campo.</p>
                 </div>
-            </section>
-
-            <div class="premium-bento-grid">
-                {% for post in publicaciones %}
-                <a href="{% if post.url_destino %}{{ post.url_destino }}{% else %}#{% endif %}" target="_blank" class="bento-card {% if post.destacado %}card-featured{% endif %}" data-category="{{ post.tipo }}">
-                    <img class="bento-card-img" src="{% if post.imagen_portada %}{{ post.imagen_portada.url }}{% else %}{% static 'Assets/ecodren17.webp' %}{% endif %}" alt="{{ post.titulo }}">
-                    <div class="bento-card-content">
-                        {% if post.destacado %}
-                        <span class="bento-badge-pill badge-tag-destacado">
-                            <i class="fa-solid fa-star"></i>Destacado
-                        </span>
-                        {% else %}
-                        <span class="bento-badge-pill">
-                            <i class="fa-brands fa-{{ post.red_social|default:'facebook' }}"></i>{{ post.get_red_social_display }}
-                        </span>
-                        {% endif %}
-                        <span class="bento-category-label">{{ post.get_tipo_display }}</span>
-                        <h3 class="bento-card-title">{{ post.titulo }}</h3>
-                        <p class="bento-card-text">{{ post.descripcion }}</p>
-
-                        <div class="bento-meta-row">
-                            <span><i class="fa-regular fa-calendar"></i>{{ post.duracion_o_fecha|default:post.creado_en|date:'d M Y' }}</span>
-                        </div>
-                        <span class="bento-action-link">Ver publicación <i class="fa-solid fa-arrow-right-long"></i></span>
-                    </div>
-                </a>
-                {% empty %}
-                <a href="https://www.facebook.com/people/Equipos-MC/100054393135080/" target="_blank" class="bento-card card-featured">
-                    <img class="bento-card-img" src="{% static 'Assets/ecodren17.webp' %}" alt="ED-17 Guadalajara">
-                    <div class="bento-card-content">
-                        <span class="bento-badge-pill badge-tag-destacado">
-                            <i class="fa-solid fa-star"></i>Destacado
-                        </span>
-                        <span class="bento-category-label">Noticias</span>
-                        <h3 class="bento-card-title">ED-17 operación en acción en Guadalajara</h3>
-                        <p class="bento-card-text">Conoce cómo nuestro equipo ED-17 realizó operaciones de desazolve de alto rendimiento en líneas de alta presión en Guadalajara, Jal.</p>
-
-                        <div class="bento-meta-row">
-                            <span><i class="fa-regular fa-calendar"></i>15 de mayo, 2026</span>
-                            <span><i class="fa-regular fa-clock"></i>6 min de lectura</span>
-                        </div>
-                        <span class="bento-action-link">Leer Publicación <i class="fa-solid fa-arrow-right-long"></i></span>
-                    </div>
-                </a>
-                {% endfor %}
             </div>
+        </section>
 
-            <div class="comunidad-pagination-wrapper">
-                <div class="comunidad-pagination-container">
-                    <button class="page-nav-btn prev-page" disabled aria-label="Página anterior">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </button>
-                    <div class="page-numbers-pill">
-                        <button class="page-num-btn active">1</button>
-                    </div>
-                    <button class="page-nav-btn next-page" disabled aria-label="Siguiente página">
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </button>
+        <!-- Barra de Filtros Integrada -->
+        <section class="resources-filter-bar-section publicaciones-filter-bar-wrap">
+            <div class="resources-filter-container">
+                <div class="filter-tabs-wrapper">
+                    <a href="{% url 'publicaciones' %}?cat=todos" class="filter-tab {% if cat_actual == 'todos' or not cat_actual %}active{% endif %}" style="text-decoration: none;">
+                        <i class="fa-solid fa-table-cells-large"></i> Todos
+                    </a>
+                    <a href="{% url 'publicaciones' %}?cat=video" class="filter-tab {% if cat_actual == 'video' %}active{% endif %}" style="text-decoration: none;">
+                        <i class="fa-solid fa-circle-play"></i> Videos
+                    </a>
+                    <a href="{% url 'publicaciones' %}?cat=noticia" class="filter-tab {% if cat_actual == 'noticia' %}active{% endif %}" style="text-decoration: none;">
+                        <i class="fa-solid fa-newspaper"></i> Noticias
+                    </a>
                 </div>
                 
-                <div class="comunidad-pagination-info">
-                    Mostrando publicaciones activas
+                <div class="filter-sort-wrapper">
+                    <a href="{% url 'recursos' %}" class="view-all-link" style="color: rgba(255,255,255,0.75);">
+                        <i class="fa-solid fa-arrow-left"></i> Volver a Recursos
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cuadrícula Bento de Publicaciones -->
+        <section class="social-hub-section" style="padding-top: 1rem;">
+            <div class="section-block-container">
+                <div class="premium-bento-grid">
+                    {% for post in publicaciones %}
+                    <a href="{% if post.url_destino %}{{ post.url_destino }}{% else %}#{% endif %}" target="_blank" class="bento-card {% if post.destacado %}card-featured{% endif %}" data-category="{{ post.tipo }}">
+                        <img class="bento-card-img" src="{% if post.imagen_portada %}{{ post.imagen_portada.url }}{% else %}{% static 'Assets/ecodren17.webp' %}{% endif %}" alt="{{ post.titulo }}">
+                        <div class="bento-card-content">
+                            {% if post.destacado %}
+                            <span class="bento-badge-pill badge-tag-destacado">
+                                <i class="fa-solid fa-star"></i>Destacado
+                            </span>
+                            {% else %}
+                            <span class="bento-badge-pill">
+                                <i class="fa-brands fa-{{ post.red_social|default:'facebook' }}"></i>{{ post.get_red_social_display }}
+                            </span>
+                            {% endif %}
+                            <span class="bento-category-label">{{ post.get_tipo_display }}</span>
+                            <h3 class="bento-card-title">{{ post.titulo }}</h3>
+                            <p class="bento-card-text">{{ post.descripcion }}</p>
+
+                            <div class="bento-meta-row">
+                                <span><i class="fa-regular fa-calendar"></i>{{ post.duracion_o_fecha|default:post.creado_en|date:'d M Y' }}</span>
+                            </div>
+                            <span class="bento-action-link">Ver publicación <i class="fa-solid fa-arrow-right-long"></i></span>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; color: #64748b;">
+                        <i class="fa-solid fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.4;"></i>
+                        <p style="font-size: 1.1rem; font-weight: 600;">No hay publicaciones disponibles en esta categoría.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="comunidad-pagination-wrapper">
+                    <div class="comunidad-pagination-container">
+                        <button class="page-nav-btn prev-page" disabled aria-label="Página anterior">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </button>
+                        <div class="page-numbers-pill">
+                            <button class="page-num-btn active">1</button>
+                        </div>
+                        <button class="page-nav-btn next-page" disabled aria-label="Siguiente página">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>

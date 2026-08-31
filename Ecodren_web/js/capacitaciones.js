@@ -1,18 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
     const btnTabExperiencia = document.querySelector(".cap-tab-btn[onclick*='experiencia']");
     const btnTabDisponibles = document.querySelector(".cap-tab-btn[onclick*='disponibles']");
-    const btnTabDiploma = document.querySelector(".cap-tab-btn[onclick*='diploma']");
 
     const colExperiencia = document.getElementById("sec-experiencia");
     const colDisponibles = document.getElementById("sec-disponibles");
-    const secDiploma = idElemento("sec-diploma");
+    const secDiploma = document.getElementById("sec-diploma");
     const mainContainer = document.querySelector(".cap-main-container");
 
     const btnVerTodosExp = document.querySelector(".cap-col-experience .cap-view-all");
     const btnVerTodosCursos = document.querySelector(".cap-all-courses-footer .cap-link-all-courses");
 
-    function idElemento(id) {
-        return document.getElementById(id);
+    function esMovil() {
+        return window.innerWidth <= 768;
     }
 
     function resetearFiltrosVista() {
@@ -23,12 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (secDiploma) secDiploma.style.display = 'block';
 
         if (mainContainer) {
-            mainContainer.style.gridTemplateColumns = '1.1fr 0.9fr';
-        }
-
-        const trackCards = document.querySelector('.cap-cards-track');
-        if (trackCards) {
-            trackCards.style.gridTemplateColumns = 'repeat(4, 1fr)';
+            mainContainer.style.gridTemplateColumns = esMovil() ? '1fr' : '1.1fr 0.9fr';
         }
     }
 
@@ -43,11 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tabName === 'experiencia') {
             if (colDisponibles) colDisponibles.style.display = 'none';
             if (mainContainer) mainContainer.style.gridTemplateColumns = '1fr';
-            
-            const trackCards = document.querySelector('.cap-cards-track');
-            if (trackCards) {
-                trackCards.style.gridTemplateColumns = 'repeat(4, 1fr)';
-            }
             if (colExperiencia) colExperiencia.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
         } else if (tabName === 'disponibles') {
@@ -76,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Funcionalidad de desplazamiento en Carrusel (Nuestra Experiencia)
     const prevArrow = document.querySelector('.cap-carousel-arrow.prev-arrow');
     const nextArrow = document.querySelector('.cap-carousel-arrow.next-arrow');
     const cardsTrack = document.querySelector('.cap-cards-track');

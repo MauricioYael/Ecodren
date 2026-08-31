@@ -11,6 +11,11 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-clave-de-respaldo-dev')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = ['*']
 
+# Cierre de sesión directo sin pantalla intermedia de confirmación
+ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
 # ── 1. INSTALLED_APPS ───────────────────────────────────────────────
 INSTALLED_APPS = [
     'django.contrib.admin',
