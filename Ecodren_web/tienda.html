@@ -202,12 +202,12 @@
             <label class="filter-label">Disponibilidad</label>
             <div class="filter-options">
                 <label class="filter-toggle">
-                    <input type="checkbox" id="filterStock">
+                    <input type="checkbox" id="filterStock" {% if request.GET.stock == '1' %}checked{% endif %}>
                     <span class="toggle-track"><span class="toggle-thumb"></span></span>
                     Solo en stock
                 </label>
                 <label class="filter-toggle">
-                    <input type="checkbox" id="filterOfertas">
+                    <input type="checkbox" id="filterOfertas" {% if etiqueta_seleccionada == 'oferta' %}checked{% endif %}>
                     <span class="toggle-track"><span class="toggle-thumb"></span></span>
                     Solo ofertas
                 </label>
@@ -243,7 +243,7 @@
         <div class="active-filter-tags" id="activeFilterTags"></div>
         <div class="shop-grid" id="shopGrid">
             {% for producto in productos %}
-            <div class="product-card" data-category="{{ producto.categoria.id }}">
+            <div class="product-card" data-category="{{ producto.categoria.id }}" data-etiqueta="{{ producto.etiqueta }}">
                 <div class="product-card-img" style="cursor: pointer;" 
                      data-id="{{ producto.id }}"
                      data-nombre="{{ producto.nombre }}"
@@ -255,6 +255,19 @@
                      data-sku="{{ producto.codigo_sku }}"
                      data-specs="{{ producto.especificaciones|default:'' }}">
                     <span class="badge-sku">{{ producto.codigo_sku }}</span>
+                    {% if producto.etiqueta %}
+                        <span class="product-badge badge-{{ producto.etiqueta }}">
+                            {% if producto.etiqueta == 'destacado' %}
+                                <i class="fa-solid fa-star"></i>
+                            {% elif producto.etiqueta == 'oferta' %}
+                                <i class="fa-solid fa-tag"></i>
+                            {% elif producto.etiqueta == 'nuevo' %}
+                                <i class="fa-solid fa-sparkles"></i>
+                            {% endif %}
+                            {{ producto.get_etiqueta_display }}
+                        </span>
+                    {% endif %}
+
                     {% if producto.imagen %}
                         <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" loading="lazy">
                     {% else %}

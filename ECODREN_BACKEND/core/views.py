@@ -25,6 +25,7 @@ def tienda(request):
     categorias = Categoria.objects.all()
     productos = Producto.objects.filter(disponible=True)
 
+    # 1. Filtro por Categoría
     cat_param = request.GET.get('cat', '').strip()
     if cat_param and cat_param.lower() != 'todos':
         if cat_param.isdigit():
@@ -32,6 +33,7 @@ def tienda(request):
         else:
             productos = productos.filter(categoria__nombre__icontains=cat_param)
 
+    # 2. Búsqueda por texto
     busqueda = request.GET.get('q', '').strip()
     if busqueda:
         productos = productos.filter(
@@ -39,14 +41,23 @@ def tienda(request):
             Q(codigo_sku__icontains=busqueda) |
             Q(descripcion__icontains=busqueda)
         )
+
+    # 3. Filtro por Stock
     solo_stock = request.GET.get('stock')
     if solo_stock == '1':
         productos = productos.filter(stock__gt=0)
 
+    # 4. Filtro por Etiquetas / Ofertas (NUEVO)
+    etiqueta_param = request.GET.get('etiqueta', '').strip()
+    if etiqueta_param:
+        productos = productos.filter(etiqueta=etiqueta_param)
+
+    # 5. Filtro por Precio Máximo
     precio_max = request.GET.get('precio_max', '').strip()
     if precio_max and precio_max.isdigit():
         productos = productos.filter(precio_base__lte=float(precio_max))
 
+    # 6. Ordenamiento
     orden = request.GET.get('sort')
     if orden == 'price-asc':
         productos = productos.order_by('precio_base')
@@ -61,6 +72,7 @@ def tienda(request):
         'categorias': categorias,
         'productos': productos,
         'cat_seleccionada': cat_param,
+        'etiqueta_seleccionada': etiqueta_param,
         'busqueda': busqueda,
         'precio_max': precio_max or '10000',
     }

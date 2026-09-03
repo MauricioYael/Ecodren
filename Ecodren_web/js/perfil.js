@@ -222,12 +222,17 @@ window.guardarNuevoMetodoPago = function(event) {
     cardElement.className = 'swipe-container-wrapper';
     cardElement.setAttribute('data-payment-id', newId);
     cardElement.innerHTML = `
+        <div class="swipe-behind-actions">
+            <button type="button" class="swipe-btn-edit" onclick="editarMetodoPago('${newId}')"><i class="fa-solid fa-pen"></i></button>
+            <button type="button" class="swipe-btn-delete" onclick="eliminarMetodoPago('${newId}')"><i class="fa-solid fa-trash-can"></i></button>
+        </div>
         <div class="company-card payment-swipe-card">
             <div class="company-card-icon">${iconHtml}</div>
             <div class="company-card-info">
                 ${infoHtml}
             </div>
             <div class="desktop-card-actions">
+                <button type="button" class="btn-action-edit" title="Editar" onclick="editarMetodoPago('${newId}')"><i class="fa-solid fa-pen"></i></button>
                 <button type="button" class="btn-action-delete" title="Eliminar" onclick="eliminarMetodoPago('${newId}')"><i class="fa-solid fa-trash"></i></button>
             </div>
         </div>
@@ -235,6 +240,7 @@ window.guardarNuevoMetodoPago = function(event) {
 
     if (grid) grid.appendChild(cardElement);
     window.togglePaymentForm();
+    inicializarSwipeCards();
 
     if (typeof showToast === 'function') {
         showToast('Método de pago registrado con éxito.', 'success');
@@ -242,6 +248,52 @@ window.guardarNuevoMetodoPago = function(event) {
         alert("✅ Método de pago guardado.");
     }
 };
+
+window.editarMetodoPago = function(id) {
+    const card = document.querySelector(`.swipe-container-wrapper[data-payment-id="${id}"]`);
+    if (!card) return;
+    const infoLabels = card.querySelectorAll('.company-card-info label');
+    const infoP = card.querySelector('.company-card-info p')?.innerText || '';
+    const title = infoLabels[0]?.innerText || '';
+
+    window.togglePaymentForm();
+    const inputTitle = document.getElementById('payment-title');
+    if (inputTitle) inputTitle.value = title;
+
+    if (infoP.includes('••••')) {
+        document.getElementById('payment-type').value = 'card';
+        window.cambiarTipoMetodoForm('card');
+        const inputNum = document.getElementById('payment-number');
+        if (inputNum) inputNum.value = infoP;
+    } else {
+        document.getElementById('payment-type').value = 'spei';
+        window.cambiarTipoMetodoForm('spei');
+    }
+};
+
+function inicializarSwipeCards() {
+    const cards = document.querySelectorAll('.payment-swipe-card');
+    cards.forEach(card => {
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        card.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        card.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+
+            if (diff > 45) {
+                cards.forEach(c => c.classList.remove('swiped'));
+                card.classList.add('swiped');
+            } else if (diff < -45) {
+                card.classList.remove('swiped');
+            }
+        }, { passive: true });
+    });
+}
 
 window.eliminarMetodoPago = function(id) {
     const card = document.querySelector(`.swipe-container-wrapper[data-payment-id="${id}"]`);
@@ -280,6 +332,7 @@ window.confirmDeleteAccount = function() {
 document.addEventListener('DOMContentLoaded', () => {
     cargarDatosOperativosGuardados();
     cargarAvatarGuardado();
+    inicializarSwipeCards();
 
     const btnAddPayment = document.getElementById('btn-add-payment');
     if (btnAddPayment) {
@@ -313,6 +366,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 100);
 
     const menuButtons = document.querySelectorAll('.sidebar-menu-item');
+    const mobileMenuTrigger = document.getElementById('mobileMenuTrigger');
+    const accordionMenu = document.getElementById('accordionMenu');
+
     menuButtons.forEach(button => {
         button.addEventListener('click', () => {
             const paneId = button.dataset.pane;
@@ -324,26 +380,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetPane = document.getElementById(`pane-${paneId}`);
             if (targetPane) targetPane.classList.add('active');
 
-            const accordionMenu = document.getElementById('accordionMenu');
-            const mobileMenuTrigger = document.getElementById('mobileMenuTrigger');
-            if (accordionMenu && accordionMenu.classList.contains('open')) {
+            if (mobileMenuTrigger) {
+                mobileMenuTrigger.classList.remove('open');
+                const triggerSpan = mobileMenuTrigger.querySelector('span');
+                if (triggerSpan) {
+                    triggerSpan.innerHTML = button.innerHTML;
+                }
+            }
+            if (accordionMenu) {
                 accordionMenu.classList.remove('open');
-                if (mobileMenuTrigger) mobileMenuTrigger.classList.remove('open');
-                const mobileTriggerSpan = mobileMenuTrigger.querySelector('span');
-                if (mobileTriggerSpan) mobileTriggerSpan.innerHTML = button.innerHTML;
             }
         });
     });
 
-    const mobileMenuTrigger = document.getElementById('mobileMenuTrigger');
-    const accordionMenu = document.getElementById('accordionMenu');
-
     if (mobileMenuTrigger && accordionMenu) {
-        mobileMenuTrigger.addEventListener('click', (e) => {
+        mobileMenuTrigger.onclick = function(e) {
+            e.preventDefault();
             e.stopPropagation();
-            mobileMenuTrigger.classList.toggle('open');
+            this.classList.toggle('open');
             accordionMenu.classList.toggle('open');
-        });
+        };
     }
 
     document.addEventListener('click', (e) => {

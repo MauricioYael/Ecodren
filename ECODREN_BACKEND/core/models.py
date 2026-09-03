@@ -22,6 +22,13 @@ class Categoria(models.Model):
 
 
 class Producto(models.Model):
+    ETIQUETA_CHOICES = [
+            ('', 'Sin etiqueta'),
+            ('nuevo', 'Nuevo'),
+            ('oferta', 'Oferta'),
+            ('destacado', 'Destacado'),
+        ]
+
     categoria = models.ForeignKey(
         Categoria, 
         on_delete=models.PROTECT, 
@@ -30,6 +37,13 @@ class Producto(models.Model):
     )
     codigo_sku = models.CharField(max_length=50, unique=True, verbose_name="Código / SKU")
     nombre = models.CharField(max_length=200, verbose_name="Nombre del Producto / Refacción")
+    etiqueta = models.CharField(
+        max_length=20,
+        choices=ETIQUETA_CHOICES,
+        default='',
+        blank=True,
+        verbose_name="Etiqueta visual"
+    )
     descripcion = models.TextField(blank=True, null=True, verbose_name="Descripción General")
     especificaciones = models.TextField(
         blank=True, 

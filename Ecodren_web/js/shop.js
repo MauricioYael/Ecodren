@@ -143,6 +143,14 @@ window.aplicarFiltros = function () {
             urlParams.delete('stock');
         }
     }
+    const filterOfertas = document.getElementById('filterOfertas');
+    if (filterOfertas) {
+        if (filterOfertas.checked) {
+            urlParams.set('etiqueta', 'oferta');
+        } else {
+            urlParams.delete('etiqueta');
+        }
+    }
 
     const sortSelect = document.getElementById('sortSelect');
     if (sortSelect && sortSelect.value !== 'default') {
@@ -223,6 +231,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const urlParams = new URLSearchParams(window.location.search);
         filterStock.checked = urlParams.get('stock') === '1';
         filterStock.addEventListener('change', window.aplicarFiltros);
+    }
+    const filterOfertas = document.getElementById('filterOfertas');
+    if (filterOfertas) {
+        const urlParams= new URLSearchParams(window.location.search);
+        filterOfertas.checked = urlParams.get('etiqueta') === 'oferta';
+        filterOfertas.addEventListener('change', window.aplicarFiltros);
     }
 
     const priceRange = document.getElementById('priceRange');

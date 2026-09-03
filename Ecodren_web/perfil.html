@@ -107,7 +107,7 @@
 
                 <button class="mobile-menu-trigger" id="mobileMenuTrigger">
                     <span><i class="fa-solid fa-building"></i> Datos de la Empresa</span>
-                    <i class="fa-solid fa-chevron-down arrow-toogle"></i>
+                    <i class="fa-solid fa-chevron-down arrow-toggle"></i>
                 </button>
 
                 <div class="profile-sidebar-menu" id="accordionMenu">
@@ -326,11 +326,15 @@
                     <div class="pane-header payment-pane-header">
                         <div class="header-text-side">
                             <h3>Métodos de Pago</h3>
-                            <p>Admstra las tarjetas de crédito, débito o cuentas bancarias ligadas a cuenta comercial.</p>
+                            <p>Administra las tarjetas de crédito, débito o cuentas bancarias ligadas a tu cuenta comercial.</p>
                         </div>
                         <button class="btn-add-payment-method" id="btn-add-payment">
                             <i class="fa-solid fa-plus"></i> Agregar Método
                         </button>
+                    </div>
+
+                    <div class="swipe-hint-legend">
+                        <i class="fa-solid fa-hand-point-left"></i> Desliza a la izquierda sobre un método para editar o eliminar
                     </div>
 
                     <div class="address-form-box" id="payment-form-container">
@@ -372,6 +376,10 @@
 
                     <div class="company-data-grid text-left" id="payment-methods-grid">
                         <div class="swipe-container-wrapper" data-payment-id="1">
+                            <div class="swipe-behind-actions">
+                                <button type="button" class="swipe-btn-edit" onclick="editarMetodoPago('1')"><i class="fa-solid fa-pen"></i></button>
+                                <button type="button" class="swipe-btn-delete" onclick="eliminarMetodoPago('1')"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
                             <div class="company-card payment-swipe-card">
                                 <div class="company-card-icon"><i class="fa-solid fa-credit-card"></i></div>
                                 <div class="company-card-info">
@@ -380,12 +388,17 @@
                                     <label style="margin-top: 4px; color: #10b981; font-weight: 700;">Vence: 12/29</label>
                                 </div>
                                 <div class="desktop-card-actions">
+                                    <button type="button" class="btn-action-edit" title="Editar" onclick="editarMetodoPago('1')"><i class="fa-solid fa-pen"></i></button>
                                     <button type="button" class="btn-action-delete" title="Eliminar" onclick="eliminarMetodoPago('1')"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             </div>
                         </div>
 
                         <div class="swipe-container-wrapper" data-payment-id="2">
+                            <div class="swipe-behind-actions">
+                                <button type="button" class="swipe-btn-edit" onclick="editarMetodoPago('2')"><i class="fa-solid fa-pen"></i></button>
+                                <button type="button" class="swipe-btn-delete" onclick="eliminarMetodoPago('2')"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
                             <div class="company-card payment-swipe-card">
                                 <div class="company-card-icon"><i class="fa-solid fa-wallet"></i></div>
                                 <div class="company-card-info">
@@ -394,6 +407,7 @@
                                     <label style="margin-top: 4px;">CLABE Registrada: •••• 5678</label>
                                 </div>
                                 <div class="desktop-card-actions">
+                                    <button type="button" class="btn-action-edit" title="Editar" onclick="editarMetodoPago('2')"><i class="fa-solid fa-pen"></i></button>
                                     <button type="button" class="btn-action-delete" title="Eliminar" onclick="eliminarMetodoPago('2')"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             </div>
