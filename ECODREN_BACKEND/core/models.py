@@ -207,7 +207,8 @@ class PublicacionRecurso(models.Model):
     ]
 
     titulo = models.CharField(max_length=200, verbose_name="Título")
-    descripcion = models.TextField(blank=True, null=True, verbose_name="Descripción corta")
+    descripcion_corta = models.CharField(max_length=150, blank=True, null=True, verbose_name="Descripción corta")
+    descripcion_larga = models.TextField(blank=True, null=True, verbose_name="Sinopsis / Descripción larga")
     tipo = models.CharField(max_length=30, choices=TIPO_CHOICES, default='noticia', verbose_name="Tipo de contenido")
     
     etiqueta_badge = models.CharField(max_length=50, blank=True, null=True, help_text="Ej: 04:35 Min, 20 May 2026, Empresa")

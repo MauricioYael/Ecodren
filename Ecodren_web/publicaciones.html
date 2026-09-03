@@ -65,7 +65,6 @@
                 </button>
                 <div class="profile-dropdown" id="profileDropdown">
                     {% if user.is_authenticated %}
-                        <!-- Estado: Sesión Activa -->
                         <div id="userState">
                             <div class="profile-header">
                                 <div class="profile-avatar" style="background: var(--eco-green); color: #fff; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">
@@ -99,7 +98,6 @@
                             </div>
                         </div>
                     {% else %}
-                        <!-- Estado: Invitado sin sesión -->
                         <div id="guestState">
                             <div style="padding:1.25rem 1.25rem 0.5rem">
                                 <p style="font-size:0.9rem;font-weight:600;margin-bottom:0.25rem">Bienvenido a Ecodren</p>
@@ -136,7 +134,6 @@
     </div>
 
     <main class="resources-main-content">
-        <!-- Hero de Publicaciones -->
         <section class="resources-hero-section publicaciones-hero">
             <div class="resources-hero-container">
                 <div class="resources-hero-text">
@@ -147,7 +144,6 @@
             </div>
         </section>
 
-        <!-- Barra de Filtros Integrada -->
         <section class="resources-filter-bar-section publicaciones-filter-bar-wrap">
             <div class="resources-filter-container">
                 <div class="filter-tabs-wrapper">
@@ -170,23 +166,25 @@
             </div>
         </section>
 
-        <!-- Cuadrícula Bento de Publicaciones -->
         <section class="social-hub-section" style="padding-top: 1rem;">
             <div class="section-block-container">
                 <div class="premium-bento-grid">
                     {% for post in publicaciones %}
                     <a href="{% if post.url_destino %}{{ post.url_destino }}{% else %}#{% endif %}" target="_blank" class="bento-card {% if post.destacado %}card-featured{% endif %}" data-category="{{ post.tipo }}">
                         <img class="bento-card-img" src="{% if post.imagen_portada %}{{ post.imagen_portada.url }}{% else %}{% static 'Assets/ecodren17.webp' %}{% endif %}" alt="{{ post.titulo }}">
-                        <div class="bento-card-content">
+                        
+                        <div class="bento-badges-row">
                             {% if post.destacado %}
                             <span class="bento-badge-pill badge-tag-destacado">
                                 <i class="fa-solid fa-star"></i>Destacado
                             </span>
-                            {% else %}
-                            <span class="bento-badge-pill">
+                            {% endif %}
+                            <span class="bento-badge-pill badge-social">
                                 <i class="fa-brands fa-{{ post.red_social|default:'facebook' }}"></i>{{ post.get_red_social_display }}
                             </span>
-                            {% endif %}
+                        </div>
+
+                        <div class="bento-card-content">
                             <span class="bento-category-label">{{ post.get_tipo_display }}</span>
                             <h3 class="bento-card-title">{{ post.titulo }}</h3>
                             <p class="bento-card-text">{{ post.descripcion }}</p>

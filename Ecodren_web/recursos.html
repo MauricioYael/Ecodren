@@ -339,17 +339,22 @@
                 {% for post in comunidad_bento %}
                 <a href="{% if post.url_destino %}{{ post.url_destino }}{% else %}#{% endif %}" target="_blank" class="bento-card {% if post.destacado %}card-featured{% endif %}">
                     <img class="bento-card-img" src="{% if post.imagen_portada %}{{ post.imagen_portada.url }}{% else %}{% static 'Assets/ecodren17.webp' %}{% endif %}" alt="{{ post.titulo }}">
-                    <div class="bento-card-content">
+                    
+                    <div class="bento-badges-row">
                         {% if post.destacado %}
                         <span class="bento-badge-pill badge-tag-destacado">
-                            <i class="fa-solid fa-star"></i>Destacado
-                        </span>
-                        {% else %}
-                        <span class="bento-badge-pill">
-                            <i class="fa-brands fa-{{ post.red_social|default:'facebook' }}"></i>{{ post.get_red_social_display }}
+                            <i class="fa-solid fa-star"></i> Destacado
                         </span>
                         {% endif %}
-                        <span class="bento-category-label">{{ post.etiqueta_badge|default:'Medios' }}</span>
+                        <span class="bento-badge-pill badge-social">
+                            <i class="fa-brands fa-{{ post.red_social|default:'facebook' }}"></i> {{ post.get_red_social_display }}
+                        </span>
+                    </div>
+
+                    <div class="bento-card-content">
+                        {% if post.etiqueta_badge %}
+                        <span class="bento-category-label">{{ post.etiqueta_badge }}</span>
+                        {% endif %}
                         <h3 class="bento-card-title">{{ post.titulo }}</h3>
                         <p class="bento-card-text">{{ post.descripcion }}</p>
 
@@ -362,10 +367,14 @@
                 {% empty %}
                 <a href="https://www.facebook.com/people/Equipos-MC/100054393135080/" target="_blank" class="bento-card card-featured">
                     <img class="bento-card-img" src="{% static 'Assets/ecodren17.webp' %}" alt="ED-17 Guadalajara">
-                    <div class="bento-card-content">
+                    
+                    <div class="bento-badges-row">
                         <span class="bento-badge-pill badge-tag-destacado">
-                            <i class="fa-solid fa-star"></i>Destacado
+                            <i class="fa-solid fa-star"></i> Destacado
                         </span>
+                    </div>
+
+                    <div class="bento-card-content">
                         <span class="bento-category-label">Noticias</span>
                         <h3 class="bento-card-title">{{ post.titulo|default:'ED-17 operación en acción en Guadalajara' }}</h3>
                         <p class="bento-card-text">Conoce cómo nuestro equipo ED-17 realizó operaciones de desazolve de alto rendimiento en líneas de alta presión en Guadalajara, Jal.</p>
@@ -433,7 +442,6 @@
         </div>
     </footer>
 
-    <!-- SIDEBAR DEL CARRITO GLOBAL -->
     <div class="cart-overlay" id="cartOverlay"></div>
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-head">
@@ -456,7 +464,6 @@
         </div>
     </div>
 
-    <!-- MODAL GLOBAL (LOGIN / REGISTER / FORGET / CHECKOUT) -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-box" style="max-width: 420px; width: 90%;">
             <button class="modal-close" onclick="closeModal()">×</button>
@@ -620,7 +627,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE GUÍAS Y DOCUMENTOS -->
     <div id="modal-guias-docs" class="modal-overlay">
         <div class="modal-box modal-guias-box">
             <button type="button" class="modal-close-btn" id="close-guias-modal" aria-label="Cerrar">&times;</button>
