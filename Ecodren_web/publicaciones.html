@@ -187,7 +187,7 @@
                         <div class="bento-card-content">
                             <span class="bento-category-label">{{ post.get_tipo_display }}</span>
                             <h3 class="bento-card-title">{{ post.titulo }}</h3>
-                            <p class="bento-card-text">{{ post.descripcion }}</p>
+                            <p class="bento-card-text">{{ post.descripcion_larga|default:post.descripcion_corta }}</p>
 
                             <div class="bento-meta-row">
                                 <span><i class="fa-regular fa-calendar"></i>{{ post.duracion_o_fecha|default:post.creado_en|date:'d M Y' }}</span>

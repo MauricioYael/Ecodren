@@ -196,7 +196,7 @@
                                 </span>
                                 <div class="resource-card-body-text">
                                     <h3 class="resource-card-title">{{ video.titulo }}</h3>
-                                    <p class="resource-card-description">{{ video.descripcion|truncatechars:80 }}</p>
+                                    <p class="resource-card-description">{{ video.descripcion_corta|default:video.descripcion_larga|truncatechars:80 }}</p>
                                 </div>
                                 <div class="resource-card-hover-action">
                                     {% if video.url_destino %}
@@ -262,7 +262,7 @@
                                 </span>
                                 <div class="resource-card-body-text">
                                     <h3 class="resource-card-title">{{ noticia.titulo }}</h3>
-                                    <p class="resource-card-description">{{ noticia.descripcion|truncatechars:80 }}</p>
+                                    <p class="resource-card-description">{{ noticia.descripcion_corta|default:noticia.descripcion_larga|truncatechars:80 }}</p>
                                     <div class="resource-pills-container">
                                         <span class="eco-pill-item">{{ noticia.etiqueta_badge|default:'Ecodren' }}</span>
                                     </div>
@@ -356,7 +356,7 @@
                         <span class="bento-category-label">{{ post.etiqueta_badge }}</span>
                         {% endif %}
                         <h3 class="bento-card-title">{{ post.titulo }}</h3>
-                        <p class="bento-card-text">{{ post.descripcion }}</p>
+                        <p class="bento-card-text">{{ post.descripcion_larga|default:post.descripcion_corta }}</p>
 
                         <div class="bento-meta-row">
                             <span><i class="fa-regular fa-calendar"></i>{{ post.duracion_o_fecha|default:post.creado_en|date:'d M Y' }}</span>
