@@ -310,6 +310,16 @@ class PerfilEmpresa(models.Model):
         default="Av. Central #123, Col. Industrial, C.P. 12345, Ciudad de México",
         verbose_name="Dirección de Entrega Principal"
     )
+    TEMA_CHOICES =[
+        ('claro', 'Claro'),
+        ('oscuro', 'Oscuro'),
+    ]
+    tema_preferido = models.CharField(
+        max_length=10,
+        choices=TEMA_CHOICES,
+        default='claro',
+        verbose_name="Tema de interfaz preferido"
+    )
     actualizado_en = models.DateTimeField(auto_now=True)
 
     class Meta:

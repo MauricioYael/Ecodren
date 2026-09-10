@@ -17,7 +17,9 @@ urlpatterns = [
     path('capacitaciones/', views.capacitaciones, name='capacitaciones'),
     path('perfil/', views.perfil_view, name='perfil'),
     path("api/actualizar-perfil/", views.actualizar_datos_perfil, name="actualizar_perfil"),
+    path("api/actualizar-tema/", views.actualizar_tema, name="actualizar_tema"),
     path('api/crear-pedido/', views.registrar_pedido_checkout, name='crear_pedido'),
+    
 
     #endpoint de cotizacion
     path('api/enviar-cotizacion/', views.enviar_cotizacion, name='enviar_cotizacion'),

@@ -16,7 +16,8 @@
     <link rel="stylesheet" href="{% static 'css/tienda.css' %}">
     <link rel="stylesheet" href="{% static 'css/perfil.css' %}">
 </head>
-<body data-user-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}">
+<body class="profile-body{% if perfil.tema_preferido == 'oscuro' %} dark-theme{% endif %}"
+    data-user-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}">
 
     <nav id="mainNav" class="light scrolled profile-nav">
         <a href="{% url 'home' %}" class="nav-logo">
@@ -504,7 +505,9 @@
                             <label style="margin-bottom: 0.5rem;">Tema del sistema</label>
                             <div class="theme-switch-wrapper">
                                 <label class="theme-switch-container" for="theme-toggle-checkbox">
-                                    <input type="checkbox" id="theme-toggle-checkbox" onchange="typeof toggleThemeSelector === 'function' ? toggleThemeSelector() : console.log('Tema cambiado')">
+                                    <input type="checkbox" id="theme-toggle-checkbox"
+                                        {% if perfil.tema_preferido == 'oscuro' %}checked{% endif %}
+                                        onchange="toggleThemeSelector()">
 
                                     <div class="theme-switch-slider">
                                         <span class="switch-text-mode text-day"> Día</span>

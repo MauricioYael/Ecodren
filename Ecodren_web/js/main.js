@@ -594,3 +594,42 @@ async function enviarPeticionSegura(url, data, metodo = 'POST') {
         body: JSON.stringify(data)
     });
 }
+window.toggleGlobalTheme = async function() {
+    const body = document.body;
+    const isDark = body.classList.contains('dark-theme');
+    const nuevoTema = isDark ? 'claro' : 'oscuro';
+
+    body.classList.toggle('dark-theme', !isDark);
+    actualizarIconoTema(!isDark);
+
+    try {
+        const response = await fetch('/api/actualizar-tema/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+            },
+            body: JSON.stringify({ tema: nuevoTema })
+        });
+        const resData = await response.json();
+        if (!response.ok || resData.status !== 'ok') {
+            throw new Error(resData.mensaje || 'No se pudo guardar el tema');
+        }
+    } catch (err) {
+        body.classList.toggle('dark-theme', isDark);
+        actualizarIconoTema(isDark);
+        console.error('No se pudo guardar el tema:', err);
+    }
+};
+
+function actualizarIconoTema(isDark) {
+    const icon = document.getElementById('themeToggleIcon');
+    if (!icon) return;
+    icon.classList.toggle('fa-moon', !isDark);
+    icon.classList.toggle('fa-sun', isDark);
+}
+
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', window.toggleGlobalTheme);
+}

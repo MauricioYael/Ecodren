@@ -16,7 +16,8 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/capacitaciones.css' %}">
 </head>
-<body data-user-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}">
+<body class="{% if tema_preferido == 'oscuro' %}dark-theme{% endif %}"
+      data-user-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}">
     <nav id="mainNav">
         <a href="{% url 'home' %}" class="nav-logo">
             <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren Logo" class="web-logo">

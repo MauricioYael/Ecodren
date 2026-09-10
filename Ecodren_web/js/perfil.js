@@ -334,6 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarAvatarGuardado();
     inicializarSwipeCards();
 
+
     const btnAddPayment = document.getElementById('btn-add-payment');
     if (btnAddPayment) {
         btnAddPayment.onclick = function(e) {
@@ -731,3 +732,37 @@ function cargarAvatarGuardado() {
         aplicarAvatarUsuario(savedAvatar);
     }
 }
+
+window.toggleThemeSelector = async function() {
+    const checkbox = document.getElementById('theme-toggle-checkbox');
+    const isDark = checkbox ? checkbox.checked : false;
+    const nuevoTema = isDark ? 'oscuro' : 'claro';
+
+    // Aplicar de inmediato (optimista)
+    document.body.classList.toggle('dark-theme', isDark);
+
+    try {
+        const response = await fetch('/api/actualizar-tema/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+            },
+            body: JSON.stringify({ tema: nuevoTema })
+        });
+
+        const resData = await response.json();
+        if (!response.ok || resData.status !== 'ok') {
+            throw new Error(resData.mensaje || 'No se pudo guardar el tema');
+        }
+    } catch (err) {
+        // Si falla el guardado, revertimos visualmente
+        document.body.classList.toggle('dark-theme', !isDark);
+        if (checkbox) checkbox.checked = !isDark;
+        if (typeof showToast === 'function') {
+            showToast('No se pudo guardar tu preferencia de tema', 'error');
+        } else {
+            alert('❌ No se pudo guardar tu preferencia de tema.');
+        }
+    }
+};

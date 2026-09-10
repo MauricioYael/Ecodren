@@ -17,7 +17,8 @@
     <link rel="stylesheet" href="{% static 'css/tienda.css' %}">
     <link rel="stylesheet" href="{% static 'css/maquinaria.css' %}">
 </head>
-<body data-user-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}">
+<body class="{% if tema_preferido == 'oscuro' %}dark-theme{% endif %}"
+      data-user-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}">
 
 <!-- Capa Semántica para Motores de Búsqueda y Crawlers (SEO) -->
 <section class="seo-crawler-content" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;" aria-hidden="true">

@@ -94,6 +94,7 @@ class CursoDisponibleAdmin(admin.ModelAdmin):
 @admin.register(PerfilEmpresa)
 class PerfilEmpresaAdmin(admin.ModelAdmin):
     list_display = ('user', 'razon_social', 'telefono_operativo', 'actualizado_en')
+    readonly_fields = ('tema_preferido',    )
     search_fields = ('user__username', 'user__email', 'razon_social', 'telefono_operativo')
 
 

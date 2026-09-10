@@ -308,3 +308,21 @@ def registrar_pedido_checkout(request):
         })
     except Exception as e:
         return JsonResponse({'status': 'error', 'mensaje': str(e)}, status=400)
+
+@login_required
+@require_POST
+def actualizar_tema(request):
+    try:
+        data = json.loads(request.body)
+        tema = data.get('tema', '').strip()
+
+        if tema not in ('claro', 'oscuro'):
+            return JsonResponse({'status': 'error', 'mensaje': 'Tema inválido'}, status= 400)
+
+        perfil, _ = PerfilEmpresa.objects.get_or_create(user=request.user)
+        perfil.tema_preferido = tema
+        perfil.save(update_fields=['tema_preferido'])
+
+        return JsonResponse({'status': 'ok', 'tema': perfil.tema_preferido})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'mensaje': str(e)}, status=400)
