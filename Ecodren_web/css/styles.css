@@ -1068,20 +1068,24 @@ body.dark-theme #categorias {
   background: #1a2226;
 }
 body.dark-theme .categories .section-title {
-  color: #ffffff;
+  color: var(--eco-lime);
 }
 body.dark-theme .categories .section-sub {
   color: #94a3b8;
 }
+body.dark-theme .categories .section-tag,
+body.dark-theme #categorias .section-tag {
+    color: #ffffff;
+}
 body.dark-theme .spec-box-card {
   background: #2b363c;
-  border: 1px soli rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.12);
   box-shadow: 0 10px 25px rgba(0,0,0,0.35);
 }
 body.dark-theme .spec-box-card:hover {
   background: #323e45;
   border-color: var(--eco-lime);
-  box-shadow: 0 14px 30px rgba(0,0,0,0.5), 0 0 15px rgba(199919,253,0,0.15);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.5), 0 0 15px rgba(119,253,0,0.15);
 }
 body.dark-theme .spec-box-card h3{
   color: #ffffff;
@@ -1101,7 +1105,7 @@ body.dark-theme .truck-fleet {
   background-color: #0d1216;
 }
 body.dark-theme .truck-fleet .section-tag{
-  color: var(--eco-lime);
+  color: #ffffff;
 }
 body.dark-theme .truck-fleet .section-title {
   color: var(--eco-lime);
@@ -1203,6 +1207,134 @@ html.dark-theme .mobile-menu a[href*="contacto"] {
     font-weight: 800 !important;
     border-bottom: none !important;
 }
+
+body.dark-theme .shop,
+body.dark-theme #tienda{
+  background-color: #161e24;
+}
+body.dark-theme .shop .section-tag{ 
+  color:#ffffff;
+}
+body.dark-theme .shop .section-title {
+  color: var(--eco-lime);
+  text-shadow: none;
+}
+body.dark-theme .shop .section-sub {
+  color: #94a3b8;
+}
+body.dark-theme .shop-card {
+  background: #2b363c;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+}
+body.dark-theme .shop-card:hover {
+  background: #20292f;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+body.dark-theme .shop-badge.badge-nuevo,
+body.dark-theme .shop-badge.badge-stock {
+  background: rgba(15,84,41,0.85);
+  color: var(--eco-lime);
+  border: 1px solid rgba(191,253,0,0.35);
+}
+body.dark-theme .shop-badge.badge-oferta {
+  background: rgba(232,92,26,0.85);
+  color: #ffffff;
+}
+body.dark-theme .shop-cat-tag {
+  color: var(--eco-lime);
+}
+body.dark-theme .shop-info p {
+  color: #ffffff;
+  font-weight: 700;
+}
+body.dark-theme .shop-info h3{
+  color: #ffffff;
+  text-shadow: none;
+  font-weight: 700;
+}
+body.dark-theme .shop-price span {
+  color: #ffffff;
+  font-weight: 700;
+}
+body.dark-theme .btn-ver-detalle {
+  background-color: var(--eco-lime);
+  color: #021510;
+  font-weight: 800;
+}
+body.dark-theme .btn-ver-detalle:hover {
+  background-color: #ffffff;
+  transform: scale(1.03);
+}
+/*---- Seccion Contacto -----*/
+body.dark-theme .contact,
+body.dark-theme #contacto {
+  background-color: #10161a;
+}
+body.dark-theme .contact .section-tag{
+  color: var(--eco-lime);
+}
+body.dark-theme .contact-info h2 {
+  color: #ffffff;
+  text-shadow: none;
+}
+body.dark-theme .contact-info p {
+  color: #94a3b8;
+}
+
+body.dark-theme.contact-detail strong {
+  color: #ffffff;
+}
+body.dark-theme .contact-detail span {
+  color: #cbd5e1;
+}
+body.dark-theme .contact-icon-img {
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+body.dark-theme .form-card {
+  background: #2b363c;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.45);
+}
+body.dark-theme .form-group label {
+  color: #ffffff;
+  font-weight: 600;
+}
+body.dark-theme .form-group input,
+body.dark-theme .form-group select,
+body.dark-theme .fprm-group textarea  {
+  background: #1e262c;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #ffffff;
+}
+body.dark-theme .form-group input::placeholder,
+body.dark-theme .form-group textarea::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+body.dark-theme .form-group input:focus,
+body.dark-theme .form-group select:focus,
+body.dark-theme .form-group textarea:focus {
+    border-color: var(--eco-lime, #bffd00) ;
+    box-shadow: 0 0 12px rgba(191, 253, 0, 0.2);
+}
+body.dark-theme .form-group select option {
+    background-color: #1e262c;
+    color: #ffffff;
+}
+body.dark-theme .form-submit {
+    background: var(--eco-lime, #bffd00);
+    color: #021510 ;
+    font-weight: 800;
+    box-shadow: 0 4px 18px rgba(191, 253, 0, 0.3);
+}
+body.dark-theme .form-submit:hover {
+    background: #ffffff ;
+    color: #021510 ;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.35);
+}
+
 
 /* ── RESPONSIVE ──────────────────────────────────────────── */
 @media (max-width: 900px) {
