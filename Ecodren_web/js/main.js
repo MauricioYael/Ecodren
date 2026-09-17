@@ -633,3 +633,83 @@ const themeToggleBtn = document.getElementById('themeToggleBtn');
 if (themeToggleBtn) {
     themeToggleBtn.addEventListener('click', window.toggleGlobalTheme);
 }
+
+// 1. Conversión de precios con ExchangeRate-API
+window.actualizarDivisaGlobal = async function(moneda) {
+    let tasaCambio = 1;
+
+    if (moneda === 'USD') {
+        try {
+            const respuesta = await fetch('https://api.exchangerate-api.com/v4/latest/MXN');
+            const data = await respuesta.json();
+            tasaCambio = data.rates.USD || 0.055;
+            sessionStorage.setItem('ecodren_tasa_usd', tasaCambio);
+        } catch (e) {
+            tasaCambio = parseFloat(sessionStorage.getItem('ecodren_tasa_usd')) || 0.055;
+        }
+    }
+
+    document.querySelectorAll('[data-precio-base]').forEach(el => {
+        const valorBase = parseFloat(el.getAttribute('data-precio-base'));
+        if (!isNaN(valorBase) && valorBase > 0) {
+            if (moneda === 'USD') {
+                el.textContent = `$${(valorBase * tasaCambio).toFixed(2)} USD`;
+            } else {
+                el.textContent = `$${valorBase.toFixed(2)} MXN`;
+            }
+        }
+    });
+
+    localStorage.setItem('ecodren_moneda', moneda);
+};
+
+window.actualizarIdiomaGlobal = function(idioma) {
+    // Escribir la cookie nativa que Google Translate lee automáticamente
+    const host = window.location.hostname;
+    document.cookie = `googtrans=/es/${idioma}; path=/;`;
+    document.cookie = `googtrans=/es/${idioma}; path=/; domain=${host};`;
+    document.cookie = `googtrans=/es/${idioma}; path=/; domain=.${host};`;
+
+    localStorage.setItem('ecodren_idioma', idioma);
+
+    // Si ya existe el selector en memoria lo sincroniza, si no, recarga para traducir de raíz
+    const googleSelect = document.querySelector('.goog-te-combo');
+    if (googleSelect) {
+        googleSelect.value = idioma;
+        googleSelect.dispatchEvent(new Event('change'));
+    } else {
+        location.reload();
+    }
+};
+
+// Inicialización en cualquier página cargada
+document.addEventListener('DOMContentLoaded', () => {
+    const moneda = localStorage.getItem('ecodren_moneda') || 'MXN';
+    const idioma = localStorage.getItem('ecodren_idioma') || 'es';
+
+    if (moneda !== 'MXN') {
+        window.actualizarDivisaGlobal(moneda);
+    }
+
+    if (idioma !== 'es') {
+        const host = window.location.hostname;
+        document.cookie = `googtrans=/es/${idioma}; path=/;`;
+        document.cookie = `googtrans=/es/${idioma}; path=/; domain=${host};`;
+    }
+});
+document.addEventListener('DOMContentLoaded', () => {
+    const moneda = localStorage.getItem('ecodren_moneda') || 'MXN';
+    const idioma = localStorage.getItem('ecodren_idioma') || 'es';
+
+    if (moneda !== 'MXN' && typeof window.actualizarDivisaGlobal === 'function') {
+        window.actualizarDivisaGlobal(moneda);
+    }
+
+    if (idioma === 'es') {
+        const host = window.location.hostname;
+        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${host};`;
+    } else {
+        document.cookie = `googtrans=/es/${idioma}; path=/;`;
+    }
+});

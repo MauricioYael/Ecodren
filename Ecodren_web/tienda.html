@@ -56,15 +56,14 @@
             <span class="cart-count" id="cartCount">0</span>
         </button>
         <div class="profile-wrap" id="profileWrap">
-                <button class="profile-btn" id="profileBtn" aria-label="Perfil de usuario" style="overflow: hidden; padding: 0; display: flex; align-items: center; justify-content: center;">
-                    <svg id="navProfileSvg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 18px; height: 18px;">
-                        <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
-                    </svg>
-                    <img id="navProfileImg" src="" alt="Perfil" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                </button>
+            <button class="profile-btn" id="profileBtn" aria-label="Perfil de usuario" style="overflow: hidden; padding: 0; display: flex; align-items: center; justify-content: center;">
+                <svg id="navProfileSvg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 18px; height: 18px;">
+                    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                </svg>
+                <img id="navProfileImg" src="" alt="Perfil" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            </button>
             <div class="profile-dropdown" id="profileDropdown">
                 {% if user.is_authenticated %}
-                    <!-- Estado: Sesión Activa -->
                     <div id="userState">
                         <div class="profile-header">
                             <div class="profile-avatar" style="background: var(--eco-green); color: #fff; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">
@@ -98,7 +97,6 @@
                         </div>
                     </div>
                 {% else %}
-                    <!-- Estado: Invitado sin sesión -->
                     <div id="guestState">
                         <div style="padding:1.25rem 1.25rem 0.5rem">
                             <p style="font-size:0.9rem;font-weight:600;margin-bottom:0.25rem">Bienvenido a Ecodren</p>
@@ -288,7 +286,7 @@
                     <div class="product-price-row">
                         <div class="price-wrap">
                             {% if producto.precio_base > 0 %}
-                                <span class="price-amount">${{ producto.precio_base }} MXN</span>
+                                <span class="price-amount" data-precio-base="{{ producto.precio_base }}">${{ producto.precio_base }} MXN</span>
                             {% else %}
                                 <span class="price-amount" style="font-size:0.88rem; color:var(--eco-green); font-weight:600;">Cotizar precio</span>
                             {% endif %}
@@ -343,7 +341,7 @@
                 <div class="modal-price-row">
                     <div>
                         <span class="modal-price-old" id="modalPriceOld"></span>
-                        <span class="modal-price" id="modalPrice">$0</span>
+                        <span class="modal-price" id="modalPrice" data-precio-base="0">$0</span>
                     </div>
                     <span class="modal-stock-badge" id="modalStock">En stock</span>
                 </div>
@@ -370,21 +368,21 @@
 <div class="cart-overlay" id="cartOverlay"></div>
 <div class="cart-sidebar" id="cartSidebar">
     <div class="cart-head">
-            <h3>🛒 Tu carrito</h3>
-                    <button class="cart-close" id="cartClose">×</button>
-                        </div>
-                            <div class="cart-items" id="cartItems">
-                                    <div class="cart-empty">
-                                                <span class="cart-empty-icon">🛒</span>
-                                                            <p style="font-weight:600;margin-bottom:.5rem">Tu carrito está vacío</p>
-                                                                        <p style="font-size:.85rem;color:var(--eco-gray)">Agrega productos desde el catálogo</p>
-                                                                                </div>
-                                                                                    </div>
-                                                                                        <div class="cart-footer" id="cartFooter" style="display:none">
-                                                                                                <div class="cart-total-row"><span>Total</span><strong id="cartTotal">$0</strong></div>
-                                                                                                        <button class="checkout-btn" onclick="handleCheckout()">Proceder al pago →</button>
-                                                                                                            </div>
-                                                                                                            </div>>
+        <h3>🛒 Tu carrito</h3>
+        <button class="cart-close" id="cartClose">×</button>
+    </div>
+    <div class="cart-items" id="cartItems">
+        <div class="cart-empty">
+            <span class="cart-empty-icon">🛒</span>
+            <p style="font-weight:600;margin-bottom:.5rem">Tu carrito está vacío</p>
+            <p style="font-size:.85rem;color:var(--eco-gray)">Agrega productos desde el catálogo</p>
+        </div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none">
+        <div class="cart-total-row"><span>Total</span><strong id="cartTotal">$0</strong></div>
+        <button class="checkout-btn" onclick="handleCheckout()">Proceder al pago →</button>
+    </div>
+</div>
 
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal-box" style="max-width: 420px; width: 90%;">
@@ -585,6 +583,18 @@
         </div>
     </div>
 </footer>
+
+<div id="google_translate_element" style="position: absolute; left: -9999px; top: -9999px;"></div>
+<script type="text/javascript">
+function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+        pageLanguage: 'es',
+        includedLanguages: 'es,en',
+        autoDisplay: false
+    }, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="{% static 'js/main.js' %}"></script>

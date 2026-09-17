@@ -334,7 +334,6 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarAvatarGuardado();
     inicializarSwipeCards();
 
-
     const btnAddPayment = document.getElementById('btn-add-payment');
     if (btnAddPayment) {
         btnAddPayment.onclick = function(e) {
@@ -738,7 +737,6 @@ window.toggleThemeSelector = async function() {
     const isDark = checkbox ? checkbox.checked : false;
     const nuevoTema = isDark ? 'oscuro' : 'claro';
 
-    // Aplicar de inmediato (optimista)
     document.body.classList.toggle('dark-theme', isDark);
 
     try {
@@ -756,7 +754,6 @@ window.toggleThemeSelector = async function() {
             throw new Error(resData.mensaje || 'No se pudo guardar el tema');
         }
     } catch (err) {
-        // Si falla el guardado, revertimos visualmente
         document.body.classList.toggle('dark-theme', !isDark);
         if (checkbox) checkbox.checked = !isDark;
         if (typeof showToast === 'function') {
@@ -766,3 +763,75 @@ window.toggleThemeSelector = async function() {
         }
     }
 };
+
+function limpiarCookieTraductor() {
+    const host = window.location.hostname;
+    const dominios = ['', host, '.' + host];
+    dominios.forEach(d => {
+        const domAttr = d ? `; domain=${d}` : '';
+        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/${domAttr};`;
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const currencySelect = document.getElementById('pref-currency');
+    const langSelect = document.getElementById('pref-lang');
+
+    const monedaGuardada = localStorage.getItem('ecodren_moneda') || 'MXN';
+    const idiomaGuardado = localStorage.getItem('ecodren_idioma') || 'es';
+
+    if (currencySelect) currencySelect.value = monedaGuardada;
+    if (langSelect) langSelect.value = idiomaGuardado;
+
+    function getCsrfToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+               document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '';
+    }
+
+    async function persistirEnBackend(payload) {
+        try {
+            await fetch('/api/preferencias/localizacion/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify(payload)
+            });
+        } catch (error) {
+            console.error('Error al guardar en base de datos:', error);
+        }
+    }
+
+    if (currencySelect) {
+        currencySelect.addEventListener('change', () => {
+            const nuevaMoneda = currencySelect.value;
+            localStorage.setItem('ecodren_moneda', nuevaMoneda);
+            persistirEnBackend({ moneda: nuevaMoneda });
+
+            if (typeof window.actualizarDivisaGlobal === 'function') {
+                window.actualizarDivisaGlobal(nuevaMoneda);
+            }
+            if (typeof showToast === 'function') {
+                showToast(`Moneda cambiada a ${nuevaMoneda}.`, 'success');
+            }
+        });
+    }
+
+    if (langSelect) {
+        langSelect.addEventListener('change', () => {
+            const nuevoIdioma = langSelect.value;
+            localStorage.setItem('ecodren_idioma', nuevoIdioma);
+            persistirEnBackend({ idioma: nuevoIdioma });
+
+            if (nuevoIdioma === 'es') {
+                limpiarCookieTraductor();
+            } else {
+                document.cookie = `googtrans=/es/${nuevoIdioma}; path=/;`;
+                document.cookie = `googtrans=/es/${nuevoIdioma}; path=/; domain=${window.location.hostname};`;
+            }
+
+            location.reload();
+        });
+    }
+});

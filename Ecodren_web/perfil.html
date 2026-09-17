@@ -590,15 +590,15 @@
                             <div class="profile-form-group">
                                 <label for="pref-currency">Moneda de facturación por defecto</label>
                                 <select id="pref-currency" style="padding: 0.75rem 1rem; border: 1px solid rgba(26,34,38,0.15); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; background: #fdfdfd; outline: none;">
-                                    <option value="MXN" selected>MXN - Peso Mexicano</option>
-                                    <option value="USD">USD - Dólar Americano</option>
+                                    <option value="MXN" {% if request.user.perfil_empresa.moneda_defecto == 'MXN' %}selected{% endif %}>MXN - Peso Mexicano</option>
+                                    <option value="USD" {% if request.user.perfil_empresa.moneda_defecto == 'USD' %}selected{% endif %}>USD - Dólar Americano</option>
                                 </select>
                             </div>
                             <div class="profile-form-group">
                                 <label for="pref-lang">Idioma del Panel Técnico</label>
                                 <select id="pref-lang" style="padding: 0.75rem 1rem; border: 1px solid rgba(26,34,38,0.15); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; background: #fdfdfd; outline: none;">
-                                    <option value="es" selected>Español (América Latina)</option>
-                                    <option value="en">English (International)</option>
+                                    <option value="es" {% if request.user.perfil_empresa.idioma_panel == 'es' %}selected{% endif %}>Español (América Latina)</option>
+                                    <option value="en" {% if request.user.perfil_empresa.idioma_panel == 'en' %}selected{% endif %}>English (International)</option>
                                 </select>
                             </div>
                         </div>
@@ -687,6 +687,18 @@
             </div>
         </div>
     </div>
+
+<div id="google_translate_element" style="position: absolute; left: -9999px; top: -9999px;"></div>
+<script type="text/javascript">
+function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+        pageLanguage: 'es',
+        includedLanguages: 'es,en',
+        autoDisplay: false
+    }, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>    
 
     <script src="{% static 'js/perfil.js' %}"></script>
 </body>

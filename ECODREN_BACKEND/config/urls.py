@@ -19,7 +19,7 @@ urlpatterns = [
     path("api/actualizar-perfil/", views.actualizar_datos_perfil, name="actualizar_perfil"),
     path("api/actualizar-tema/", views.actualizar_tema, name="actualizar_tema"),
     path('api/crear-pedido/', views.registrar_pedido_checkout, name='crear_pedido'),
-    
+    path('api/preferencias/localizacion/', views.api_actualizar_localizacion, name='api_localizacion'),
 
     #endpoint de cotizacion
     path('api/enviar-cotizacion/', views.enviar_cotizacion, name='enviar_cotizacion'),

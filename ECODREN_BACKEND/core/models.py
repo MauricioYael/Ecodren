@@ -321,6 +321,8 @@ class PerfilEmpresa(models.Model):
         verbose_name="Tema de interfaz preferido"
     )
     actualizado_en = models.DateTimeField(auto_now=True)
+    moneda_defecto = models.CharField(max_length=3, default='MXN', choices=[('MXN', 'Peso Mexicano'),('USD', 'Dolar Americano')])
+    idioma_panel = models.CharField(max_length=5, default='es', choices=[('es','Español'), ('en', 'Ingles')])
 
     class Meta:
         verbose_name = "Perfil de Empresa"
@@ -423,3 +425,4 @@ class SolicitudCotizacion(models.Model):
 
     def __str__(self):
         return f"Cotización #{self.id} - {self.nombre} ({self.email})"
+

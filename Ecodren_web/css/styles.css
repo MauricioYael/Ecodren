@@ -47,6 +47,14 @@ body.dark-theme {
 html { scroll-behavior: smooth; }
 body { font-family: 'DM Sans', sans-serif; background: var(--surface-bg); color: var(--text-primary); overflow-x: hidden; }
 
+body {
+    top: 0 !important;
+}
+.goog-te-banner-frame.skiptranslate,
+.skiptranslate:not(.goog-te-gadget) {
+    display: none !important;
+}
+
 /* ── NAV ────────────────────────────────────────────────── */
 nav {
   position: fixed;

@@ -326,3 +326,21 @@ def actualizar_tema(request):
         return JsonResponse({'status': 'ok', 'tema': perfil.tema_preferido})
     except Exception as e:
         return JsonResponse({'status': 'error', 'mensaje': str(e)}, status=400)
+
+def api_actualizar_localizacion(request):
+    if request.method != 'POST' or not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'No autorizado'}, status=401)
+
+    try:
+        data = json.loads(request.body)
+        perfil, _ = PerfilEmpresa.objects.get_or_create(user=request.user)
+
+        if 'moneda' in data:
+            perfil.moneda_defecto = data['moneda']
+        if 'idioma' in data:
+            perfil.idioma_panel = data['idioma']
+
+        perfil.save()
+        return JsonResponse({'status': 'ok', 'moneda':perfil.moneda_defecto, 'idioma': perfil.idioma_panel})
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Datos invalidos'}, status=400)

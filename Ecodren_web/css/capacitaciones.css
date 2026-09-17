@@ -855,6 +855,138 @@
     color: #64748b;
     font-weight: 600;
 }
+/* ---- Modo oscuro ----- */
+body.dark-theme .capacitaciones-main-content  {
+    background-color: #10161a;
+    color: #f8fafc;
+}
+body.dark-theme .capacitaciones-hero-section::after{
+    background: linear-gradient(to bottom, transparent 0%, #10161a 100%);
+}
+body.dark-theme .cap-subnav-section {
+    background: #141b20;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+body.dark-theme .cap-tab-btn {
+    color: #94a3b8;
+}
+body.dark-theme .cap-tab-btn:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.05);
+}
+body.dark-theme .cap-tab-btn.active {
+    color: var(--eco-lime);
+    background: rgba(11,253,0,0.12);
+}
+body.dark-theme .cap-tab-btn.active i {
+    color: var(--eco-lime);
+}
+body.dark-theme .cap-main-section {
+    background-color: #10161a;
+}
+body.dark-theme .cap-header-titles h2 {
+    color: #ffffff;
+}
+body.dark-theme .cap-subtitle {
+    color: #94a3b8;
+}
+body.dark-theme .cap-view-all,
+body.dark-theme .cap-calendar-link,
+body.dark-theme .cap-link-all-courses {
+    color: #cbd5e1;
+}
+body.dark-theme .cap-view-all:hover,
+body.dark-theme .cap-calendar-link:hover,
+body.dark-theme .cap-link-all-courses:hover {
+    color: var(--eco-lime);
+}
+body.dark-theme .cap-carousel-arrow {
+    color: #cbd5e1;
+}
+body.dark-theme .cap-carousel-arrow:hover {
+    color: var(--eco-lime);
+}
+body.dark-theme .cap-exp-card {
+    background: #182228;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+body.dark-theme .cap-card-body h3{
+    color: #ffffff;
+}
+body.dark-theme .cap-card-location{
+    color: #94a3b8;
+}
+body.dark-theme .cap-card-participants {
+    color: #ffffff;
+}
+
+body.dark-theme .cap-course-card {
+    background: #182228;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+}
+
+body.dark-theme .cap-course-card:hover{
+    background: #222d35;
+    border-color: var(--eco-lime);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+}
+body.dark-theme .cap-course-thumb {
+    background: #12171b;
+}
+body.dark-theme .cap-course-info h3{
+    color: #ffffff;
+}
+body.dark-theme .cap-course-meta {
+    color: #94a3b8;
+}
+body.dark-theme .cap-course-price {
+    color: #cbd5e1;
+}
+body.dark-theme .cap-btn-enroll {
+    background: #2b363c;
+    border: 1px solid var(--eco-lime);
+    color: #ffffff;
+}
+body.dark-theme .cap-btn-enroll:hover {
+    background: var(--eco-lime);
+    color: #021510;
+}
+body.dark-theme .cap-diploma-section {
+    background-color: #10161a;
+}
+body.dark-theme .cap-diploma-banner-card {
+    border-color: rgba(255,255,255,0.12);
+    box-shadow: 0 20px 45px rgba(0,0,0,0.5);
+}
+body.dark-theme .cap-certificate-pass-card {
+    background: #182228;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+}
+body.dark-theme .pass-header {
+    border-bottom-color: rgba(255,255,255,0.12);
+}
+body.dark-theme .pass-code {
+    color: #94a3b8;
+}
+body.dark-theme .pass-label {
+    color: var(--eco-lime);
+}
+body.dark-theme .pass-course {
+    color: #ffffff;
+}
+body.dark-theme .pass-grant {
+    color: #cbd5e1;
+}
+body.dark-theme .pass-footer {
+    background: #12171b;
+}
+body.dark-theme .pass-dates {
+    color: #94a3b8;
+}
+
 
 @media (max-width: 992px) {
     .cap-main-container {
