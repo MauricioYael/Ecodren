@@ -13,7 +13,7 @@ h1, h2, h3, h4, h5, h6, .section-title, .machine-category-radical {
   font-family: 'DCC Ash', sans-serif !important;
   letter-spacing: 0.08em;
   line-height: 1.2;
-  text-shadow: 0 4px 15px rgba(0,0,0,0.65)
+  text-shadow: none;
 }
 :root {
   --eco-dark:   #1a2226;
