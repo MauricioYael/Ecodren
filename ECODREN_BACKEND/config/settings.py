@@ -4,19 +4,19 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ── Cargar variables de entorno desde .env ─────────────────────────
+# Cargar variables desde .env en BASE_DIR, directorio actual o directorio superior
 load_dotenv(os.path.join(BASE_DIR, '.env'))
+load_dotenv(os.path.join(BASE_DIR.parent, '.env'))
+load_dotenv()
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-clave-de-respaldo-dev')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = ['*']
 
-# Cierre de sesión directo sin pantalla intermedia de confirmación
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-# ── 1. INSTALLED_APPS ───────────────────────────────────────────────
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -24,12 +24,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',  # Requerido por allauth
+    'django.contrib.sites',
 
-    # Aplicaciones locales
     'core',
 
-    # django-allauth
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -38,7 +36,6 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 
-# ── 2. MIDDLEWARE ───────────────────────────────────────────────────
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -47,14 +44,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    # Requerido por allauth
     'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
 
-# ── 3. TEMPLATES ────────────────────────────────────────────────────
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -66,7 +60,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',  # Requerido por admin y allauth
+                'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.tema_usuario',
@@ -77,7 +71,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# ── 4. BASE DE DATOS SEGURA (Conexión vía variables de entorno) ─────
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -89,7 +82,6 @@ DATABASES = {
     }
 }
 
-# ── 5. AUTENTICACIÓN Y ALLAUTH ──────────────────────────────────────
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
@@ -103,10 +95,9 @@ LOGIN_URL = 'home'
 LOGIN_REDIRECT_URL = 'perfil'
 LOGOUT_REDIRECT_URL = 'home'
 
-# ── CONFIGURACION DEL PROVEEDOR GOOGLE (OAuth 2.0) ─────────────────────────
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
-        'SCOPE':[
+        'SCOPE': [
             'profile',
             'email',
         ],
@@ -124,7 +115,7 @@ ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_EMAIL_SUBJECT_PREFIX = '[ECODREN] '
 SOCIALACCOUNT_LOGIN_ON_GET = True
-# SERVICIO DE CORREO ELECTRONIO (SMTP)
+
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
@@ -136,8 +127,6 @@ else:
     EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
     DEFAULT_FROM_EMAIL = f"ECODREN <{EMAIL_HOST_USER}>"
 
-
-# ── 6. ARCHIVOS ESTÁTICOS Y SUBIDOS (MEDIA) ─────────────────────────
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR.parent, 'Ecodren_web'),
@@ -148,3 +137,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR.parent, 'Ecodren_web', 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CONEKTA_PRIVATE_KEY = os.getenv('CONEKTA_PRIVATE_KEY')
+CONEKTA_PUBLIC_KEY = os.getenv('CONEKTA_PUBLIC_KEY')

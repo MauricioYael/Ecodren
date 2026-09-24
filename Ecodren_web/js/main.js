@@ -281,10 +281,10 @@ window.handleCheckout = function() {
     document.getElementById('cartOverlay')?.classList.remove('active','open');
     openModal('checkout');
 };
- 
-window.processSimulatedPayment = async function(e) {
+
+window.processSimulatedPayment = function(e) {
     e.preventDefault();
-    
+
     let carrito = [];
     try {
         carrito = JSON.parse(localStorage.getItem('ecodren_cart')) || [];
@@ -297,21 +297,54 @@ window.processSimulatedPayment = async function(e) {
         return;
     }
 
-    const totalCalculado = carrito.reduce((acc, item) => {
-        const precio = obtenerPrecioNumerico(item.precio || item.price || 0);
-        const qty = parseInt(item.qty || item.cantidad || 1, 10);
-        return acc + (precio * qty);
-    }, 0);
-
-    const totalPagar = `$${totalCalculado.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})} MXN`;
-    const modalBox = document.querySelector('#modalOverlay .modal-box');
+    const payMethod = document.querySelector('input[name="payMethod"]:checked')?.value || 'card';
     const btn = e.target.querySelector('button[type="submit"]');
 
     if (btn) {
-        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Procesando Orden en Servidor...';
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Validando transacción...';
         btn.disabled = true;
     }
 
+    if (payMethod === 'card') {
+        // Asigna tu llave pública real copiada desde tu panel Conekta (empieza con key_)
+        Conekta.setPublicKey("key_Ct78Zupov4Uxj5XvMyh0ZXH");
+
+        const expRaw = document.querySelector('#cardDetailsForm input[placeholder="MM/AA"]').value.split('/');
+        const tokenData = {
+            card: {
+                number: document.querySelector('#cardDetailsForm input[placeholder*="0000"]').value.replace(/\s+/g, ''),
+                name: document.querySelector('#cardDetailsForm input[placeholder*="Nombre"]').value.trim(),
+                exp_month: expRaw[0]?.trim(),
+                exp_year: expRaw[1]?.trim().length === 2 ? '20' + expRaw[1].trim() : expRaw[1]?.trim(),
+                cvc: document.querySelector('#cardDetailsForm input[placeholder="123"]').value.trim()
+            }
+        };
+
+        Conekta.Token.create(tokenData, 
+            function(token) {
+                enviarOrdenBackend({
+                    items: carrito,
+                    token_id: token.id,
+                    metodo: 'tarjeta'
+                }, btn);
+            }, 
+            function(error) {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-lock"></i> Confirmar y Pagar';
+                }
+                showToast(error.message_to_purchaser || 'Datos de tarjeta inválidos.', 'error');
+            }
+        );
+    } else {
+        enviarOrdenBackend({
+            items: carrito,
+            metodo: 'spei'
+        }, btn);
+    }
+};
+
+async function enviarOrdenBackend(payload, btn) {
     try {
         const response = await fetch('/api/crear-pedido/', {
             method: 'POST',
@@ -319,73 +352,62 @@ window.processSimulatedPayment = async function(e) {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken') || document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
             },
-            body: JSON.stringify({
-                items: carrito,
-                total: totalCalculado
-            })
+            body: JSON.stringify(payload)
         });
-
         const data = await response.json();
 
         if (response.ok && data.status === 'ok') {
-            const numeroTicket = data.codigo_pedido || ("EC-" + Math.floor(100000 + Math.random() * 900000));
-            
             localStorage.removeItem('ecodren_cart');
             actualizarContadorCarritoGlobal();
 
-            if (btn) {
-                btn.innerHTML = '<i class="fas fa-check"></i> ¡Pago Autorizado!';
-                btn.style.background = 'var(--eco-green, #0f5429)';
-            }
-
-            setTimeout(() => {
-                if (modalBox) {
-                    modalBox.innerHTML = `
-                        <div class="checkout-success-wrapper">
-                            <div class="success-icon-animated">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <h3>¡Pago Autorizado!</h3>
-                            <p>Tu orden ha sido registrada en el sistema de logística de Ecodren y guardada en tu historial.</p>
-                            
-                            <div class="order-meta-box">
-                                <div class="order-meta-row">
-                                    <span>No. Pedimento / Ticket:</span>
-                                    <strong>${numeroTicket}</strong>
-                                </div>
-                                <div class="order-meta-row">
-                                    <span>Monto Liquidado:</span>
-                                    <strong style="color: #0f5429;">${totalPagar}</strong>
-                                </div>
-                                <div class="order-meta-row">
-                                    <span>Estatus de Despacho:</span>
-                                    <strong style="color: #e85c1a;">En Preparación</strong>
-                                </div>
-                            </div>
-
-                            <button class="mform-submit" onclick="closeModalAndRedirect();" style="margin-top: 0; padding: 0.85rem; width: 100%;">
-                                Ver Mi Historial de Pedidos <i class="fas fa-arrow-right" style="margin-left: 6px;"></i>
-                            </button>
+            const modalBox = document.querySelector('#modalOverlay .modal-box');
+            if (modalBox) {
+                const esSpei = payload.metodo === 'spei';
+                modalBox.innerHTML = `
+                    <div class="checkout-success-wrapper">
+                        <div class="success-icon-animated">
+                            <i class="fas ${esSpei ? 'fa-clock' : 'fa-check-circle'}"></i>
                         </div>
-                    `;
-                }
-            }, 900);
+                        <h3>${esSpei ? 'Orden Generada para SPEI' : '¡Pago Autorizado!'}</h3>
+                        <p>${esSpei ? 'Realiza tu transferencia interbancaria con los datos generados a continuación.' : 'Tu orden ha sido cobrada y enviada a logística.'}</p>
+                        
+                        <div class="order-meta-box">
+                            <div class="order-meta-row">
+                                <span>No. Pedido:</span>
+                                <strong>${data.codigo_pedido}</strong>
+                            </div>
+                            <div class="order-meta-row">
+                                <span>Total:</span>
+                                <strong>$${data.total} MXN</strong>
+                            </div>
+                            ${esSpei && data.clabe ? `
+                            <div class="order-meta-row">
+                                <span>CLABE SPEI Conekta:</span>
+                                <strong style="color: #0f5429;">${data.clabe}</strong>
+                            </div>` : ''}
+                        </div>
+
+                        <button class="mform-submit" onclick="closeModalAndRedirect();" style="margin-top: 0; padding: 0.85rem; width: 100%;">
+                            Ver Mis Pedidos <i class="fas fa-arrow-right" style="margin-left: 6px;"></i>
+                        </button>
+                    </div>
+                `;
+            }
         } else {
-            showToast(data.mensaje || 'Error al procesar el pedido.', 'error');
+            showToast(data.mensaje || 'Error al procesar el cobro.', 'error');
             if (btn) {
                 btn.disabled = false;
-                btn.innerHTML = 'Proceder al Pago Seguro';
+                btn.innerHTML = '<i class="fas fa-lock"></i> Confirmar y Pagar';
             }
         }
     } catch (error) {
-        console.error("Error al registrar pedido:", error);
-        showToast('Error de conexión con el servidor de pagos.', 'error');
+        showToast('Error de conexión al procesar el pago.', 'error');
         if (btn) {
             btn.disabled = false;
-            btn.innerHTML = 'Proceder al Pago Seguro';
+            btn.innerHTML = '<i class="fas fa-lock"></i> Confirmar y Pagar';
         }
     }
-};
+}
 
 window.closeModalAndRedirect = function() {
     const overlay = document.getElementById('modalOverlay');
@@ -594,6 +616,7 @@ async function enviarPeticionSegura(url, data, metodo = 'POST') {
         body: JSON.stringify(data)
     });
 }
+
 window.toggleGlobalTheme = async function() {
     const body = document.body;
     const isDark = body.classList.contains('dark-theme');
@@ -634,7 +657,6 @@ if (themeToggleBtn) {
     themeToggleBtn.addEventListener('click', window.toggleGlobalTheme);
 }
 
-// 1. Conversión de precios con ExchangeRate-API
 window.actualizarDivisaGlobal = async function(moneda) {
     let tasaCambio = 1;
 
@@ -664,7 +686,6 @@ window.actualizarDivisaGlobal = async function(moneda) {
 };
 
 window.actualizarIdiomaGlobal = function(idioma) {
-    // Escribir la cookie nativa que Google Translate lee automáticamente
     const host = window.location.hostname;
     document.cookie = `googtrans=/es/${idioma}; path=/;`;
     document.cookie = `googtrans=/es/${idioma}; path=/; domain=${host};`;
@@ -672,7 +693,6 @@ window.actualizarIdiomaGlobal = function(idioma) {
 
     localStorage.setItem('ecodren_idioma', idioma);
 
-    // Si ya existe el selector en memoria lo sincroniza, si no, recarga para traducir de raíz
     const googleSelect = document.querySelector('.goog-te-combo');
     if (googleSelect) {
         googleSelect.value = idioma;
@@ -682,21 +702,6 @@ window.actualizarIdiomaGlobal = function(idioma) {
     }
 };
 
-// Inicialización en cualquier página cargada
-document.addEventListener('DOMContentLoaded', () => {
-    const moneda = localStorage.getItem('ecodren_moneda') || 'MXN';
-    const idioma = localStorage.getItem('ecodren_idioma') || 'es';
-
-    if (moneda !== 'MXN') {
-        window.actualizarDivisaGlobal(moneda);
-    }
-
-    if (idioma !== 'es') {
-        const host = window.location.hostname;
-        document.cookie = `googtrans=/es/${idioma}; path=/;`;
-        document.cookie = `googtrans=/es/${idioma}; path=/; domain=${host};`;
-    }
-});
 document.addEventListener('DOMContentLoaded', () => {
     const moneda = localStorage.getItem('ecodren_moneda') || 'MXN';
     const idioma = localStorage.getItem('ecodren_idioma') || 'es';

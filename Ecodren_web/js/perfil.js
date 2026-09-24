@@ -198,7 +198,8 @@ window.guardarNuevoMetodoPago = function(event) {
     let infoHtml = '';
 
     if (tipo === 'spei') {
-        const clabe = document.getElementById('payment-clabe').value.trim();
+        const clabeInput = document.getElementById('payment-clabe');
+        const clabe = clabeInput ? clabeInput.value.trim() : '';
         const ultimosDigitos = clabe.slice(-4) || '••••';
         iconHtml = '<i class="fa-solid fa-wallet"></i>';
         infoHtml = `
@@ -207,9 +208,12 @@ window.guardarNuevoMetodoPago = function(event) {
             <label style="margin-top: 4px;">CLABE Registrada: •••• ${ultimosDigitos}</label>
         `;
     } else {
-        const tarjeta = document.getElementById('payment-number').value.trim();
-        const vencimiento = document.getElementById('payment-expiry').value.trim();
+        const numInput = document.getElementById('payment-number');
+        const expInput = document.getElementById('payment-expiry');
+        const tarjeta = numInput ? numInput.value.replace(/\s+/g, '') : '';
+        const vencimiento = expInput ? expInput.value.trim() : '';
         const ultimosDigitos = tarjeta.slice(-4) || '••••';
+
         iconHtml = '<i class="fa-solid fa-credit-card"></i>';
         infoHtml = `
             <label>${titulo || 'Tarjeta de Crédito / Débito'}</label>
@@ -239,6 +243,10 @@ window.guardarNuevoMetodoPago = function(event) {
     `;
 
     if (grid) grid.appendChild(cardElement);
+
+    const form = document.getElementById('form-manage-payment');
+    if (form) form.reset();
+
     window.togglePaymentForm();
     inicializarSwipeCards();
 
@@ -252,19 +260,19 @@ window.guardarNuevoMetodoPago = function(event) {
 window.editarMetodoPago = function(id) {
     const card = document.querySelector(`.swipe-container-wrapper[data-payment-id="${id}"]`);
     if (!card) return;
+
     const infoLabels = card.querySelectorAll('.company-card-info label');
     const infoP = card.querySelector('.company-card-info p')?.innerText || '';
     const title = infoLabels[0]?.innerText || '';
 
     window.togglePaymentForm();
+
     const inputTitle = document.getElementById('payment-title');
     if (inputTitle) inputTitle.value = title;
 
     if (infoP.includes('••••')) {
         document.getElementById('payment-type').value = 'card';
         window.cambiarTipoMetodoForm('card');
-        const inputNum = document.getElementById('payment-number');
-        if (inputNum) inputNum.value = infoP;
     } else {
         document.getElementById('payment-type').value = 'spei';
         window.cambiarTipoMetodoForm('spei');

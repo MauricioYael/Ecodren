@@ -1,31 +1,32 @@
 import json
 import random
+import re
+import requests
 from django.shortcuts import render
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from django.core.mail import send_mail
+from django.conf import settings
 from .models import (
     Producto, Categoria, Maquinaria, PublicacionRecurso, 
     DocumentoTecnico, CapacitacionImpartida, CursoDisponible,
-    PerfilEmpresa, DireccionEntrega, Pedido, CotizacionGuardada,
-    SolicitudCotizacion
+    PerfilEmpresa, DireccionEntrega, Pedido, ItemPedido, 
+    CotizacionGuardada, SolicitudCotizacion
 )
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST    
-from django.core.mail import send_mail
-from django.conf import settings
-
 
 def index(request):
     productos_destacados = Producto.objects.filter(disponible=True).order_by('?')[:4]
     return render(request, 'index.html', {
-        'productos_destacados': productos_destacados
+        'productos_destacados': productos_destacados,
+        'conekta_public_key': getattr(settings, 'CONEKTA_PUBLIC_KEY', '')
     })
 
 def tienda(request):
     categorias = Categoria.objects.all()
     productos = Producto.objects.filter(disponible=True)
 
-    # 1. Filtro por Categoría
     cat_param = request.GET.get('cat', '').strip()
     if cat_param and cat_param.lower() != 'todos':
         if cat_param.isdigit():
@@ -33,7 +34,6 @@ def tienda(request):
         else:
             productos = productos.filter(categoria__nombre__icontains=cat_param)
 
-    # 2. Búsqueda por texto
     busqueda = request.GET.get('q', '').strip()
     if busqueda:
         productos = productos.filter(
@@ -42,22 +42,18 @@ def tienda(request):
             Q(descripcion__icontains=busqueda)
         )
 
-    # 3. Filtro por Stock
     solo_stock = request.GET.get('stock')
     if solo_stock == '1':
         productos = productos.filter(stock__gt=0)
 
-    # 4. Filtro por Etiquetas / Ofertas (NUEVO)
     etiqueta_param = request.GET.get('etiqueta', '').strip()
     if etiqueta_param:
         productos = productos.filter(etiqueta=etiqueta_param)
 
-    # 5. Filtro por Precio Máximo
     precio_max = request.GET.get('precio_max', '').strip()
     if precio_max and precio_max.isdigit():
         productos = productos.filter(precio_base__lte=float(precio_max))
 
-    # 6. Ordenamiento
     orden = request.GET.get('sort')
     if orden == 'price-asc':
         productos = productos.order_by('precio_base')
@@ -75,6 +71,7 @@ def tienda(request):
         'etiqueta_seleccionada': etiqueta_param,
         'busqueda': busqueda,
         'precio_max': precio_max or '10000',
+        'conekta_public_key': getattr(settings, 'CONEKTA_PUBLIC_KEY', '')
     }
     return render(request, 'tienda.html', context)
 
@@ -118,7 +115,6 @@ def maquinaria(request):
     }
     return render(request, 'maquinaria.html', context)
 
-
 def recursos(request):
     videos = PublicacionRecurso.objects.filter(activo=True, tipo='video')
     noticias = PublicacionRecurso.objects.filter(activo=True, tipo='noticia')
@@ -138,7 +134,6 @@ def recursos(request):
     }
     return render(request, 'recursos.html', context)
 
-
 def publicaciones(request):
     cat = request.GET.get('cat', 'todos')
     publicaciones_qs = PublicacionRecurso.objects.filter(activo=True)
@@ -152,7 +147,6 @@ def publicaciones(request):
     }
     return render(request, 'publicaciones.html', context)
 
-
 def capacitaciones(request):
     experiencias = CapacitacionImpartida.objects.filter(activo=True)
     cursos_disponibles = CursoDisponible.objects.filter(activo=True)
@@ -163,14 +157,10 @@ def capacitaciones(request):
     }
     return render(request, 'capacitaciones.html', context)
 
-
 @login_required
 def perfil_view(request):
-    # 🟢 Se usa 'user' para coincidir con la definición de PerfilEmpresa en models.py
     perfil, _ = PerfilEmpresa.objects.get_or_create(user=request.user)
     direcciones = DireccionEntrega.objects.filter(usuario=request.user)
-    
-    # 🟢 Pedidos ordenados cronológicamente (más recientes primero)
     pedidos = Pedido.objects.filter(usuario=request.user).order_by('-fecha_operacion')
     cotizaciones = SolicitudCotizacion.objects.filter(usuario=request.user).order_by('-creado_en')
 
@@ -181,7 +171,6 @@ def perfil_view(request):
         'cotizaciones': cotizaciones,
     }
     return render(request, 'perfil.html', context)
-
 
 @require_POST
 def enviar_cotizacion(request):
@@ -236,7 +225,6 @@ def enviar_cotizacion(request):
         'mensaje': '¡Cotización enviada con éxito! Te hemos enviado un correo con los detalles.'
     })
 
-
 @login_required
 @require_POST
 def actualizar_datos_perfil(request):
@@ -270,45 +258,6 @@ def actualizar_datos_perfil(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'mensaje': str(e)}, status=400)
 
-
-@login_required
-@require_POST
-def registrar_pedido_checkout(request):
-    try:
-        data = json.loads(request.body)
-        items = data.get('items', [])
-        total = float(data.get('total', 0))
-
-        if not items:
-            return JsonResponse({'status': 'error', 'mensaje': 'El carrito está vacío'}, status=400)
-
-        # Folio único de pedido
-        codigo = f"#EC-2026-{random.randint(1000, 9999)}"
-
-        # Resumen de artículos adquiridos
-        resumen_productos = ", ".join([
-            f"{item.get('nombre', 'Producto')} × {item.get('qty', item.get('cantidad', 1))}" 
-            for item in items
-        ])
-        if len(resumen_productos) > 250:
-            resumen_productos = resumen_productos[:247] + "..."
-
-        pedido = Pedido.objects.create(
-            usuario=request.user,
-            codigo_pedido=codigo,
-            equipo_insumo=resumen_productos,
-            total=total,
-            estatus='proceso'
-        )
-
-        return JsonResponse({
-            'status': 'ok',
-            'mensaje': 'Pedido registrado con éxito.',
-            'codigo_pedido': pedido.codigo_pedido
-        })
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'mensaje': str(e)}, status=400)
-
 @login_required
 @require_POST
 def actualizar_tema(request):
@@ -317,7 +266,7 @@ def actualizar_tema(request):
         tema = data.get('tema', '').strip()
 
         if tema not in ('claro', 'oscuro'):
-            return JsonResponse({'status': 'error', 'mensaje': 'Tema inválido'}, status= 400)
+            return JsonResponse({'status': 'error', 'mensaje': 'Tema inválido'}, status=400)
 
         perfil, _ = PerfilEmpresa.objects.get_or_create(user=request.user)
         perfil.tema_preferido = tema
@@ -341,6 +290,151 @@ def api_actualizar_localizacion(request):
             perfil.idioma_panel = data['idioma']
 
         perfil.save()
-        return JsonResponse({'status': 'ok', 'moneda':perfil.moneda_defecto, 'idioma': perfil.idioma_panel})
+        return JsonResponse({'status': 'ok', 'moneda': perfil.moneda_defecto, 'idioma': perfil.idioma_panel})
     except json.JSONDecodeError:
         return JsonResponse({'status': 'error', 'message': 'Datos invalidos'}, status=400)
+
+@login_required
+@require_POST
+def registrar_pedido_checkout(request):
+    try:
+        data = json.loads(request.body)
+        items_data = data.get('items', [])
+        metodo = data.get('metodo', 'tarjeta')
+        token_id = data.get('token_id', '')
+
+        if not items_data:
+            return JsonResponse({'status': 'error', 'mensaje': 'El carrito está vacío'}, status=400)
+
+        line_items_conekta = []
+        total_centavos = 0
+        items_a_crear = []
+
+        for item in items_data:
+            item_id = str(item.get('id', ''))
+            cantidad = int(item.get('qty', item.get('cantidad', 1)))
+
+            prod = Producto.objects.filter(id=item_id).first() if item_id.isdigit() else None
+            curso = None
+            if not prod:
+                curso = CursoDisponible.objects.filter(id=item_id).first() if item_id.isdigit() else None
+
+            precio_unitario = prod.precio_base if prod else (curso.precio if curso else float(item.get('precio', 0)))
+            nombre = prod.nombre if prod else (curso.titulo if curso else item.get('nombre', 'Artículo'))
+            
+            unit_price_cents = int(float(precio_unitario) * 100)
+            total_centavos += unit_price_cents * cantidad
+
+            line_items_conekta.append({
+                "name": str(nombre)[:245],
+                "unit_price": unit_price_cents,
+                "quantity": cantidad
+            })
+
+            items_a_crear.append({
+                "producto": prod,
+                "curso": curso,
+                "nombre_item": nombre,
+                "cantidad": cantidad,
+                "precio_unitario": precio_unitario
+            })
+
+        total_pesos = total_centavos / 100.0
+        codigo = f"#EC-2026-{random.randint(1000, 9999)}"
+
+        telefono_raw = getattr(getattr(request.user, 'perfil_empresa', None), 'telefono_operativo', '') or '+525512345678'
+        telefono_limpio = re.sub(r'[^\d+]', '', telefono_raw)
+        if len(telefono_limpio) < 10:
+            telefono_limpio = "+525512345678"
+
+        order_payload = {
+            "currency": "MXN",
+            "customer_info": {
+                "name": (request.user.get_full_name() or request.user.username)[:100],
+                "email": request.user.email or "ventas@ecodren.com",
+                "phone": telefono_limpio
+            },
+            "line_items": line_items_conekta
+        }
+
+        if metodo == 'tarjeta':
+            order_payload["charges"] = [{
+                "payment_method": {
+                    "type": "card",
+                    "token_id": token_id
+                }
+            }]
+        elif metodo == 'spei':
+            order_payload["charges"] = [{
+                "payment_method": {
+                    "type": "spei"
+                }
+            }]
+
+        private_key = getattr(settings, 'CONEKTA_PRIVATE_KEY', '') or ''
+        conekta_res = requests.post(
+            'https://api.conekta.io/orders',
+            auth=(private_key, ''),
+            headers={
+                'Accept': 'application/vnd.conekta-v2.0.0+json',
+                'Content-Type': 'application/json'
+            },
+            json=order_payload,
+            timeout=15
+        )
+
+        conekta_data = conekta_res.json()
+
+        if conekta_res.status_code not in (200, 201):
+            details = conekta_data.get('details', [])
+            error_msg = details[0].get('message') if details else conekta_data.get('message', 'Error en pasarela de pagos')
+            return JsonResponse({'status': 'error', 'mensaje': error_msg}, status=400)
+
+        conekta_order_id = conekta_data.get('id', '')
+        charges_data = conekta_data.get('charges', {}).get('data', [])
+        charge = charges_data[0] if len(charges_data) > 0 else {}
+
+        clabe_spei = ''
+        if metodo == 'tarjeta':
+            charge_status = charge.get('status', '')
+            estado_pago = 'pagado' if charge_status == 'paid' else 'rechazado'
+        else:
+            estado_pago = 'pendiente'
+            pm = charge.get('payment_method', {})
+            clabe_spei = pm.get('clabe', '')
+
+        resumen_txt = ", ".join([f"{i['nombre_item']} × {i['cantidad']}" for i in items_a_crear])[:245]
+        
+        pedido = Pedido.objects.create(
+            usuario=request.user,
+            codigo_pedido=codigo,
+            equipo_insumo=resumen_txt,
+            total=total_pesos,
+            estatus='proceso',
+            estado_pago=estado_pago,
+            conekta_order_id=conekta_order_id,
+            metodo_pago=metodo
+        )
+
+        for it in items_a_crear:
+            ItemPedido.objects.create(
+                pedido=pedido,
+                producto=it['producto'],
+                curso=it['curso'],
+                nombre_item=it['nombre_item'],
+                cantidad=it['cantidad'],
+                precio_unitario=it['precio_unitario']
+            )
+
+        return JsonResponse({
+            'status': 'ok',
+            'codigo_pedido': pedido.codigo_pedido,
+            'total': f"{total_pesos:,.2f}",
+            'estado_pago': estado_pago,
+            'clabe': clabe_spei
+        })
+
+    except requests.exceptions.RequestException as re_err:
+        return JsonResponse({'status': 'error', 'mensaje': f"Error de conexión con Conekta: {str(re_err)}"}, status=502)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'mensaje': f"Error interno: {str(e)}"}, status=500)

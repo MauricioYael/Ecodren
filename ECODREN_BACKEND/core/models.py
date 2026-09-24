@@ -366,12 +366,26 @@ class Pedido(models.Model):
         ('entregado', 'Liberado / Entregado'),
         ('cancelado', 'Cancelado'),
     ]
+    ESTADO_PAGO_CHOICES = [
+        ('pendiente', 'Pendiente'),
+        ('pagado', 'Pagado'),
+        ('rechazado', 'Rechazado'),
+        ('reembolsado', 'Reembolsado'),
+    ]
+    METODO_PAGO_CHOICES = [
+        ('tarjeta', 'Tarjeta de Crédito / Débito'),
+        ('spei', 'Trasferencia Interbancaria (SPEI)'),
+        ('oxxo', 'Efectivo en Oxxo'),
+    ]
 
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pedidos')
     codigo_pedido = models.CharField(max_length=50, unique=True, verbose_name="ID Pedido")
     equipo_insumo = models.CharField(max_length=255, verbose_name="Equipo / Insumo Solicitado")
     total = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Costo Total (MXN)")
     estatus = models.CharField(max_length=20, choices=ESTATUS_CHOICES, default='proceso', verbose_name="Estatus de Despacho")
+    estado_pago = models.CharField(max_length=20, choices=ESTADO_PAGO_CHOICES, default='pendiente', verbose_name="Estado del Pago")
+    conekta_order_id = models.CharField(max_length=100, blank=True, null=True, verbose_name="ID Orden Conekta")
+    metodo_pago = models.CharField(max_length=30, choices=METODO_PAGO_CHOICES, default='tarjeta', verbose_name="Metodo de Pago")
     fecha_operacion = models.DateField(auto_now_add=True, verbose_name="Fecha de Operación")
 
     class Meta:
@@ -380,7 +394,7 @@ class Pedido(models.Model):
         ordering = ['-fecha_operacion']
 
     def __str__(self):
-        return f"{self.codigo_pedido} - {self.usuario.username}"
+        return f"{self.codigo_pedido} - {self.usuario.username} ({self.get_estado_pago_display()})"
 
 
 class CotizacionGuardada(models.Model):
@@ -425,4 +439,24 @@ class SolicitudCotizacion(models.Model):
 
     def __str__(self):
         return f"Cotización #{self.id} - {self.nombre} ({self.email})"
+
+class ItemPedido(models.Model):
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='items', verbose_name="Pedido Asociado")
+    producto = models.ForeignKey(Producto, on_delete=models.SET_NULL, null=True, blank=True, related_name='items_pedido', verbose_name="Producto / Refacción")
+    curso = models.ForeignKey(CursoDisponible, on_delete=models.SET_NULL, null=True, blank=True, related_name='items_curso', verbose_name="Curso Adquirido")
+    nombre_item = models.CharField(max_length=200, blank=True, null=True, verbose_name="Nombre del Item al comprar")
+    cantidad = models.PositiveIntegerField(default=1, verbose_name="Cantidad")
+    precio_unitario = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Precio Unitario (MXN)")
+
+    class Meta:
+        verbose_name = "Item del Pedido"
+        verbose_name_plural = "Items del Pedido"
+
+    def __str__(self):
+        item_nombre = self.nombre_item or (self.producto.nombre if self.producto else (self.curso.titulo if self.curso else "Item"))
+        return f"{self.cantidad}x {item_nombre} en {self.pedido.codigo_pedido}"
+
+    @property
+    def subtotal(self):
+        return self.cantidad * self.precio_unitario
 
