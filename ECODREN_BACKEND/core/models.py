@@ -279,6 +279,7 @@ class CapacitacionImpartida(models.Model):
 class CursoDisponible(models.Model):
     titulo = models.CharField(max_length=200, verbose_name="Título del Curso")
     fecha_proxima = models.CharField(max_length=100, default="Próximamente", verbose_name="Fecha / Estado")
+    fecha_evento = models.DateField(null=True, blank=True, verbose_name="Fecha exacta para el calendario")
     duracion = models.CharField(max_length=50, default="5 Horas", verbose_name="Duración")
     precio = models.DecimalField(max_digits=10, decimal_places=2, default=3800.00, verbose_name="Precio (MXN)")
     imagen = models.ImageField(upload_to='cursos_disponibles/', blank=True, null=True, verbose_name="Miniatura del Curso")
@@ -459,4 +460,30 @@ class ItemPedido(models.Model):
     @property
     def subtotal(self):
         return self.cantidad * self.precio_unitario
+
+class ChasisOption(models.Model):
+    TIPO_CABINA_CHOICES= [
+        ('convencional', 'Cabina Convencional'),
+        ('cab_over', 'Cab Over (Cabina Recortada)'),
+    ]
+
+    MARCA_CHOICES = [
+        ('international', 'International'),
+        ('freightliner', 'Freightliner'),
+        ('isuzu', 'Izusu'),
+        ('sinotruk', 'Sinotruk'),
+    ]
+    tipo_cabina = models.CharField(max_length=20, choices=TIPO_CABINA_CHOICES)
+    marca = models.CharField(max_length= 30, choices=MARCA_CHOICES)
+    nombre = models.CharField(max_length=100, help_text="Ej. International MV Series / WorkStar")
+    libra_minimas = models.PositiveBigIntegerField(help_text="Capacidad mínima requerida en lbs (Ej: 33000)")
+    activo = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['tipo_cabina', 'marca']
+        verbose_name = ["Opcion de Chasis"]
+        verbose_name_plural = "Opciones de Chasis"
+
+    def __str__(self):
+        return f"[{self.get_tipo_cabina_display()}] {self.get_marca_display()} - Min. {self.libra_minimas:,} lbs"
 

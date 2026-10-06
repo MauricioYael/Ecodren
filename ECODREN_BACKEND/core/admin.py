@@ -4,7 +4,7 @@ from .models import (
     Equipamento, AccesorioExtra, PuntoDestacado, PublicacionRecurso,
     DocumentoTecnico, CapacitacionImpartida, CursoDisponible,
     PerfilEmpresa, DireccionEntrega, Pedido, CotizacionGuardada,
-    SolicitudCotizacion
+    SolicitudCotizacion, ChasisOption
 )
 
 # ── INLINES DE MAQUINARIA ───────────────────────────────────────────
@@ -124,3 +124,9 @@ class SolicitudCotizacionAdmin(admin.ModelAdmin):
     list_display = ('id', 'nombre', 'empresa', 'email', 'categoria', 'creado_en')
     list_filter = ('categoria', 'creado_en')
     search_fields = ('nombre', 'empresa', 'email', 'detalles')
+
+@admin.register(ChasisOption)
+class ChasisOptionAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'marca', 'tipo_cabina', 'libra_minimas', 'activo')
+    list_filter = ('marca', 'tipo_cabina', 'activo')
+    search_fields = ('nombre',)

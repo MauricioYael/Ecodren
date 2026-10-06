@@ -20,6 +20,7 @@ urlpatterns = [
     path("api/actualizar-tema/", views.actualizar_tema, name="actualizar_tema"),
     path('api/crear-pedido/', views.registrar_pedido_checkout, name='crear_pedido'),
     path('api/preferencias/localizacion/', views.api_actualizar_localizacion, name='api_localizacion'),
+    path('api/calendario-cursos/', views.api_calendario_cursos, name='api_calendario_cursos'),
 
     #endpoint de cotizacion
     path('api/enviar-cotizacion/', views.enviar_cotizacion, name='enviar_cotizacion'),

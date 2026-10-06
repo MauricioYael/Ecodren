@@ -1,7 +1,7 @@
 let configActual = {
     maquinaIndex: 0,
     fotoIndex: 0,
-    chasis: "chasis-6x4",
+    chasis: null,
     equipamentos: [],
     extras: []
 };
@@ -159,30 +159,67 @@ window.cambiarTabExtra = function(checkboxBtn, extraName) {
     }
 };
 
+function obtenerLibrasSegunCapacidad(m3) {
+    if (m3 <= 5) {
+        return 35000;
+    } else if (m3 < 10) {
+        return 38000;
+    } else if (m3 === 10) {
+        return 46000;
+    } else if (m3 === 11 || m3 === 12) {
+        return 58000;
+    } else if (m3 >= 15) {
+        return 60000;
+    }
+    return 58000;
+}
+
 function renderComponentes() {
     const container = document.getElementById('tab-componentes');
     if (!container) return;
-    const chasis = [
-        {id: "chasis-4x2", nombre: "Chasis Corto (4x2)", desc: "Ideal para maniobras urbanas."},
-        {id: "chasis-6x4", nombre: "Chasis Estándar (6x4)", desc: "Balance perfecto entre estabilidad y capacidad."},
-        {id: "chasis-hd", nombre: "Chasis Heavy Duty", desc: "Para terrenos difíciles."}
-    ];
+
+    if (!window.MAQUINARIA || window.MAQUINARIA.length === 0 || !window.MAQUINARIA[configActual.maquinaIndex]) {
+        container.innerHTML = `<h3>Selección de Chasis</h3><p style="color: #aaa; padding: 1rem;">No hay información disponible.</p>`;
+        return;
+    }
+
+    const maquinaActual = window.MAQUINARIA[configActual.maquinaIndex];
+    const chasisDb = maquinaActual.chasis || [];
+
+    const capM3 = maquinaActual.capacidad_m3 
+        || parseFloat(maquinaActual.capacidad)
+        || parseFloat((maquinaActual.nombre.match(/\d+/) || [0])[0]);
+
+    const librasCalculadas = obtenerLibrasSegunCapacidad(capM3);
 
     let html = `<h3>Selección de Chasis</h3>`;
-    chasis.forEach(c => {
-        const isActive = configActual.chasis === c.id ? 'active-chasis-card' : '';
-        const checked = configActual.chasis === c.id ? 'checked' : '';
+
+    if (chasisDb.length === 0) {
+        container.innerHTML = html + `<p style="color: #aaa; padding: 1rem;">No hay opciones de chasis registradas en la base de datos para este equipo.</p>`;
+        return;
+    }
+
+    chasisDb.forEach((c, index) => {
+        const chasisId = c.id;
+        if (!configActual.chasis && index === 0) {
+            configActual.chasis = chasisId;
+        }
+
+        const isActive = configActual.chasis == chasisId ? 'active-chasis-card' : '';
+        const checked = configActual.chasis == chasisId ? 'checked' : '';
+
         html += `
             <label class="radical-chasis-selectable-card ${isActive}">
-                <input type="radio" name="chasis" value="${c.id}" ${checked} onchange="cambiarTabChasis(this)">
+                <input type="radio" name="chasis" value="${chasisId}" ${checked} onchange="cambiarTabChasis(this)">
                 <div class="chasis-card-indicator-dot"></div>
                 <div class="chasis-card-text-content">
-                    <strong>${c.nombre}</strong>
-                    <p>${c.desc}</p>
+                    <strong>${c.tipo_cabina}</strong>
+                    <p>Algunos Ejemplos: ${c.marca} ${c.nombre} &nbsp;|&nbsp; Capacidad Mín.: ${librasCalculadas.toLocaleString()} lbs</p>
                 </div>
             </label>
         `;
     });
+
     container.innerHTML = html;
 }
 
@@ -371,6 +408,7 @@ window.descargarFichaTecnica = function(event) {
         alert(`La ficha técnica en PDF para el modelo "${maquina.nombre}" se estará cargando próximamente.`);
     }
 }
+
 window.cerrarModalCotizacion = function() {
     const modalOverlay = document.querySelector('.custom-modal-overlay');
     if (modalOverlay) {

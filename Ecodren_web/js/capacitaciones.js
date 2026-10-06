@@ -78,4 +78,79 @@ document.addEventListener('DOMContentLoaded', () => {
             cardsTrack.scrollBy({ left: -280, behavior: 'smooth' });
         });
     }
+
+    let calendarInstance = null;
+
+    window.abrirModalCalendario = function (e) {
+    if (e) e.preventDefault();
+    const modal = document.getElementById('modalCalendarioOverlay');
+    if (!modal) return;
+
+    modal.style.display = 'flex';
+
+    if (!calendarInstance) {
+        const calendarEl = document.getElementById('calendar-container');
+        if (calendarEl && typeof FullCalendar !== 'undefined') {
+            calendarInstance = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'es',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,listMonth'
+                },
+                buttonText: {
+                    today: 'Hoy',
+                    month: 'Mes',
+                    list: 'Lista'
+                },
+                events: '/api/calendario-cursos/',
+                eventColor: '#0f5429',
+                eventTextColor: '#bffd00',
+                eventClick: function (info) {
+                    const props = info.event.extendedProps;
+                    if (confirm(`📘 ${info.event.title}\n⏱ Duración: ${props.duracion}\n💰 Costo: ${props.precio}\n\n¿Deseas agregar este curso al carrito?`)) {
+                        if (typeof agregarAlCarrito === 'function') {
+                            agregarAlCarrito(info.event.id, info.event.title, props.precio, props.img);
+                            cerrarModalCalendario();
+                        }
+                    }
+                }
+            });
+            calendarInstance.render();
+        }
+    } else {
+        calendarInstance.refetchEvents();
+    }
+
+    // Ajusta el tamaño de la cuadrícula al mostrar el modal
+    setTimeout(() => {
+        if (calendarInstance) calendarInstance.updateSize();
+    }, 50);
+};
+
+    window.cerrarModalCalendario = function () {
+        const modal = document.getElementById('modalCalendarioOverlay');
+        if (modal) modal.style.display = 'none';
+    };
+
+    const modalOverlay = document.getElementById('modalCalendarioOverlay');
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', function (e) {
+            if (e.target === this) {
+                cerrarModalCalendario();
+            }
+        });
+    }
+
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-inscribir-curso');
+        if (btn) {
+            e.preventDefault();
+            const d = btn.dataset;
+            if (typeof agregarAlCarrito === 'function') {
+                agregarAlCarrito(d.id, d.titulo, d.precio, d.img);
+            }
+        }
+    });
 });

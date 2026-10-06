@@ -15,9 +15,11 @@
 
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/capacitaciones.css' %}">
+    
 </head>
 <body class="{% if tema_preferido == 'oscuro' %}dark-theme{% endif %}"
       data-user-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}">
+
     <nav id="mainNav">
         <a href="{% url 'home' %}" class="nav-logo">
             <img src="{% static 'Assets/logo-ecodren.png' %}" alt="Ecodren Logo" class="web-logo">
@@ -189,7 +191,6 @@
             </div>
         </section>
 
-        <!-- Barra de Navegación Secundaria (Tabs) -->
         <section class="cap-subnav-section">
             <div class="cap-subnav-container">
                 <button class="cap-tab-btn active" onclick="switchCapTab('experiencia', this)">
@@ -207,7 +208,6 @@
         <section class="cap-main-section">
             <div class="cap-main-container">
                 
-                <!-- Columna Izquierda: Nuestra Experiencia -->
                 <div class="cap-col-experience" id="sec-experiencia">
                     <div class="cap-section-header">
                         <div class="cap-header-titles">
@@ -267,7 +267,6 @@
                     </div>
                 </div>
 
-                <!-- Columna Derecha: Cursos Disponibles -->
                 <div class="cap-col-available" id="sec-disponibles">
                     <div class="cap-section-header">
                         <div class="cap-header-titles">
@@ -277,8 +276,9 @@
                             </h2>
                             <p class="cap-subtitle">Inscríbete en nuestros próximos cursos</p>
                         </div>
-                        <a href="#" class="cap-calendar-link">
-                            Ver Calendario <i class="fa-regular fa-calendar"></i>
+                        <a href="#" class="btn-ver-calendario" id="btnVerCalendario" onclick="abrirModalCalendario(event)">
+                            <span>Ver Calendario</span>
+                            <span class="btn-icon">📅</span>
                         </a>
                     </div>
 
@@ -297,7 +297,13 @@
                             </div>
                             <div class="cap-course-action">
                                 <span class="cap-course-price">${{ curso.precio|floatformat:2 }} MXN</span>
-                                <button class="cap-btn-enroll">Inscribirme <i class="fa-solid fa-arrow-right"></i></button>
+                                <button type="button" class="cap-btn-enroll btn-inscribir-curso"
+                                        data-id="{{ curso.id }}"
+                                        data-titulo="{{ curso.titulo }}"
+                                        data-precio="{{ curso.precio|stringformat:'s' }}"
+                                        data-img="{% if curso.imagen %}{{ curso.imagen.url }}{% else %}{% static 'Assets/afilial1_ecovac.webp' %}{% endif %}">
+                                    Inscribirme <i class="fa-solid fa-arrow-right"></i>
+                                </button>
                             </div>
                         </div>
                         {% empty %}
@@ -314,7 +320,7 @@
                             </div>
                             <div class="cap-course-action">
                                 <span class="cap-course-price">$3,800.00 MXN</span>
-                                <button class="cap-btn-enroll">Inscribirme <i class="fa-solid fa-arrow-right"></i></button>
+                                <button type="button" class="cap-btn-enroll">Inscribirme <i class="fa-solid fa-arrow-right"></i></button>
                             </div>
                         </div>
                         {% endfor %}
@@ -439,7 +445,6 @@
         </div>
     </footer>
 
-    <!-- SIDEBAR DEL CARRITO GLOBAL -->
     <div class="cart-overlay" id="cartOverlay"></div>
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-head">
@@ -462,7 +467,6 @@
         </div>
     </div>
 
-    <!-- MODAL GLOBAL (LOGIN / REGISTER / FORGET / CHECKOUT) -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-box" style="max-width: 420px; width: 90%;">
             <button class="modal-close" onclick="closeModal()">×</button>
@@ -626,19 +630,35 @@
         </div>
     </div>
 
+    <div class="modal-calendar-overlay" id="modalCalendarioOverlay">
+        <div class="modal-calendar-card">
+            <button type="button" class="btn-close-calendar" onclick="cerrarModalCalendario()" aria-label="Cerrar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <h3 class="modal-calendar-title">
+                <i class="fa-solid fa-calendar-check"></i> Calendario de Cursos y Capacitaciones
+            </h3>
+            <div id="calendar-container"></div>
+        </div>
+    </div>    
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/capacitaciones.js' %}"></script> 
+    
 
     <div id="google_translate_element" style="position: absolute; left: -9999px; top: -9999px;"></div>
-<script type="text/javascript">
-function googleTranslateElementInit() {
-    new google.translate.TranslateElement({
-        pageLanguage: 'es',
-        includedLanguages: 'es,en',
-        autoDisplay: false
-    }, 'google_translate_element');
-}
-</script>
-<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'es',
+            includedLanguages: 'es,en',
+            autoDisplay: false
+        }, 'google_translate_element');
+    }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>

@@ -13,8 +13,9 @@ from .models import (
     Producto, Categoria, Maquinaria, PublicacionRecurso, 
     DocumentoTecnico, CapacitacionImpartida, CursoDisponible,
     PerfilEmpresa, DireccionEntrega, Pedido, ItemPedido, 
-    CotizacionGuardada, SolicitudCotizacion
+    CotizacionGuardada, SolicitudCotizacion, ChasisOption
 )
+
 
 def index(request):
     productos_destacados = Producto.objects.filter(disponible=True).order_by('?')[:4]
@@ -22,6 +23,7 @@ def index(request):
         'productos_destacados': productos_destacados,
         'conekta_public_key': getattr(settings, 'CONEKTA_PUBLIC_KEY', '')
     })
+
 
 def tienda(request):
     categorias = Categoria.objects.all()
@@ -75,10 +77,23 @@ def tienda(request):
     }
     return render(request, 'tienda.html', context)
 
+
 def maquinaria(request):
     maquinas_qs = Maquinaria.objects.filter(activo=True).prefetch_related(
         'imagenes', 'equipamentos', 'accesorios_disponibles', 'puntos_destacados'
     )
+    
+    chasis_globales = [
+        {
+            'id': c.id,
+            'nombre': c.nombre,
+            'marca': c.get_marca_display(),
+            'tipo_cabina': "Cabina Convencional" if c.tipo_cabina == 'convencional' else "Cab Over",
+            'libras': c.libra_minimas
+        }
+        for c in ChasisOption.objects.filter(activo=True)
+    ]
+
     maquinaria_data = []
     for m in maquinas_qs:
         maquinaria_data.append({
@@ -88,6 +103,7 @@ def maquinaria(request):
             'categoria': m.categoria_equipo,
             'tagline': m.tagline or '',
             'capacidad': m.capacidad or '',
+            'capicidad_m3': float(m.capacidad_m3) if m.capacidad_m3 else 0,
             'presion': m.presion or '',
             'succion': m.succion or 'Alto Vacío',
             'peso': m.peso or '19,500 Kg',
@@ -99,9 +115,10 @@ def maquinaria(request):
                 for eq in m.equipamentos.all()
             ],
             'accesorios': [
-                {'nombre': acc.nombre, 'descripcion': acc.descripcion or ''}
+                {'id': acc.id, 'nombre': acc.nombre, 'descripcion': acc.descripcion or ''}
                 for acc in m.accesorios_disponibles.all()
             ],
+            'chasis': chasis_globales,
             'puntos_destacados': [
                 {'titulo': p.titulo, 'descripcion': p.descripcion, 'icono': p.icono}
                 for p in m.puntos_destacados.all()
@@ -114,6 +131,7 @@ def maquinaria(request):
         'maquinaria_data': maquinaria_data
     }
     return render(request, 'maquinaria.html', context)
+
 
 def recursos(request):
     videos = PublicacionRecurso.objects.filter(activo=True, tipo='video')
@@ -134,6 +152,7 @@ def recursos(request):
     }
     return render(request, 'recursos.html', context)
 
+
 def publicaciones(request):
     cat = request.GET.get('cat', 'todos')
     publicaciones_qs = PublicacionRecurso.objects.filter(activo=True)
@@ -147,6 +166,7 @@ def publicaciones(request):
     }
     return render(request, 'publicaciones.html', context)
 
+
 def capacitaciones(request):
     experiencias = CapacitacionImpartida.objects.filter(activo=True)
     cursos_disponibles = CursoDisponible.objects.filter(activo=True)
@@ -156,6 +176,7 @@ def capacitaciones(request):
         'cursos_disponibles': cursos_disponibles,
     }
     return render(request, 'capacitaciones.html', context)
+
 
 @login_required
 def perfil_view(request):
@@ -171,6 +192,7 @@ def perfil_view(request):
         'cotizaciones': cotizaciones,
     }
     return render(request, 'perfil.html', context)
+
 
 @require_POST
 def enviar_cotizacion(request):
@@ -225,6 +247,7 @@ def enviar_cotizacion(request):
         'mensaje': '¡Cotización enviada con éxito! Te hemos enviado un correo con los detalles.'
     })
 
+
 @login_required
 @require_POST
 def actualizar_datos_perfil(request):
@@ -258,6 +281,7 @@ def actualizar_datos_perfil(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'mensaje': str(e)}, status=400)
 
+
 @login_required
 @require_POST
 def actualizar_tema(request):
@@ -276,6 +300,7 @@ def actualizar_tema(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'mensaje': str(e)}, status=400)
 
+
 def api_actualizar_localizacion(request):
     if request.method != 'POST' or not request.user.is_authenticated:
         return JsonResponse({'status': 'error', 'message': 'No autorizado'}, status=401)
@@ -293,6 +318,7 @@ def api_actualizar_localizacion(request):
         return JsonResponse({'status': 'ok', 'moneda': perfil.moneda_defecto, 'idioma': perfil.idioma_panel})
     except json.JSONDecodeError:
         return JsonResponse({'status': 'error', 'message': 'Datos invalidos'}, status=400)
+
 
 @login_required
 @require_POST
@@ -438,3 +464,23 @@ def registrar_pedido_checkout(request):
         return JsonResponse({'status': 'error', 'mensaje': f"Error de conexión con Conekta: {str(re_err)}"}, status=502)
     except Exception as e:
         return JsonResponse({'status': 'error', 'mensaje': f"Error interno: {str(e)}"}, status=500)
+
+
+def api_calendario_cursos(request):
+    cursos = CursoDisponible.objects.filter(activo=True).exclude(fecha_evento__isnull=True)
+    eventos = []
+
+    for c in cursos:
+        eventos.append({
+            'id': c.id,
+            'title': c.titulo,
+            'start': c.fecha_evento.isoformat(),
+            'extendedProps': {
+                'precio': f"${c.precio:,.2f} MXN",
+                'duracion': c.duracion,
+                'cupos': c.cupos,
+                'img': c.imagen.url if c.imagen else '/static/Assets/logo_web_ecodren.png'
+            }
+        })
+
+    return JsonResponse(eventos, safe=False)

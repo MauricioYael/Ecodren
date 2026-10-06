@@ -987,6 +987,282 @@ body.dark-theme .pass-dates {
     color: #94a3b8;
 }
 
+/* ---- Modal y Calendario ---- */
+:root {
+  /* Tema Claro (Imagen 1) */
+  --fc-bg-container: #ffffff;
+  --fc-modal-bg: #ffffff;
+  --fc-border: #f1f5f9;
+  --fc-text-title: #101828;
+  --fc-text-subtitle: #94a3b8;
+  --fc-text-day: #1e293b;
+  --fc-text-header: #64748b;
+  --fc-text-other-month: #cbd5e1;
+  --fc-btn-bg: #f1f5f9;
+  --fc-btn-text: #64748b;
+  --fc-btn-active-bg: #278652;
+  --fc-btn-active-text: #ffffff;
+  --fc-today-bg: #f0fdf4;
+  --fc-today-border: transparent;
+  --fc-accent: #278652;
+  --fc-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+}
+
+/* Modo Oscuro (Imagen 2) - Compatible con body.dark-theme */
+body.dark-theme {
+  --fc-bg-container: #0d151c;
+  --fc-modal-bg: #0d151c;
+  --fc-border: #1a2632;
+  --fc-text-title: #ffffff;
+  --fc-text-subtitle: #64748b;
+  --fc-text-day: #e2e8f0;
+  --fc-text-header: #94a3b8;
+  --fc-text-other-month: #334155;
+  --fc-btn-bg: #16222f;
+  --fc-btn-text: #94a3b8;
+  --fc-btn-active-bg: #278652;
+  --fc-btn-active-text: #ffffff;
+  --fc-today-bg: #0f231a;
+  --fc-today-border: #278652;
+  --fc-accent: #278652;
+  --fc-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* ---- Modal ---- */
+.modal-calendar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 15, 20, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 1rem;
+}
+
+.modal-calendar-card {
+    position: relative;
+    width: 100%;
+    max-width: 920px;
+    background: var(--fc-modal-bg);
+    border: 1px solid var(--fc-border);
+    border-radius: 20px;
+    padding: 1.8rem 1.5rem 1.5rem;
+    color: var(--fc-text-day);
+    box-shadow: var(--fc-shadow);
+    animation: modalFadeIn 0.25s ease-out;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.btn-close-calendar {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    width: 36px;
+    height: 36px;
+    background: var(--fc-btn-bg);
+    border: 1px solid var(--fc-border);
+    border-radius: 50%;
+    color: var(--fc-text-header);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.btn-close-calendar:hover {
+    background: #ef4444;
+    color: #ffffff;
+    border-color: #ef4444;
+    transform: scale(1.08);
+}
+
+/* Botón "Ver Calendario" */
+.btn-ver-calendario {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 22px;
+    background-color: var(--eco-green, #0f5429);
+    color: #ffffff !important;
+    text-decoration: none !important;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 30px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.btn-ver-calendario:hover {
+    background-color: #146c35;
+    color: #bffd00 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(15, 84, 41, 0.4);
+}
+
+.btn-ver-calendario .btn-icon {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-ver-calendario:hover .btn-icon {
+    transform: scale(1.15) rotate(5deg);
+}
+
+/* ===================================================
+   ESTILOS FULLCALENDAR
+   =================================================== */
+
+#calendar-container {
+    min-height: 480px;
+    background-color: var(--fc-bg-container) !important;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+    padding: 20px;
+    border-radius: 16px;
+    transition: background-color 0.3s ease;
+}
+
+/* Encabezado y Título con Subtítulo */
+.fc .fc-toolbar-title {
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+    color: var(--fc-text-title) !important;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.fc .fc-toolbar-title::after {
+    content: "ORGANIZA  ·  PLANIFICA  ·  AVANZA";
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--fc-text-subtitle);
+    text-transform: uppercase;
+}
+
+/* Botones Navegación y Vistas */
+.fc .fc-button-primary {
+    background-color: var(--fc-btn-bg) !important;
+    border: 1px solid var(--fc-border) !important;
+    color: var(--fc-btn-text) !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    padding: 7px 15px !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.fc .fc-button-primary:hover {
+    opacity: 0.9;
+}
+
+.fc .fc-button-primary:disabled {
+    opacity: 0.4 !important;
+}
+
+/* Botones activos (Mes / Lista) */
+.fc .fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
+    background-color: var(--fc-btn-active-bg) !important;
+    border-color: var(--fc-btn-active-bg) !important;
+    color: var(--fc-btn-active-text) !important;
+}
+
+/* Encabezados de Días de la Semana */
+.fc .fc-col-header-cell {
+    background: transparent !important;
+    padding: 10px 0 !important;
+    border-color: var(--fc-border) !important;
+}
+
+.fc .fc-col-header-cell-cushion {
+    color: var(--fc-text-header) !important;
+    font-weight: 700 !important;
+    font-size: 0.78rem !important;
+    letter-spacing: 1px;
+    text-decoration: none !important;
+}
+
+.fc .fc-day-sun .fc-col-header-cell-cushion {
+    color: var(--fc-accent) !important;
+}
+
+/* Cuadrícula */
+.fc-theme-standard td, 
+.fc-theme-standard th, 
+.fc-theme-standard .fc-scrollgrid {
+    border-color: var(--fc-border) !important;
+}
+
+/* Números de los Días */
+.fc .fc-daygrid-day-number {
+    color: var(--fc-text-day) !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    padding: 8px 10px !important;
+    text-decoration: none !important;
+}
+
+.fc .fc-day-other .fc-daygrid-day-number {
+    color: var(--fc-text-other-month) !important;
+    opacity: 0.6;
+}
+
+/* Día Actual */
+.fc .fc-day-today {
+    background-color: var(--fc-today-bg) !important;
+    border: 1px solid var(--fc-today-border) !important;
+}
+
+.fc .fc-day-today .fc-daygrid-day-number {
+    background-color: var(--fc-accent) !important;
+    color: #ffffff !important;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4px;
+}
+
+/* Eventos / Cursos */
+.fc-daygrid-event {
+    border-radius: 6px !important;
+    padding: 3px 6px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    background-color: var(--fc-accent) !important;
+    border: none !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+    transition: transform 0.15s ease !important;
+}
+
+.fc-daygrid-event:hover {
+    transform: scale(1.02);
+    filter: brightness(1.1);
+}
+
 
 @media (max-width: 992px) {
     .cap-main-container {
