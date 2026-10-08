@@ -103,7 +103,7 @@ def maquinaria(request):
             'categoria': m.categoria_equipo,
             'tagline': m.tagline or '',
             'capacidad': m.capacidad or '',
-            'capicidad_m3': float(m.capacidad_m3) if m.capacidad_m3 else 0,
+            'capacidad_m3': float(m.capacidad_m3) if m.capacidad_m3 else 0,
             'presion': m.presion or '',
             'succion': m.succion or 'Alto Vacío',
             'peso': m.peso or '19,500 Kg',
@@ -138,17 +138,17 @@ def recursos(request):
     noticias = PublicacionRecurso.objects.filter(activo=True, tipo='noticia')
     comunidad_bento = PublicacionRecurso.objects.filter(activo=True, tipo='redes')
 
-    doc_ficha = DocumentoTecnico.objects.filter(activo=True, categoria='ficha').first()
-    doc_manual = DocumentoTecnico.objects.filter(activo=True, categoria='manual').first()
-    doc_catalogo = DocumentoTecnico.objects.filter(activo=True, categoria='catalogo').first()
+    fichas = DocumentoTecnico.objects.filter(activo=True, categoria='ficha').first()
+    manuales = DocumentoTecnico.objects.filter(activo=True, categoria='manual').first()
+    catalogos = DocumentoTecnico.objects.filter(activo=True, categoria='catalogo').first()
 
     context = {
         'videos': videos,
         'noticias': noticias,
         'comunidad_bento': comunidad_bento,
-        'doc_ficha': doc_ficha,
-        'doc_manual': doc_manual,
-        'doc_catalogo': doc_catalogo,
+        'doc_ficha': fichas,
+        'doc_manual': manuales,
+        'doc_catalogo': catalogos,
     }
     return render(request, 'recursos.html', context)
 

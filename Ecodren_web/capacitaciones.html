@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/capacitaciones.css' %}">
@@ -217,7 +217,7 @@
                             </h2>
                             <p class="cap-subtitle">Cursos que ya hemos impartido.</p>
                         </div>
-                        <a href="#" class="cap-view-all">Ver todos <i class="fa-solid fa-arrow-right"></i></a>
+                        <a href="javascript:void(0);" onclick="switchCapTab('experiencia', document.query.Selector('.cap-tab-btn'))" class="cap-view-all">Ver todos <i class="fa-solid fa-arrow-right"></i></a>
                     </div>
 
                     <div class="cap-carousel-wrapper">
@@ -276,7 +276,7 @@
                             </h2>
                             <p class="cap-subtitle">Inscríbete en nuestros próximos cursos</p>
                         </div>
-                        <a href="#" class="btn-ver-calendario" id="btnVerCalendario" onclick="abrirModalCalendario(event)">
+                        <a href="javascript:void(0);" class="btn-ver-calendario" id="btnVerCalendario" onclick="abrirModalCalendario(event)">
                             <span>Ver Calendario</span>
                             <span class="btn-icon">📅</span>
                         </a>
@@ -326,7 +326,7 @@
                         {% endfor %}
                     </div>
                     <div class="cap-all-courses-footer">
-                        <a href="#" class="cap-link-all-courses">
+                        <a href="#sec-disponibles" class="cap-link-all-courses">
                             Ver todos los cursos <i class="fa-solid fa-arrow-right"></i>
                         </a>
                     </div>
@@ -366,7 +366,7 @@
                             <a href="{% static 'Assets/ecodren-5/Ecodren ED-5.webp' %}" download class="cap-btn-download-glow">
                                 <i class="fa-solid fa-download"></i> Descargar diploma
                             </a>
-                            <a href="#" class="cap-btn-history-outline">
+                            <a href="{% url 'perfil'% }?tab=pedidos" class="cap-btn-history-outline">
                                 <i class="fa-regular fa-folder-closed"></i> Historial de constancias
                             </a>
                         </div>
@@ -427,7 +427,7 @@
                 <span class="social-text">Ecodren Oficial</span>
             </a>
             <a href="https://x.com/equipos_mc" target="_blank" class="social-pill instagram">
-                <div class="icon-circle"><i class="fab fa-instagram"></i></div>
+                <div class="icon-circle"><i class="fab fa-x-twitter"></i></div>
                 <span class="social-text">@ecodren</span>
             </a>
             <a href="https://www.linkedin.com/in/equipos-mc-770731114/" target="_blank" class="social-pill linkedin">

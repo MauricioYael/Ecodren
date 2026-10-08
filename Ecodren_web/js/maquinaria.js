@@ -387,27 +387,40 @@ window.solicitarCotizacion = function() {
         }
         modalOverlay.classList.add('modal-active');
     } else {
-        window.location.href = `/ #contacto?modelo=${encodeURIComponent(maquina.nombre)}`;
+        window.location.href = `/#contacto?modelo=${encodeURIComponent(maquina.nombre)}`;
     }
 };
 
 window.descargarFichaTecnica = function(event) {
     if (event) event.preventDefault();
 
-    if(!window.MAQUINARIA || !window.MAQUINARIA [configActual.maquinaIndex]) return;
+    if (!window.MAQUINARIA || !window.MAQUINARIA[configActual.maquinaIndex]) return;
     const maquina = window.MAQUINARIA[configActual.maquinaIndex];
 
-    if (maquina.pdf_url) {
+    if (maquina.pdf_url && maquina.pdf_url.trim() !== '' && maquina.pdf_url !== '#' && maquina.pdf_url !== 'null' && maquina.pdf_url !== 'undefined') {
         const link = document.createElement('a');
         link.href = maquina.pdf_url;
-        link.download = `Ficha_Tecnica_${maquina.nombre.replace(/\s+/g, '_')}.pdf`;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     } else {
-        alert(`La ficha técnica en PDF para el modelo "${maquina.nombre}" se estará cargando próximamente.`);
+        const solicitar = confirm(
+            `La ficha técnica en PDF para el modelo "${maquina.nombre}" no se encuentra disponible para descarga directa en este momento.\n\n` +
+            `¿Deseas solicitar la información a un asesor técnico?`
+        );
+
+        if (solicitar) {
+            const seccionContacto = document.getElementById('contacto');
+            if (seccionContacto) {
+                seccionContacto.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                window.location.href = '/#contacto';
+            }
+        }
     }
-}
+};
 
 window.cerrarModalCotizacion = function() {
     const modalOverlay = document.querySelector('.custom-modal-overlay');
