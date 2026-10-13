@@ -299,6 +299,7 @@ window.processSimulatedPayment = function(e) {
 
     const payMethod = document.querySelector('input[name="payMethod"]:checked')?.value || 'card';
     const btn = e.target.querySelector('button[type="submit"]');
+    const monedaSeleccionada = localStorage.getItem('ecodren_moneda') || 'MXN';
 
     if (btn) {
         btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Validando transacción...';
@@ -306,7 +307,6 @@ window.processSimulatedPayment = function(e) {
     }
 
     if (payMethod === 'card') {
-        // Asigna tu llave pública real copiada desde tu panel Conekta (empieza con key_)
         Conekta.setPublicKey("key_Ct78Zupov4Uxj5XvMyh0ZXH");
 
         const expRaw = document.querySelector('#cardDetailsForm input[placeholder="MM/AA"]').value.split('/');
@@ -325,7 +325,8 @@ window.processSimulatedPayment = function(e) {
                 enviarOrdenBackend({
                     items: carrito,
                     token_id: token.id,
-                    metodo: 'tarjeta'
+                    metodo: 'tarjeta',
+                    moneda: monedaSeleccionada
                 }, btn);
             }, 
             function(error) {
@@ -339,12 +340,16 @@ window.processSimulatedPayment = function(e) {
     } else {
         enviarOrdenBackend({
             items: carrito,
-            metodo: 'spei'
+            metodo: 'spei',
+            moneda: monedaSeleccionada
         }, btn);
     }
 };
 
 async function enviarOrdenBackend(payload, btn) {
+    if (!payload.moneda) {
+        payload.moneda = localStorage.getItem('ecodren_moneda') || 'MXN';
+    }
     try {
         const response = await fetch('/api/crear-pedido/', {
             method: 'POST',
@@ -378,7 +383,7 @@ async function enviarOrdenBackend(payload, btn) {
                             </div>
                             <div class="order-meta-row">
                                 <span>Total:</span>
-                                <strong>$${data.total} MXN</strong>
+                                <strong>$${data.total}</strong>
                             </div>
                             ${esSpei && data.clabe ? `
                             <div class="order-meta-row">

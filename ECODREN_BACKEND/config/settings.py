@@ -138,5 +138,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR.parent, 'Ecodren_web', 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CONEKTA_PRIVATE_KEY = os.getenv('CONEKTA_PRIVATE_KEY')
-CONEKTA_PUBLIC_KEY = os.getenv('CONEKTA_PUBLIC_KEY')
+CONEKTA_PRIVATE_KEY = os.getenv('CONEKTA_PRIVATE_KEY', 'key_ibfI6vUBuKBXhNqLZNxquyI')
+CONEKTA_PUBLIC_KEY = os.getenv('CONEKTA_PUBLIC_KEY', 'key_Ct78Zupov4Uxj5XvMyh0ZXH')

@@ -15,9 +15,12 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/tienda.css' %}">
     <link rel="stylesheet" href="{% static 'css/perfil.css' %}">
+
+    <script type="text/javascript" src="https://cdn.conekta.io/js/latest/conekta.js"></script>
 </head>
 <body class="profile-body{% if perfil.tema_preferido == 'oscuro' %} dark-theme{% endif %}"
-    data-user-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}">
+    data-user-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}"
+    data-conekta-public-key="{{ conekta_public_key|default:'key_Ct78Zupov4Uxj5XvMyh0ZXH' }}">
 
     <nav id="mainNav" class="light scrolled profile-nav">
         <a href="{% url 'home' %}" class="nav-logo">
@@ -376,43 +379,29 @@
                     </div>
 
                     <div class="company-data-grid text-left" id="payment-methods-grid">
-                        <div class="swipe-container-wrapper" data-payment-id="1">
+                        {% for metodo in metodos_pago %}
+                        <div class="swipe-container-wrapper" data-payment-id="{{ metodo.id }}">
                             <div class="swipe-behind-actions">
-                                <button type="button" class="swipe-btn-edit" onclick="editarMetodoPago('1')"><i class="fa-solid fa-pen"></i></button>
-                                <button type="button" class="swipe-btn-delete" onclick="eliminarMetodoPago('1')"><i class="fa-solid fa-trash-can"></i></button>
+                                <button type="button" class="swipe-btn-delete" onclick="eliminarMetodoPago('{{ metodo.id }}')"><i class="fa-solid fa-trash-can"></i></button>
                             </div>
                             <div class="company-card payment-swipe-card">
                                 <div class="company-card-icon"><i class="fa-solid fa-credit-card"></i></div>
                                 <div class="company-card-info">
-                                    <label>Tarjeta de Crédito Principal</label>
-                                    <p>•••• •••• •••• 4321</p>
-                                    <label style="margin-top: 4px; color: #10b981; font-weight: 700;">Vence: 12/29</label>
+                                    <label>{{ metodo.brand|default:"Tarjeta"|upper }} •••• {{ metodo.last4 }}</label>
+                                    <p>{{ metodo.name|default:"Tarjeta Registrada" }}</p>
+                                    <label style="margin-top: 4px; color: #10b981; font-weight: 700;">Vence: {{ metodo.exp_month }}/{{ metodo.exp_year }}</label>
                                 </div>
                                 <div class="desktop-card-actions">
-                                    <button type="button" class="btn-action-edit" title="Editar" onclick="editarMetodoPago('1')"><i class="fa-solid fa-pen"></i></button>
-                                    <button type="button" class="btn-action-delete" title="Eliminar" onclick="eliminarMetodoPago('1')"><i class="fa-solid fa-trash"></i></button>
+                                    <button type="button" class="btn-action-delete" title="Eliminar" onclick="eliminarMetodoPago('{{ metodo.id }}')"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="swipe-container-wrapper" data-payment-id="2">
-                            <div class="swipe-behind-actions">
-                                <button type="button" class="swipe-btn-edit" onclick="editarMetodoPago('2')"><i class="fa-solid fa-pen"></i></button>
-                                <button type="button" class="swipe-btn-delete" onclick="eliminarMetodoPago('2')"><i class="fa-solid fa-trash-can"></i></button>
-                            </div>
-                            <div class="company-card payment-swipe-card">
-                                <div class="company-card-icon"><i class="fa-solid fa-wallet"></i></div>
-                                <div class="company-card-info">
-                                    <label>Método Alternativo</label>
-                                    <p>Transferencia Interbancaria (SPEI)</p>
-                                    <label style="margin-top: 4px;">CLABE Registrada: •••• 5678</label>
-                                </div>
-                                <div class="desktop-card-actions">
-                                    <button type="button" class="btn-action-edit" title="Editar" onclick="editarMetodoPago('2')"><i class="fa-solid fa-pen"></i></button>
-                                    <button type="button" class="btn-action-delete" title="Eliminar" onclick="eliminarMetodoPago('2')"><i class="fa-solid fa-trash"></i></button>
-                                </div>
-                            </div>
+                        {% empty %}
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem; color: var(--eco-gray);">
+                            <i class="fa-solid fa-credit-card" style="font-size: 2rem; display: block; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+                            <p>No tienes métodos de pago guardados actualmente.</p>
                         </div>
+                        {% endfor %}
                     </div>
                 </div>
 
@@ -465,6 +454,19 @@
                     </div>
 
                     <div id="address-cards-list">
+                        {% for dir in direcciones %}
+                        <div class="operational-address-block" data-id="{{ dir.id }}">
+                            <div class="address-icon-box"><i class="fa-solid fa-location-dot"></i></div>
+                            <div class="address-text-box">
+                                <h4 class="card-title-data">{{ dir.nombre_sucursal|default:"Ubicación Registrada" }}</h4>
+                                <p class="card-desc-data">{{ dir.calle_numero }}, Col. {{ dir.colonia }}, C.P. {{ dir.codigo_postal }}<br>{{ dir.ciudad_estado }}, México</p>
+                            </div>
+                            <div class="address-action-box">
+                                <button class="btn-address-edit-inline" title="Editar dirección"><i class="fa-solid fa-pen"></i> Editar</button>
+                                <button class="btn-address-delete-inline" title="Eliminar dirección"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </div>
+                        {% empty %}
                         <div class="operational-address-block" data-id="1">
                             <div class="address-icon-box"><i class="fa-solid fa-location-dot"></i></div>
                             <div class="address-text-box">
@@ -476,18 +478,7 @@
                                 <button class="btn-address-delete-inline" title="Eliminar dirección"><i class="fa-solid fa-trash-can"></i></button>
                             </div>
                         </div>
-                        
-                        <div class="operational-address-block" data-id="2">
-                            <div class="address-icon-box"><i class="fa-solid fa-location-dot"></i></div>
-                            <div class="address-text-box">
-                                <h4 class="card-title-data">Planta Alterna - Logística</h4>
-                                <p class="card-desc-data">Vía Adolfo López Mateos S/N, Industrial Tlalnepantla, C.P. 54000<br>Estado de México, México</p>
-                            </div>
-                            <div class="address-action-box">
-                                <button class="btn-address-edit-inline" title="Editar dirección"><i class="fa-solid fa-pen"></i> Editar</button>
-                                <button class="btn-address-delete-inline" title="Eliminar dirección"><i class="fa-solid fa-trash-can"></i></button>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
                 </div>
 
@@ -533,23 +524,38 @@
 
                     <div class="config-section">
                         <h4><i class="fa-solid fa-key"></i> Seguridad y Acceso</h4>
-                        <form id="form-password">
+                        
+                        {% if not has_usable_password %}
+                        <div style="background: rgba(59, 130, 246, 0.08); border-left: 4px solid #3b82f6; padding: 0.85rem 1rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: 0.88rem; color: var(--eco-text, #1e293b);">
+                            <i class="fa-brands fa-google" style="color: #4285F4; margin-right: 6px;"></i>
+                            Iniciaste sesión mediante <strong>Google</strong>. Actualmente tu cuenta no dispone de una contraseña local. Puedes definir una a continuación para ingresar también con tu correo y contraseña.
+                        </div>
+                        {% endif %}
+
+                        <form id="form-password" onsubmit="handlePasswordChange(event)" data-has-password="{% if has_usable_password %}true{% else %}false{% endif %}">
                             {% csrf_token %}
+                            
+                            {% if has_usable_password %}
                             <div class="profile-form-group">
                                 <label for="current-password">Contraseña actual</label>
                                 <input type="password" id="current-password" placeholder="••••••••" required>
                             </div>
+                            {% endif %}
+
                             <div class="profile-form-row">
                                 <div class="profile-form-group">
-                                    <label for="new-password">Nueva Contraseña</label>
+                                    <label for="new-password">{% if has_usable_password %}Nueva Contraseña{% else %}Crear Contraseña Local{% endif %}</label>
                                     <input type="password" id="new-password" placeholder="Mínimo 8 Caracteres" required>
                                 </div>
                                 <div class="profile-form-group">
-                                    <label for="confirm-password">Confirmar nueva Contraseña</label>
+                                    <label for="confirm-password">Confirmar Contraseña</label>
                                     <input type="password" id="confirm-password" placeholder="Repite tu contraseña" required> 
                                 </div>
                             </div>
-                            <button type="submit" class="profile-submit-btn" style="margin-top: 1rem;">Actualizar Credenciales</button>
+                            
+                            <button type="submit" class="profile-submit-btn" style="margin-top: 1rem;">
+                                {% if has_usable_password %}Actualizar Credenciales{% else %}Establecer Contraseña{% endif %}
+                            </button>
                         </form>
                     </div>
 

@@ -4,6 +4,7 @@ import re
 import requests
 from django.shortcuts import render
 from django.db.models import Q
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
@@ -185,13 +186,71 @@ def perfil_view(request):
     pedidos = Pedido.objects.filter(usuario=request.user).order_by('-fecha_operacion')
     cotizaciones = SolicitudCotizacion.objects.filter(usuario=request.user).order_by('-creado_en')
 
+    metodos_pago = []
+    if perfil.conekta_customer_id:
+        private_key = getattr(settings, 'CONEKTA_PRIVATE_KEY', '') or ''
+        try:
+            res = requests.get(
+                f'https://api.conekta.io/customers/{perfil.conekta_customer_id}/payment_sources',
+                auth=(private_key, ''),
+                headers={'Accept': 'application/vnd.conekta-v2.0.0+json'},
+                timeout=5
+            )
+            if res.status_code == 200:
+                metodos_pago = res.json().get('data', [])
+        except Exception:
+            metodos_pago = []
+    
     context = {
         'perfil': perfil,
         'direcciones': direcciones,
         'pedidos': pedidos,
         'cotizaciones': cotizaciones,
+        'metodos_pago': metodos_pago,
+        'conekta_public_key': getattr(settings, 'CONEKTA_PUBLIC_KEY', ''),
+        'has_usable_password': request.user.has_usable_password()  # 👈 Indicador de contraseña local
     }
     return render(request, 'perfil.html', context)
+
+
+@login_required
+@require_POST
+def cambiar_password(request):
+    try:
+        data = json.loads(request.body)
+        password_actual = data.get('password_actual', '').strip()
+        password_nueva = data.get('password_nueva', '').strip()
+        password_confirmar = data.get('password_confirmar', '').strip()
+
+        user = request.user
+        tiene_password = user.has_usable_password()
+
+        # Solo validar la contraseña actual si el usuario ya tiene una establecida
+        if tiene_password:
+            if not password_actual:
+                return JsonResponse({'status': 'error', 'mensaje': 'Por favor ingresa tu contraseña actual.'}, status=400)
+            if not user.check_password(password_actual):
+                return JsonResponse({'status': 'error', 'mensaje': 'La contraseña actual es incorrecta.'}, status=400)
+
+        # Validaciones para la nueva contraseña
+        if not password_nueva or len(password_nueva) < 8:
+            return JsonResponse({'status': 'error', 'mensaje': 'La nueva contraseña debe tener al menos 8 caracteres.'}, status=400)
+
+        if password_nueva != password_confirmar:
+            return JsonResponse({'status': 'error', 'mensaje': 'La nueva contraseña y su confirmación no coinciden.'}, status=400)
+
+        # Guardar nueva contraseña
+        user.set_password(password_nueva)
+        user.save()
+
+        # Mantener la sesión activa tras cambiar la contraseña
+        update_session_auth_hash(request, user)
+
+        msg = 'Contraseña creada exitosamente.' if not tiene_password else 'Contraseña actualizada correctamente.'
+        return JsonResponse({'status': 'ok', 'mensaje': msg})
+
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'mensaje': f'Error interno: {str(e)}'}, status=500)
 
 
 @require_POST
@@ -265,7 +324,6 @@ def actualizar_datos_perfil(request):
         if email:
             user.email = email
         user.save()
-
         perfil, _ = PerfilEmpresa.objects.get_or_create(user=user)
         perfil.razon_social = data.get('razon', '').strip()
         perfil.telefono_operativo = data.get('telefono', '').strip()
@@ -328,9 +386,21 @@ def registrar_pedido_checkout(request):
         items_data = data.get('items', [])
         metodo = data.get('metodo', 'tarjeta')
         token_id = data.get('token_id', '')
+        moneda_solicitada = data.get('moneda', 'MXN').upper()
 
         if not items_data:
             return JsonResponse({'status': 'error', 'mensaje': 'El carrito está vacío'}, status=400)
+
+        tasa_usd = 1.0
+        if moneda_solicitada == 'USD':
+            try:
+                res_tasa = requests.get('https://api.exchangerate-api.com/v4/latest/MXN', timeout=5)
+                if res_tasa.status_code == 200:
+                    tasa_usd = res_tasa.json().get('rates', {}).get('USD', 0.055)
+                else:
+                    tasa_usd = 0.055
+            except Exception:
+                tasa_usd = 0.055
 
         line_items_conekta = []
         total_centavos = 0
@@ -345,10 +415,15 @@ def registrar_pedido_checkout(request):
             if not prod:
                 curso = CursoDisponible.objects.filter(id=item_id).first() if item_id.isdigit() else None
 
-            precio_unitario = prod.precio_base if prod else (curso.precio if curso else float(item.get('precio', 0)))
+            precio_mxn = prod.precio_base if prod else (curso.precio if curso else float(item.get('precio', 0)))
+            if moneda_solicitada == 'USD':
+                precio_final = round(float(precio_mxn) * tasa_usd, 2)
+            else:
+                precio_final = float(precio_mxn)
+
             nombre = prod.nombre if prod else (curso.titulo if curso else item.get('nombre', 'Artículo'))
             
-            unit_price_cents = int(float(precio_unitario) * 100)
+            unit_price_cents = int(precio_final * 100)
             total_centavos += unit_price_cents * cantidad
 
             line_items_conekta.append({
@@ -362,10 +437,10 @@ def registrar_pedido_checkout(request):
                 "curso": curso,
                 "nombre_item": nombre,
                 "cantidad": cantidad,
-                "precio_unitario": precio_unitario
+                "precio_unitario": precio_final
             })
 
-        total_pesos = total_centavos / 100.0
+        total_cobrado = total_centavos / 100.0
         codigo = f"#EC-2026-{random.randint(1000, 9999)}"
 
         telefono_raw = getattr(getattr(request.user, 'perfil_empresa', None), 'telefono_operativo', '') or '+525512345678'
@@ -374,7 +449,7 @@ def registrar_pedido_checkout(request):
             telefono_limpio = "+525512345678"
 
         order_payload = {
-            "currency": "MXN",
+            "currency": moneda_solicitada,
             "customer_info": {
                 "name": (request.user.get_full_name() or request.user.username)[:100],
                 "email": request.user.email or "ventas@ecodren.com",
@@ -434,8 +509,8 @@ def registrar_pedido_checkout(request):
         pedido = Pedido.objects.create(
             usuario=request.user,
             codigo_pedido=codigo,
-            equipo_insumo=resumen_txt,
-            total=total_pesos,
+            equipo_insumo=f"[{moneda_solicitada}] {resumen_txt}"[:245],
+            total=total_cobrado,
             estatus='proceso',
             estado_pago=estado_pago,
             conekta_order_id=conekta_order_id,
@@ -455,7 +530,7 @@ def registrar_pedido_checkout(request):
         return JsonResponse({
             'status': 'ok',
             'codigo_pedido': pedido.codigo_pedido,
-            'total': f"{total_pesos:,.2f}",
+            'total': f"{total_cobrado:,.2f} {moneda_solicitada}",
             'estado_pago': estado_pago,
             'clabe': clabe_spei
         })
@@ -484,3 +559,126 @@ def api_calendario_cursos(request):
         })
 
     return JsonResponse(eventos, safe=False)
+
+def _obtener_o_crear_cliente_conekta(user):
+    perfil, _ = PerfilEmpresa.objects.get_or_create(user=user)
+    private_key = getattr(settings, 'CONEKTA_PRIVATE_KEY', '') or ''
+    
+    if not private_key:
+        print("[CONEKTA ERROR] No se encontró CONEKTA_PRIVATE_KEY en settings.py")
+        return None
+
+    auth = (private_key, '')
+    headers = {
+        'Accept': 'application/vnd.conekta-v2.0.0+json',
+        'Content-Type': 'application/json'
+    }
+
+    # 1. Si el usuario ya tiene ID de cliente registrado, verificar que exista en Conekta
+    if perfil.conekta_customer_id:
+        res = requests.get(f'https://api.conekta.io/customers/{perfil.conekta_customer_id}', auth=auth, headers=headers)
+        if res.status_code == 200:
+            return res.json()
+        else:
+            # Si el cliente ya no existe en Conekta (ejemplo: al resetear Sandbox), se limpia el ID guardado
+            perfil.conekta_customer_id = None
+            perfil.save(update_fields=['conekta_customer_id'])
+
+    # 2. Formatear teléfono para cumplir requerimientos de Conekta
+    telefono_raw = perfil.telefono_operativo or '+525512345678'
+    telefono_limpio = re.sub(r'[^\d+]', '', telefono_raw)
+    if len(telefono_limpio) < 10:
+        telefono_limpio = "+525512345678"
+
+    payload = {
+        "name": (user.get_full_name() or user.username)[:100],
+        "email": user.email or f"cliente_{user.id}@ecodren.com",
+        "phone": telefono_limpio
+    }
+
+    # 3. Crear cliente en Conekta
+    res = requests.post('https://api.conekta.io/customers', auth=auth, headers=headers, json=payload)
+    if res.status_code in (200, 201):
+        cust_data = res.json()
+        perfil.conekta_customer_id = cust_data.get('id')
+        perfil.save(update_fields=['conekta_customer_id'])
+        return cust_data
+    else:
+        print(f"[CONEKTA ERROR {res.status_code}] {res.text}")
+        return None
+
+
+@login_required
+@require_POST
+def agregar_metodo_pago(request):
+    try:
+        data = json.loads(request.body)
+        token_id = data.get('token_id')
+        if not token_id:
+            return JsonResponse({'status': 'error', 'mensaje': 'Token de tarjeta no válido.'}, status=400)
+
+        cliente = _obtener_o_crear_cliente_conekta(request.user)
+        if not cliente:
+            return JsonResponse({'status': 'error', 'mensaje': 'No se pudo conectar o crear el cliente en Conekta.'}, status=500)
+
+        private_key = getattr(settings, 'CONEKTA_PRIVATE_KEY', '') or ''
+        customer_id = cliente['id']
+
+        headers = {
+            'Accept': 'application/vnd.conekta-v2.0.0+json',
+            'Content-Type': 'application/json'
+        }
+
+        res = requests.post(
+            f'https://api.conekta.io/customers/{customer_id}/payment_sources',
+            auth=(private_key, ''),
+            headers=headers,
+            json={"type": "card", "token_id": token_id}
+        )
+
+        if res.status_code in (200, 201):
+            return JsonResponse({'status': 'ok', 'mensaje': 'Método de pago guardado con éxito en Conekta.'})
+        else:
+            err = res.json()
+            msg = err.get('message') or err.get('details', [{}])[0].get('message', 'Error al guardar la tarjeta.')
+            return JsonResponse({'status': 'error', 'mensaje': msg}, status=400)
+
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'mensaje': str(e)}, status=500)
+
+
+@login_required
+@require_POST
+def eliminar_metodo_pago(request):
+    try:
+        data = json.loads(request.body)
+        source_id = data.get('source_id')
+        perfil = getattr(request.user, 'perfil_empresa', None)
+
+        if not perfil or not perfil.conekta_customer_id or not source_id:
+            return JsonResponse({'status': 'error', 'mensaje': 'Datos de solicitud incompletos.'}, status=400)
+
+        private_key = getattr(settings, 'CONEKTA_PRIVATE_KEY', '') or ''
+        headers = {
+            'Accept': 'application/vnd.conekta-v2.0.0+json',
+            'Content-Type': 'application/json'
+        }
+
+        res = requests.delete(
+            f'https://api.conekta.io/customers/{perfil.conekta_customer_id}/payment_sources/{source_id}',
+            auth=(private_key, ''),
+            headers=headers
+        )
+
+        if res.status_code in (200, 204):
+            return JsonResponse({'status': 'ok', 'mensaje': 'Método de pago eliminado correctamente.'})
+        else:
+            try:
+                err_data = res.json()
+                msg = err_data.get('message') or err_data.get('details', [{}])[0].get('message', 'Error al eliminar en Conekta.')
+            except Exception:
+                msg = res.text
+            return JsonResponse({'status': 'error', 'mensaje': msg}, status=400)
+
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'mensaje': f'Error interno: {str(e)}'}, status=500)

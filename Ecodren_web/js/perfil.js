@@ -101,7 +101,7 @@ window.guardarDatosOperativos = async function(e) {
             if (btn) btn.disabled = false;
         }
     } catch (err) {
-        alert("❌ Error de conexión al guardar los datos en MySQL.");
+        alert("❌ Error de conexión al guardar los datos.");
         if (btn) btn.disabled = false;
     } finally {
         setTimeout(() => {
@@ -189,93 +189,119 @@ window.cambiarTipoMetodoForm = function(tipo) {
 
 window.guardarNuevoMetodoPago = function(event) {
     event.preventDefault();
-    const tipo = document.getElementById('payment-type').value;
-    const titulo = document.getElementById('payment-title').value.trim();
-    const grid = document.getElementById('payment-methods-grid');
-    const newId = Date.now();
+    
+    const numTarjeta = document.getElementById('payment-number')?.value.replace(/\s+/g, '') || '';
+    const expRaw = document.getElementById('payment-expiry')?.value.split('/') || [];
+    const nombreTitular = document.getElementById('payment-title')?.value.trim() || '';
+    const btnSubmit = event.target.querySelector('button[type="submit"]');
 
-    let iconHtml = '<i class="fa-solid fa-credit-card"></i>';
-    let infoHtml = '';
-
-    if (tipo === 'spei') {
-        const clabeInput = document.getElementById('payment-clabe');
-        const clabe = clabeInput ? clabeInput.value.trim() : '';
-        const ultimosDigitos = clabe.slice(-4) || '••••';
-        iconHtml = '<i class="fa-solid fa-wallet"></i>';
-        infoHtml = `
-            <label>${titulo || 'Transferencia Interbancaria (SPEI)'}</label>
-            <p>Transferencia Interbancaria (SPEI)</p>
-            <label style="margin-top: 4px;">CLABE Registrada: •••• ${ultimosDigitos}</label>
-        `;
-    } else {
-        const numInput = document.getElementById('payment-number');
-        const expInput = document.getElementById('payment-expiry');
-        const tarjeta = numInput ? numInput.value.replace(/\s+/g, '') : '';
-        const vencimiento = expInput ? expInput.value.trim() : '';
-        const ultimosDigitos = tarjeta.slice(-4) || '••••';
-
-        iconHtml = '<i class="fa-solid fa-credit-card"></i>';
-        infoHtml = `
-            <label>${titulo || 'Tarjeta de Crédito / Débito'}</label>
-            <p>•••• •••• •••• ${ultimosDigitos}</p>
-            <label style="margin-top: 4px; color: #10b981; font-weight: 700;">Vence: ${vencimiento}</label>
-        `;
+    if (!numTarjeta || expRaw.length < 2 || !nombreTitular) {
+        if (typeof showToast === 'function') {
+            showToast('Completa todos los datos de la tarjeta.', 'error');
+        } else {
+            alert('❌ Completa todos los datos de la tarjeta.');
+        }
+        return;
     }
 
-    const cardElement = document.createElement('div');
-    cardElement.className = 'swipe-container-wrapper';
-    cardElement.setAttribute('data-payment-id', newId);
-    cardElement.innerHTML = `
-        <div class="swipe-behind-actions">
-            <button type="button" class="swipe-btn-edit" onclick="editarMetodoPago('${newId}')"><i class="fa-solid fa-pen"></i></button>
-            <button type="button" class="swipe-btn-delete" onclick="eliminarMetodoPago('${newId}')"><i class="fa-solid fa-trash-can"></i></button>
-        </div>
-        <div class="company-card payment-swipe-card">
-            <div class="company-card-icon">${iconHtml}</div>
-            <div class="company-card-info">
-                ${infoHtml}
-            </div>
-            <div class="desktop-card-actions">
-                <button type="button" class="btn-action-edit" title="Editar" onclick="editarMetodoPago('${newId}')"><i class="fa-solid fa-pen"></i></button>
-                <button type="button" class="btn-action-delete" title="Eliminar" onclick="eliminarMetodoPago('${newId}')"><i class="fa-solid fa-trash"></i></button>
-            </div>
-        </div>
-    `;
+    if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Tokenizando...';
+    }
 
-    if (grid) grid.appendChild(cardElement);
+    const publicKey = document.body.dataset.conektaPublicKey || "key_Ct78Zupov4Uxj5XvMyh0ZXH";
+    
+    if (typeof Conekta !== 'undefined') {
+        Conekta.setPublicKey(publicKey);
 
-    const form = document.getElementById('form-manage-payment');
-    if (form) form.reset();
+        const tokenData = {
+            card: {
+                number: numTarjeta,
+                name: nombreTitular,
+                exp_month: expRaw[0].trim(),
+                exp_year: expRaw[1].trim().length === 2 ? '20' + expRaw[1].trim() : expRaw[1].trim(),
+                cvc: '123'
+            }
+        };
 
-    window.togglePaymentForm();
-    inicializarSwipeCards();
+        Conekta.Token.create(tokenData, 
+            async function(token) {
+                try {
+                    const response = await fetch('/api/metodos-pago/agregar/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                        },
+                        body: JSON.stringify({ token_id: token.id })
+                    });
 
-    if (typeof showToast === 'function') {
-        showToast('Método de pago registrado con éxito.', 'success');
+                    const data = await response.json();
+
+                    if (response.ok && data.status === 'ok') {
+                        if (typeof showToast === 'function') {
+                            showToast('Método de pago guardado correctamente.', 'success');
+                        } else {
+                            alert('✅ Método de pago guardado correctamente.');
+                        }
+                        setTimeout(() => location.reload(), 800);
+                    } else {
+                        alert('❌ ' + (data.mensaje || 'Error al vincular método de pago.'));
+                    }
+                } catch (e) {
+                    alert('❌ Error de comunicación con el servidor.');
+                } finally {
+                    if (btnSubmit) {
+                        btnSubmit.disabled = false;
+                        btnSubmit.innerHTML = 'Guardar Método';
+                    }
+                }
+            }, 
+            function(error) {
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = 'Guardar Método';
+                }
+                alert('❌ ' + (error.message_to_purchaser || 'Datos de tarjeta inválidos.'));
+            }
+        );
     } else {
-        alert("✅ Método de pago guardado.");
+        alert('❌ La librería de Conekta no está cargada correctamente.');
+        if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = 'Guardar Método';
+        }
     }
 };
 
-window.editarMetodoPago = function(id) {
-    const card = document.querySelector(`.swipe-container-wrapper[data-payment-id="${id}"]`);
-    if (!card) return;
+window.eliminarMetodoPago = async function(sourceId) {
+    if (!confirm('¿Estás seguro de que deseas eliminar este método de pago de tu cuenta?')) return;
 
-    const infoLabels = card.querySelectorAll('.company-card-info label');
-    const infoP = card.querySelector('.company-card-info p')?.innerText || '';
-    const title = infoLabels[0]?.innerText || '';
+    try {
+        const response = await fetch('/api/metodos-pago/eliminar/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+            },
+            body: JSON.stringify({ source_id: sourceId })
+        });
 
-    window.togglePaymentForm();
+        const data = await response.json();
 
-    const inputTitle = document.getElementById('payment-title');
-    if (inputTitle) inputTitle.value = title;
-
-    if (infoP.includes('••••')) {
-        document.getElementById('payment-type').value = 'card';
-        window.cambiarTipoMetodoForm('card');
-    } else {
-        document.getElementById('payment-type').value = 'spei';
-        window.cambiarTipoMetodoForm('spei');
+        if (response.ok && data.status === 'ok') {
+            if (typeof showToast === 'function') {
+                showToast('Método de pago eliminado.', 'info');
+            } else {
+                alert('✅ Método de pago eliminado.');
+            }
+            const card = document.querySelector(`.swipe-container-wrapper[data-payment-id="${sourceId}"]`);
+            if (card) card.remove();
+        } else {
+            alert('❌ ' + (data.mensaje || 'No se pudo eliminar el método de pago.'));
+        }
+    } catch (e) {
+        alert('❌ Error al conectar con el servidor.');
     }
 };
 
@@ -303,20 +329,6 @@ function inicializarSwipeCards() {
     });
 }
 
-window.eliminarMetodoPago = function(id) {
-    const card = document.querySelector(`.swipe-container-wrapper[data-payment-id="${id}"]`);
-    if (card) {
-        card.style.opacity = '0';
-        card.style.transform = 'scale(0.9)';
-        card.style.transition = 'all 0.25s ease';
-        setTimeout(() => {
-            card.remove();
-            if (typeof showToast === 'function') {
-                showToast('Método de pago eliminado.', 'info');
-            }
-        }, 250);
-    }
-};
 
 window.toggleSupportMenu = function(event) {
     event.preventDefault();
@@ -334,6 +346,108 @@ window.toggleSupportMenu = function(event) {
 window.confirmDeleteAccount = function() {
     if (confirm("🚨 ALERTA CRÍTICA: ¿Estás seguro de querer dar de baja esta cuenta? Se perderán todos tus pedimentos logísticos.")) {
         alert("Solicitud de desactivación enviada a revisión con el administrador de Equipos MC.");
+    }
+};
+
+window.handlePasswordChange = async function(e) {
+    if (e) e.preventDefault();
+
+    const form = document.getElementById('form-password') || (e ? e.target : null);
+    const hasPassword = form?.dataset.hasPassword !== 'false';
+
+    const passActual = document.getElementById('current-password')?.value.trim() || '';
+    const passNueva = (document.getElementById('new-password') || document.getElementById('passNueva'))?.value.trim() || '';
+    const passConfirmar = (document.getElementById('confirm-password') || document.getElementById('passConfirmar'))?.value.trim() || '';
+    
+    const btn = form ? form.querySelector('button[type="submit"]') : document.getElementById('btnCambiarPass');
+
+    // Validar contraseña actual solo si la cuenta ya tiene una registrada
+    if (hasPassword && !passActual) {
+        if (typeof showToast === 'function') {
+            showToast('Por favor ingresa tu contraseña actual.', 'error');
+        } else {
+            alert('❌ Por favor ingresa tu contraseña actual.');
+        }
+        return;
+    }
+
+    if (!passNueva || !passConfirmar) {
+        if (typeof showToast === 'function') {
+            showToast('Por favor completa los campos de nueva contraseña.', 'error');
+        } else {
+            alert('❌ Por favor completa los campos de nueva contraseña.');
+        }
+        return;
+    }
+
+    if (passNueva.length < 8) {
+        if (typeof showToast === 'function') {
+            showToast('La nueva contraseña debe contener al menos 8 caracteres.', 'error');
+        } else {
+            alert('❌ La nueva contraseña debe tener al menos 8 caracteres.');
+        }
+        return;
+    }
+
+    if (passNueva !== passConfirmar) {
+        if (typeof showToast === 'function') {
+            showToast('Las contraseñas nuevas no coinciden.', 'error');
+        } else {
+            alert('❌ Las contraseñas nuevas no coinciden.');
+        }
+        return;
+    }
+
+    const textoOriginal = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+    }
+
+    try {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                          document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '';
+
+        const response = await fetch('/api/cambiar-password/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                password_actual: passActual,
+                password_nueva: passNueva,
+                password_confirmar: passConfirmar
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'ok') {
+            if (typeof showToast === 'function') {
+                showToast(data.mensaje || 'Contraseña asignada correctamente.', 'success');
+            } else {
+                alert('✅ ' + (data.mensaje || 'Contraseña asignada correctamente.'));
+            }
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            if (typeof showToast === 'function') {
+                showToast(data.mensaje || 'Error al procesar la contraseña.', 'error');
+            } else {
+                alert('❌ ' + (data.mensaje || 'Error al procesar la contraseña.'));
+            }
+        }
+    } catch (err) {
+        if (typeof showToast === 'function') {
+            showToast('Error de conexión con el servidor.', 'error');
+        } else {
+            alert('❌ Error de conexión con el servidor.');
+        }
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = textoOriginal;
+        }
     }
 };
 
@@ -558,18 +672,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const formPassword = document.getElementById('form-password');
     if (formPassword) {
-        formPassword.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const newPass = document.getElementById('new-password').value;
-            const confirmPass = document.getElementById('confirm-password').value;
-
-            if (newPass !== confirmPass) {
-                alert("❌ Las contraseñas nuevas no coinciden. Inténtalo de nuevo.");
-                return;
-            }
-            alert("🔒 Seguridad Ecodren: Contraseña corporativa actualizada con éxito.");
-            formPassword.reset();
-        });
+        formPassword.addEventListener('submit', window.handlePasswordChange);
     }
 });
 

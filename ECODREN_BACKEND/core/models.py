@@ -311,6 +311,7 @@ class PerfilEmpresa(models.Model):
         default="Av. Central #123, Col. Industrial, C.P. 12345, Ciudad de México",
         verbose_name="Dirección de Entrega Principal"
     )
+    conekta_customer_id = models.CharField(max_length=255, blank=True, null=True)
     TEMA_CHOICES =[
         ('claro', 'Claro'),
         ('oscuro', 'Oscuro'),
