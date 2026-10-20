@@ -203,11 +203,20 @@ window.renderCartGlobal = function() {
         container.innerHTML = `<div class="cart-empty"><span class="cart-empty-icon">🛒</span><p style="font-weight:600;margin-bottom:.5rem">Tu carrito está vacío</p><p style="font-size:.85rem;color:var(--eco-gray)">Agrega productos desde la tienda</p></div>`;
         if (footer) footer.style.display = 'none';
     } else {
-        let html = '', total = 0;
+        const moneda = localStorage.getItem('ecodren_moneda') || 'MXN';
+        const tasaUSD = parseFloat(sessionStorage.getItem('ecodren_tasa_usd')) || 0.055;
+
+        let html = '', totalMXN = 0;
         limpio.forEach(item => {
-            const precioNum = obtenerPrecioNumerico(item.precio || item.price || 0);
+            const precioMXN = obtenerPrecioNumerico(item.precio || item.price || 0);
             const cantidadNum = parseInt(item.qty || item.cantidad || 1, 10);
-            total += precioNum * cantidadNum;
+            totalMXN += precioMXN * cantidadNum;
+
+            const precioCalculado = moneda === 'USD' ? (precioMXN * tasaUSD) : precioMXN;
+            const textoPrecio = moneda === 'USD' 
+                ? `$${precioCalculado.toFixed(2)} USD` 
+                : `$${precioMXN.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})} MXN`;
+
             html += `
             <div class="cart-item" style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid #eee">
                 <div style="background:#f8f9fa;width:50px;height:50px;display:flex;align-items:center;justify-content:center;border-radius:8px;flex-shrink:0;overflow:hidden;">
@@ -215,7 +224,7 @@ window.renderCartGlobal = function() {
                 </div>
                 <div style="flex:1;min-width:0">
                     <h4 style="margin:0;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.nombre || item.name || 'Producto'}</h4>
-                    <div style="color:var(--eco-green);font-weight:600;font-size:.88rem">$${precioNum.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})} MXN</div>
+                    <div style="color:var(--eco-green);font-weight:600;font-size:.88rem">${textoPrecio}</div>
                     <div style="display:flex;align-items:center;gap:.4rem;margin-top:.35rem">
                         <button onclick="changeGlobalQty('${item.id}',-1)" class="qty-btn">−</button>
                         <span style="font-size:.85rem;min-width:20px;text-align:center">${cantidadNum}</span>
@@ -226,7 +235,14 @@ window.renderCartGlobal = function() {
             </div>`;
         });
         container.innerHTML = html;
-        if (totalEl) totalEl.textContent = `$${total.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})} MXN`;
+
+        const totalCalculado = moneda === 'USD' ? (totalMXN * tasaUSD) : totalMXN;
+        if (totalEl) {
+            totalEl.textContent = moneda === 'USD' 
+                ? `$${totalCalculado.toFixed(2)} USD` 
+                : `$${totalMXN.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})} MXN`;
+        }
+
         if (footer) footer.style.display = 'block';
     }
     actualizarContadorCarritoGlobal();
@@ -269,14 +285,24 @@ window.handleCheckout = function() {
         return;
     }
     
-    const total = carrito.reduce((s, i) => {
+    const moneda = localStorage.getItem('ecodren_moneda') || 'MXN';
+    const tasaUSD = parseFloat(sessionStorage.getItem('ecodren_tasa_usd')) || 0.055;
+
+    const totalMXN = carrito.reduce((s, i) => {
         const precio = obtenerPrecioNumerico(i.precio || i.price || 0);
         const qty = parseInt(i.qty || i.cantidad || 1, 10);
         return s + (precio * qty);
     }, 0);
+
+    const totalCalculado = moneda === 'USD' ? (totalMXN * tasaUSD) : totalMXN;
     
     const el = document.getElementById('checkoutTotalDisplay');
-    if (el) el.textContent = `$${total.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})} MXN`;
+    if (el) {
+        el.textContent = moneda === 'USD' 
+            ? `$${totalCalculado.toFixed(2)} USD` 
+            : `$${totalMXN.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})} MXN`;
+    }
+
     document.getElementById('cartSidebar')?.classList.remove('active','open');
     document.getElementById('cartOverlay')?.classList.remove('active','open');
     openModal('checkout');
@@ -688,6 +714,11 @@ window.actualizarDivisaGlobal = async function(moneda) {
     });
 
     localStorage.setItem('ecodren_moneda', moneda);
+
+    // Refrescar la vista lateral del carrito con la moneda seleccionada
+    if (typeof renderCartGlobal === 'function') {
+        renderCartGlobal();
+    }
 };
 
 window.actualizarIdiomaGlobal = function(idioma) {
