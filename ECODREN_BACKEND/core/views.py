@@ -3,7 +3,7 @@ import re
 import uuid
 import logging
 import requests
-
+from django.core.cache import cache
 from django.shortcuts import render
 from django.db import transaction
 from django.db.models import Q
@@ -268,57 +268,117 @@ def cambiar_password(request):
 
 @require_POST
 def enviar_cotizacion(request):
-    nombre = request.POST.get('nombre', '').strip()
-    empresa = request.POST.get('empresa', '').strip()
-    telefono = request.POST.get('telefono', '').strip()
-    email = request.POST.get('email', '').strip()
-    categoria = request.POST.get('categoria', '').strip()
-    detalles = request.POST.get('detalles', '').strip()
+    try:
+        # 1. Rate Limiting por IP (Máximo 5 cotizaciones por hora)
+        ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR', '')).split(',')[0].strip()
+        cache_key = f"cotizacion_ratelimit_{ip}"
+        peticiones = cache.get(cache_key, 0)
 
-    if not nombre or not email:
-        return JsonResponse({'status': 'error', 'mensaje': 'El nombre y correo electrónico son requeridos'})
+        if peticiones >= 5:
+            return JsonResponse({
+                'status': 'error', 
+                'mensaje': 'Has alcanzado el límite de solicitudes de cotización por hora. Intenta más tarde.'
+            }, status=429)
 
-    usuario_activo = request.user if request.user.is_authenticated else None
-    cotizacion = SolicitudCotizacion.objects.create(
-        usuario=usuario_activo,
-        nombre=nombre,
-        empresa=empresa,
-        telefono=telefono,
-        email=email,
-        categoria=categoria,
-        detalles=detalles
-    )
+        # 2. Protección Honeypot (Campo oculto anti-bots)
+        honeypot = request.POST.get('website_hp', '').strip()
+        if honeypot:
+            return JsonResponse({'status': 'ok', 'mensaje': 'Solicitud recibida correctamente.'})
 
-    asunto_cliente = "Hemos recibido tu solicitud de cotización | ECODREN"
-    mensaje_cliente = (
-        f"Hola {nombre},\n\n"
-        f"Hemos recibido con éxito tu solicitud de cotización (Folio: #COT-{cotizacion.id:04d}).\n\n"
-        f"Resumen de tu solicitud:\n"
-        f"• Categoría: {categoria or 'General'}\n"
-        f"• Empresa: {empresa or 'Particular'}\n"
-        f"• Teléfono de contacto: {telefono or 'No proporcionado'}\n"
-        f"• Requerimiento: {detalles or 'Sin detalles adicionales'}\n\n"
-        f"Uno de nuestros asesores comerciales y técnicos de Equipos MC se comunicará contigo en breve.\n\n"
-        f"Atentamente,\n"
-        f"Equipo ECODREN México"
-    )
+        nombre = request.POST.get('nombre', '').strip()
+        empresa = request.POST.get('empresa', '').strip()
+        telefono = request.POST.get('telefono', '').strip()
+        email = request.POST.get('email', '').strip().lower()
+        categoria = request.POST.get('categoria', '').strip()
+        detalles = request.POST.get('detalles', '').strip()
 
-    try: 
-        send_mail(
-            asunto_cliente,
-            mensaje_cliente,
-            settings.DEFAULT_FROM_EMAIL,
-            [email],
-            fail_silently=False,
+        # 3. Validaciones de presencia y formato
+        if not nombre or not email:
+            return JsonResponse({'status': 'error', 'mensaje': 'El nombre y correo electrónico son requeridos.'}, status=400)
+
+        try:
+            validate_email(email)
+        except ValidationError:
+            return JsonResponse({'status': 'error', 'mensaje': 'El correo electrónico no tiene un formato válido.'}, status=400)
+
+        # 4. Guardar cotización en Base de Datos
+        usuario_activo = request.user if request.user.is_authenticated else None
+        cotizacion = SolicitudCotizacion.objects.create(
+            usuario=usuario_activo,
+            nombre=nombre,
+            empresa=empresa,
+            telefono=telefono,
+            email=email,
+            categoria=categoria,
+            detalles=detalles
         )
+
+        # 5. Notificación al Cliente
+        asunto_cliente = f"Hemos recibido tu solicitud de cotización #COT-{cotizacion.id:04d} | ECODREN"
+        mensaje_cliente = (
+            f"Hola {nombre},\n\n"
+            f"Hemos recibido con éxito tu solicitud de cotización (Folio: #COT-{cotizacion.id:04d}).\n\n"
+            f"Resumen de tu solicitud:\n"
+            f"• Categoría: {categoria or 'General'}\n"
+            f"• Empresa: {empresa or 'Particular'}\n"
+            f"• Teléfono de contacto: {telefono or 'No proporcionado'}\n"
+            f"• Requerimiento: {detalles or 'Sin detalles adicionales'}\n\n"
+            f"Uno de nuestros asesores comerciales y técnicos de Equipos MC se comunicará contigo en breve.\n\n"
+            f"Atentamente,\n"
+            f"Equipo ECODREN México"
+        )
+
+        try:
+            send_mail(
+                asunto_cliente,
+                mensaje_cliente,
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            logger.error(f"Error al enviar correo de cotización al cliente ({email}): {str(e)}", exc_info=True)
+
+        # 6. Notificación al departamento de Ventas
+        email_ventas = getattr(settings, 'VENTAS_EMAIL', settings.DEFAULT_FROM_EMAIL)
+        asunto_ventas = f"🚨 NUEVA COTIZACIÓN RECIBIDA #COT-{cotizacion.id:04d} - {nombre}"
+        mensaje_ventas = (
+            f"Se ha recibido una nueva solicitud de cotización a través de la plataforma web:\n\n"
+            f"• Folio: #COT-{cotizacion.id:04d}\n"
+            f"• Cliente: {nombre}\n"
+            f"• Empresa: {empresa or 'Particular'}\n"
+            f"• Correo electrónico: {email}\n"
+            f"• Teléfono de contacto: {telefono or 'No proporcionado'}\n"
+            f"• Categoría de interés: {categoria or 'General'}\n"
+            f"• Requerimiento detallado:\n{detalles or 'Sin detalles adicionales'}\n\n"
+            f"Usuario registrado: {'Sí (' + usuario_activo.username + ')' if usuario_activo else 'No (Visitante anónimo)'}\n"
+        )
+
+        try:
+            send_mail(
+                asunto_ventas,
+                mensaje_ventas,
+                settings.DEFAULT_FROM_EMAIL,
+                [email_ventas],
+                fail_silently=False,
+            )
+        except Exception as e:
+            logger.error(f"Error al notificar al equipo de ventas ({email_ventas}): {str(e)}", exc_info=True)
+
+        # Incrementar contador de peticiones (expira en 1 hora / 3600s)
+        cache.set(cache_key, peticiones + 1, 3600)
+
+        return JsonResponse({
+            'status': 'ok',
+            'mensaje': '¡Cotización enviada con éxito! Te hemos enviado un correo con los detalles.'
+        })
+
     except Exception as e:
-        logger.error(f"Error al enviar correo de cotización: {str(e)}")
-
-    return JsonResponse({
-        'status': 'ok',
-        'mensaje': '¡Cotización enviada con éxito! Te hemos enviado un correo con los detalles.'
-    })
-
+        logger.error(f"Error inesperado en enviar_cotizacion: {str(e)}", exc_info=True)
+        return JsonResponse({
+            'status': 'error', 
+            'mensaje': 'Ocurrió un error interno al procesar tu cotización. Por favor intenta nuevamente.'
+        }, status=500)
 
 @login_required
 @require_POST
