@@ -123,9 +123,23 @@ window.handleLogin = async function(e) {
 };
  
 window.logOut = function() {
-    window.location.href = "/accounts/logout/";
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/accounts/logout/';
+    
+    // Obtener el token CSRF disponible en el DOM o en la cookie
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                      document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '';
+    
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = csrfToken;
+    
+    form.appendChild(csrfInput);
+    document.body.appendChild(form);
+    form.submit();
 };
- 
 async function hashPassword(password) {
     const buffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password));
     return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2,'0')).join('');

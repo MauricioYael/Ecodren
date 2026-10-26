@@ -777,7 +777,7 @@ function iniciarEventosDrag() {
     window.ontouchend = end;
 }
 
-window.guardarRecorteAvatar = function() {
+window.guardarRecorteAvatar = async function() {
     const previewImg = document.getElementById('avatarCropPreview');
     if (!previewImg) return;
 
@@ -806,15 +806,50 @@ window.guardarRecorteAvatar = function() {
     ctx.restore();
 
     const croppedBase64 = canvas.toDataURL('image/png');
-    aplicarAvatarUsuario(croppedBase64);
-    localStorage.setItem('ecodren_user_avatar', croppedBase64);
 
-    cerrarModalCrop();
+    const btnGuardar = document.getElementById('btnSaveAvatarCrop') || document.querySelector('#modal-crop-avatar button[onclick*="guardarRecorteAvatar"]');
+    const originalContent = btnGuardar ? btnGuardar.innerHTML : '';
 
-    if (typeof showToast === 'function') {
-        showToast('Foto de perfil recortada y actualizada con éxito.', 'success');
-    } else {
-        alert('✅ Foto de perfil actualizada.');
+    if (btnGuardar) {
+        btnGuardar.disabled = true;
+        btnGuardar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+    }
+
+    try {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                          document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '';
+
+        const response = await fetch('/api/perfil/avatar/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ avatar_b64: croppedBase64 })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'ok') {
+            aplicarAvatarUsuario(croppedBase64);
+            localStorage.setItem('ecodren_user_avatar', croppedBase64);
+            cerrarModalCrop();
+
+            if (typeof showToast === 'function') {
+                showToast('Foto de perfil actualizada en tu cuenta.', 'success');
+            } else {
+                alert('✅ Foto de perfil guardada correctamente.');
+            }
+        } else {
+            alert('❌ ' + (data.mensaje || 'No se pudo guardar la foto de perfil.'));
+        }
+    } catch (err) {
+        alert('❌ Error de conexión al guardar la imagen.');
+    } finally {
+        if (btnGuardar) {
+            btnGuardar.disabled = false;
+            btnGuardar.innerHTML = originalContent;
+        }
     }
 };
 
@@ -837,9 +872,15 @@ function aplicarAvatarUsuario(imageSrc) {
 }
 
 function cargarAvatarGuardado() {
-    const savedAvatar = localStorage.getItem('ecodren_user_avatar');
+    const avatarContainer = document.getElementById('userAvatarContainer');
+    const dbAvatar = avatarContainer?.dataset?.avatar;
+    const savedAvatar = dbAvatar || localStorage.getItem('ecodren_user_avatar');
+
     if (savedAvatar) {
         aplicarAvatarUsuario(savedAvatar);
+        if (dbAvatar) {
+            localStorage.setItem('ecodren_user_avatar', dbAvatar);
+        }
     }
 }
 

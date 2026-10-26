@@ -1,21 +1,32 @@
 import json
-import random
 import re
+import uuid
+import logging
 import requests
+
 from django.shortcuts import render
+from django.db import transaction
 from django.db.models import Q
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.core.mail import send_mail
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.contrib.auth.password_validation import validate_password
+from django.core.validators import validate_email
+from django.contrib.auth.models import User
+
 from .models import (
     Producto, Categoria, Maquinaria, PublicacionRecurso, 
     DocumentoTecnico, CapacitacionImpartida, CursoDisponible,
     PerfilEmpresa, DireccionEntrega, Pedido, ItemPedido, 
     CotizacionGuardada, SolicitudCotizacion, ChasisOption
 )
+
+logger = logging.getLogger(__name__)
 
 
 def index(request):
@@ -208,7 +219,7 @@ def perfil_view(request):
         'cotizaciones': cotizaciones,
         'metodos_pago': metodos_pago,
         'conekta_public_key': getattr(settings, 'CONEKTA_PUBLIC_KEY', ''),
-        'has_usable_password': request.user.has_usable_password()  # 👈 Indicador de contraseña local
+        'has_usable_password': request.user.has_usable_password()
     }
     return render(request, 'perfil.html', context)
 
@@ -218,39 +229,41 @@ def perfil_view(request):
 def cambiar_password(request):
     try:
         data = json.loads(request.body)
-        password_actual = data.get('password_actual', '').strip()
-        password_nueva = data.get('password_nueva', '').strip()
-        password_confirmar = data.get('password_confirmar', '').strip()
+        password_actual = data.get('password_actual', '')
+        password_nueva = data.get('password_nueva', '')
+        password_confirmar = data.get('password_confirmar', '')
 
         user = request.user
         tiene_password = user.has_usable_password()
 
-        # Solo validar la contraseña actual si el usuario ya tiene una establecida
         if tiene_password:
             if not password_actual:
                 return JsonResponse({'status': 'error', 'mensaje': 'Por favor ingresa tu contraseña actual.'}, status=400)
             if not user.check_password(password_actual):
                 return JsonResponse({'status': 'error', 'mensaje': 'La contraseña actual es incorrecta.'}, status=400)
 
-        # Validaciones para la nueva contraseña
-        if not password_nueva or len(password_nueva) < 8:
-            return JsonResponse({'status': 'error', 'mensaje': 'La nueva contraseña debe tener al menos 8 caracteres.'}, status=400)
+        if not password_nueva or not password_confirmar:
+            return JsonResponse({'status': 'error', 'mensaje': 'Por favor completa todos los campos de la nueva contraseña.'}, status=400)
 
         if password_nueva != password_confirmar:
             return JsonResponse({'status': 'error', 'mensaje': 'La nueva contraseña y su confirmación no coinciden.'}, status=400)
 
-        # Guardar nueva contraseña
+        try:
+            validate_password(password_nueva, user=user)
+        except ValidationError as ve:
+            return JsonResponse({'status': 'error', 'mensaje': ' '.join(ve.messages)}, status=400)
+
         user.set_password(password_nueva)
         user.save()
 
-        # Mantener la sesión activa tras cambiar la contraseña
         update_session_auth_hash(request, user)
 
-        msg = 'Contraseña creada exitosamente.' if not tiene_password else 'Contraseña actualizada correctamente.'
+        msg = 'Contraseña asignada exitosamente.' if not tiene_password else 'Contraseña actualizada correctamente.'
         return JsonResponse({'status': 'ok', 'mensaje': msg})
 
     except Exception as e:
-        return JsonResponse({'status': 'error', 'mensaje': f'Error interno: {str(e)}'}, status=500)
+        logger.error(f"Error cambiando contraseña: {str(e)}", exc_info=True)
+        return JsonResponse({'status': 'error', 'mensaje': 'Ocurrió un error interno al intentar cambiar la contraseña.'}, status=500)
 
 
 @require_POST
@@ -299,7 +312,7 @@ def enviar_cotizacion(request):
             fail_silently=False,
         )
     except Exception as e:
-        print(f"Error al enviar correo: {e}")
+        logger.error(f"Error al enviar correo de cotización: {str(e)}")
 
     return JsonResponse({
         'status': 'ok',
@@ -315,19 +328,33 @@ def actualizar_datos_perfil(request):
         user = request.user
 
         nombre_completo = data.get('nombre', '').strip()
+        email_nuevo = data.get('email', '').strip().lower()
+        razon_social = data.get('razon', '').strip()
+        telefono = data.get('telefono', '').strip()
+        direccion = data.get('direccion', '').strip()
+
+        if email_nuevo and email_nuevo != user.email:
+            try:
+                validate_email(email_nuevo)
+            except ValidationError:
+                return JsonResponse({'status': 'error', 'mensaje': 'El correo electrónico ingresado no tiene un formato válido.'}, status=400)
+
+            if User.objects.filter(email__iexact=email_nuevo).exclude(pk=user.pk).exists():
+                return JsonResponse({'status': 'error', 'mensaje': 'Este correo electrónico ya está registrado por otra cuenta.'}, status=400)
+
+            user.email = email_nuevo
+
         if nombre_completo:
             partes = nombre_completo.split(' ', 1)
             user.first_name = partes[0]
             user.last_name = partes[1] if len(partes) > 1 else ''
 
-        email = data.get('email', '').strip()
-        if email:
-            user.email = email
         user.save()
+
         perfil, _ = PerfilEmpresa.objects.get_or_create(user=user)
-        perfil.razon_social = data.get('razon', '').strip()
-        perfil.telefono_operativo = data.get('telefono', '').strip()
-        perfil.direccion_principal = data.get('direccion', '').strip()
+        perfil.razon_social = razon_social
+        perfil.telefono_operativo = telefono
+        perfil.direccion_principal = direccion
         perfil.save()
 
         return JsonResponse({
@@ -336,8 +363,12 @@ def actualizar_datos_perfil(request):
             'nombre': user.get_full_name() or user.username,
             'email': user.email
         })
+
+    except ValidationError as ve:
+        return JsonResponse({'status': 'error', 'mensaje': ' '.join(ve.messages)}, status=400)
     except Exception as e:
-        return JsonResponse({'status': 'error', 'mensaje': str(e)}, status=400)
+        logger.error(f"Error al actualizar datos de perfil: {str(e)}", exc_info=True)
+        return JsonResponse({'status': 'error', 'mensaje': 'Ocurrió un error interno al actualizar tu perfil.'}, status=500)
 
 
 @login_required
@@ -356,7 +387,8 @@ def actualizar_tema(request):
 
         return JsonResponse({'status': 'ok', 'tema': perfil.tema_preferido})
     except Exception as e:
-        return JsonResponse({'status': 'error', 'mensaje': str(e)}, status=400)
+        logger.error(f"Error al actualizar tema: {str(e)}")
+        return JsonResponse({'status': 'error', 'mensaje': 'No se pudo guardar la preferencia.'}, status=400)
 
 
 def api_actualizar_localizacion(request):
@@ -375,13 +407,24 @@ def api_actualizar_localizacion(request):
         perfil.save()
         return JsonResponse({'status': 'ok', 'moneda': perfil.moneda_defecto, 'idioma': perfil.idioma_panel})
     except json.JSONDecodeError:
-        return JsonResponse({'status': 'error', 'message': 'Datos invalidos'}, status=400)
+        return JsonResponse({'status': 'error', 'message': 'Datos inválidos'}, status=400)
 
 
 @login_required
 @require_POST
 def registrar_pedido_checkout(request):
     try:
+        email_usuario = request.user.email
+        if not email_usuario or '@' not in email_usuario:
+            return JsonResponse({'status': 'error', 'mensaje': 'Tu cuenta no tiene un correo electrónico válido registrado.'}, status=400)
+
+        perfil = getattr(request.user, 'perfil_empresa', None)
+        telefono_raw = perfil.telefono_operativo if perfil else ''
+        telefono_limpio = re.sub(r'[^\d+]', '', telefono_raw or '')
+
+        if len(re.sub(r'[^\d]', '', telefono_limpio)) < 10:
+            return JsonResponse({'status': 'error', 'mensaje': 'Por favor registra un número telefónico válido (10 dígitos) en tu perfil antes de comprar.'}, status=400)
+
         data = json.loads(request.body)
         items_data = data.get('items', [])
         metodo = data.get('metodo', 'tarjeta')
@@ -406,139 +449,167 @@ def registrar_pedido_checkout(request):
         total_centavos = 0
         items_a_crear = []
 
-        for item in items_data:
-            item_id = str(item.get('id', ''))
-            cantidad = int(item.get('qty', item.get('cantidad', 1)))
+        with transaction.atomic():
+            for item in items_data:
+                item_id = str(item.get('id', ''))
+                
+                try:
+                    cantidad = int(item.get('qty', item.get('cantidad', 1)))
+                except (ValueError, TypeError):
+                    return JsonResponse({'status': 'error', 'mensaje': 'Cantidad inválida para uno de los artículos.'}, status=400)
 
-            prod = Producto.objects.filter(id=item_id).first() if item_id.isdigit() else None
-            curso = None
-            if not prod:
-                curso = CursoDisponible.objects.filter(id=item_id).first() if item_id.isdigit() else None
+                if cantidad <= 0 or cantidad > 100:
+                    return JsonResponse({'status': 'error', 'mensaje': 'La cantidad debe ser mayor a 0 y máximo 100 por artículo.'}, status=400)
 
-            precio_mxn = prod.precio_base if prod else (curso.precio if curso else float(item.get('precio', 0)))
-            if moneda_solicitada == 'USD':
-                precio_final = round(float(precio_mxn) * tasa_usd, 2)
-            else:
-                precio_final = float(precio_mxn)
+                prod = Producto.objects.select_for_update().filter(id=item_id).first() if item_id.isdigit() else None
+                curso = None
+                if not prod:
+                    curso = CursoDisponible.objects.filter(id=item_id).first() if item_id.isdigit() else None
 
-            nombre = prod.nombre if prod else (curso.titulo if curso else item.get('nombre', 'Artículo'))
-            
-            unit_price_cents = int(precio_final * 100)
-            total_centavos += unit_price_cents * cantidad
+                if not prod and not curso:
+                    return JsonResponse({'status': 'error', 'mensaje': f'El artículo con ID "{item_id}" no existe en la base de datos.'}, status=400)
 
-            line_items_conekta.append({
-                "name": str(nombre)[:245],
-                "unit_price": unit_price_cents,
-                "quantity": cantidad
-            })
+                if prod:
+                    if getattr(prod, 'disponible', True) is False:
+                        return JsonResponse({'status': 'error', 'mensaje': f'El producto "{prod.nombre}" no está disponible.'}, status=400)
 
-            items_a_crear.append({
-                "producto": prod,
-                "curso": curso,
-                "nombre_item": nombre,
-                "cantidad": cantidad,
-                "precio_unitario": precio_final
-            })
+                    if prod.stock < cantidad:
+                        return JsonResponse({
+                            'status': 'error',
+                            'mensaje': f'Stock insuficiente para "{prod.nombre}". Disponibles: {prod.stock}, solicitados: {cantidad}'
+                        }, status=400)
 
-        total_cobrado = total_centavos / 100.0
-        codigo = f"#EC-2026-{random.randint(1000, 9999)}"
+                    precio_mxn = prod.precio_base
+                    nombre = prod.nombre
+                    prod.stock -= cantidad
+                    prod.save()
+                else:
+                    precio_mxn = curso.precio
+                    nombre = curso.titulo
 
-        telefono_raw = getattr(getattr(request.user, 'perfil_empresa', None), 'telefono_operativo', '') or '+525512345678'
-        telefono_limpio = re.sub(r'[^\d+]', '', telefono_raw)
-        if len(telefono_limpio) < 10:
-            telefono_limpio = "+525512345678"
+                if moneda_solicitada == 'USD':
+                    precio_final = round(float(precio_mxn) * tasa_usd, 2)
+                else:
+                    precio_final = float(precio_mxn)
 
-        order_payload = {
-            "currency": moneda_solicitada,
-            "customer_info": {
-                "name": (request.user.get_full_name() or request.user.username)[:100],
-                "email": request.user.email or "ventas@ecodren.com",
-                "phone": telefono_limpio
-            },
-            "line_items": line_items_conekta
-        }
+                unit_price_cents = int(precio_final * 100)
+                total_centavos += unit_price_cents * cantidad
 
-        if metodo == 'tarjeta':
-            order_payload["charges"] = [{
-                "payment_method": {
-                    "type": "card",
-                    "token_id": token_id
-                }
-            }]
-        elif metodo == 'spei':
-            order_payload["charges"] = [{
-                "payment_method": {
-                    "type": "spei"
-                }
-            }]
+                line_items_conekta.append({
+                    "name": str(nombre)[:245],
+                    "unit_price": unit_price_cents,
+                    "quantity": cantidad
+                })
 
-        private_key = getattr(settings, 'CONEKTA_PRIVATE_KEY', '') or ''
-        conekta_res = requests.post(
-            'https://api.conekta.io/orders',
-            auth=(private_key, ''),
-            headers={
-                'Accept': 'application/vnd.conekta-v2.0.0+json',
-                'Content-Type': 'application/json'
-            },
-            json=order_payload,
-            timeout=15
-        )
+                items_a_crear.append({
+                    "producto": prod,
+                    "curso": curso,
+                    "nombre_item": nombre,
+                    "cantidad": cantidad,
+                    "precio_unitario": precio_final
+                })
 
-        conekta_data = conekta_res.json()
+            total_cobrado = total_centavos / 100.0
+            codigo = f"#EC-{uuid.uuid4().hex[:6].upper()}"
 
-        if conekta_res.status_code not in (200, 201):
-            details = conekta_data.get('details', [])
-            error_msg = details[0].get('message') if details else conekta_data.get('message', 'Error en pasarela de pagos')
-            return JsonResponse({'status': 'error', 'mensaje': error_msg}, status=400)
+            order_payload = {
+                "currency": moneda_solicitada,
+                "customer_info": {
+                    "name": (request.user.get_full_name() or request.user.username)[:100],
+                    "email": email_usuario,
+                    "phone": telefono_limpio
+                },
+                "line_items": line_items_conekta
+            }
 
-        conekta_order_id = conekta_data.get('id', '')
-        charges_data = conekta_data.get('charges', {}).get('data', [])
-        charge = charges_data[0] if len(charges_data) > 0 else {}
+            if metodo == 'tarjeta':
+                order_payload["charges"] = [{
+                    "payment_method": {
+                        "type": "card",
+                        "token_id": token_id
+                    }
+                }]
+            elif metodo == 'spei':
+                order_payload["charges"] = [{
+                    "payment_method": {
+                        "type": "spei"
+                    }
+                }]
 
-        clabe_spei = ''
-        if metodo == 'tarjeta':
-            charge_status = charge.get('status', '')
-            estado_pago = 'pagado' if charge_status == 'paid' else 'rechazado'
-        else:
-            estado_pago = 'pendiente'
-            pm = charge.get('payment_method', {})
-            clabe_spei = pm.get('clabe', '')
-
-        resumen_txt = ", ".join([f"{i['nombre_item']} × {i['cantidad']}" for i in items_a_crear])[:245]
-        
-        pedido = Pedido.objects.create(
-            usuario=request.user,
-            codigo_pedido=codigo,
-            equipo_insumo=f"[{moneda_solicitada}] {resumen_txt}"[:245],
-            total=total_cobrado,
-            estatus='proceso',
-            estado_pago=estado_pago,
-            conekta_order_id=conekta_order_id,
-            metodo_pago=metodo
-        )
-
-        for it in items_a_crear:
-            ItemPedido.objects.create(
-                pedido=pedido,
-                producto=it['producto'],
-                curso=it['curso'],
-                nombre_item=it['nombre_item'],
-                cantidad=it['cantidad'],
-                precio_unitario=it['precio_unitario']
+            private_key = getattr(settings, 'CONEKTA_PRIVATE_KEY', '') or ''
+            conekta_res = requests.post(
+                'https://api.conekta.io/orders',
+                auth=(private_key, ''),
+                headers={
+                    'Accept': 'application/vnd.conekta-v2.0.0+json',
+                    'Content-Type': 'application/json'
+                },
+                json=order_payload,
+                timeout=15
             )
 
-        return JsonResponse({
-            'status': 'ok',
-            'codigo_pedido': pedido.codigo_pedido,
-            'total': f"{total_cobrado:,.2f} {moneda_solicitada}",
-            'estado_pago': estado_pago,
-            'clabe': clabe_spei
-        })
+            conekta_data = conekta_res.json()
 
+            if conekta_res.status_code not in (200, 201):
+                details = conekta_data.get('details', [])
+                error_msg = details[0].get('message') if details else conekta_data.get('message', 'Error en pasarela de pagos')
+                raise ValueError(error_msg)
+
+            conekta_order_id = conekta_data.get('id', '')
+            charges_data = conekta_data.get('charges', {}).get('data', [])
+            charge = charges_data[0] if len(charges_data) > 0 else {}
+
+            clabe_spei = ''
+            if metodo == 'tarjeta':
+                charge_status = charge.get('status', '')
+                if charge_status != 'paid':
+                    mensaje_error = charge.get('failure_message') or 'La tarjeta fue declinada por el banco emisor.'
+                    raise ValueError(f'Pago no autorizado: {mensaje_error}')
+                estado_pago = 'pagado'
+            else:
+                estado_pago = 'pendiente'
+                pm = charge.get('payment_method', {})
+                clabe_spei = pm.get('clabe', '')
+
+            resumen_txt = ", ".join([f"{i['nombre_item']} × {i['cantidad']}" for i in items_a_crear])[:245]
+            
+            pedido = Pedido.objects.create(
+                usuario=request.user,
+                codigo_pedido=codigo,
+                equipo_insumo=f"[{moneda_solicitada}] {resumen_txt}"[:245],
+                total=total_cobrado,
+                estatus='proceso',
+                estado_pago=estado_pago,
+                conekta_order_id=conekta_order_id,
+                metodo_pago=metodo
+            )
+
+            for it in items_a_crear:
+                ItemPedido.objects.create(
+                    pedido=pedido,
+                    producto=it['producto'],
+                    curso=it['curso'],
+                    nombre_item=it['nombre_item'],
+                    cantidad=it['cantidad'],
+                    precio_unitario=it['precio_unitario']
+                )
+
+            return JsonResponse({
+                'status': 'ok',
+                'codigo_pedido': pedido.codigo_pedido,
+                'total': f"{total_cobrado:,.2f} {moneda_solicitada}",
+                'estado_pago': estado_pago,
+                'clabe': clabe_spei
+            })
+
+    except ValueError as ve:
+        return JsonResponse({'status': 'error', 'mensaje': str(ve)}, status=400)
     except requests.exceptions.RequestException as re_err:
-        return JsonResponse({'status': 'error', 'mensaje': f"Error de conexión con Conekta: {str(re_err)}"}, status=502)
+        logger.error(f"Error de conexión con Conekta: {str(re_err)}")
+        return JsonResponse({'status': 'error', 'mensaje': "Error de comunicación con la pasarela de pagos."}, status=502)
     except Exception as e:
-        return JsonResponse({'status': 'error', 'mensaje': f"Error interno: {str(e)}"}, status=500)
+        logger.error(f"Error procesando la orden: {str(e)}", exc_info=True)
+        return JsonResponse({'status': 'error', 'mensaje': "Ocurrió un error interno al procesar tu pedido. Intenta nuevamente."}, status=500)
 
 
 def api_calendario_cursos(request):
@@ -560,12 +631,13 @@ def api_calendario_cursos(request):
 
     return JsonResponse(eventos, safe=False)
 
+
 def _obtener_o_crear_cliente_conekta(user):
     perfil, _ = PerfilEmpresa.objects.get_or_create(user=user)
     private_key = getattr(settings, 'CONEKTA_PRIVATE_KEY', '') or ''
     
     if not private_key:
-        print("[CONEKTA ERROR] No se encontró CONEKTA_PRIVATE_KEY en settings.py")
+        logger.error("[CONEKTA ERROR] No se encontró CONEKTA_PRIVATE_KEY en settings.py")
         return None
 
     auth = (private_key, '')
@@ -574,20 +646,17 @@ def _obtener_o_crear_cliente_conekta(user):
         'Content-Type': 'application/json'
     }
 
-    # 1. Si el usuario ya tiene ID de cliente registrado, verificar que exista en Conekta
     if perfil.conekta_customer_id:
         res = requests.get(f'https://api.conekta.io/customers/{perfil.conekta_customer_id}', auth=auth, headers=headers)
         if res.status_code == 200:
             return res.json()
         else:
-            # Si el cliente ya no existe en Conekta (ejemplo: al resetear Sandbox), se limpia el ID guardado
             perfil.conekta_customer_id = None
             perfil.save(update_fields=['conekta_customer_id'])
 
-    # 2. Formatear teléfono para cumplir requerimientos de Conekta
     telefono_raw = perfil.telefono_operativo or '+525512345678'
     telefono_limpio = re.sub(r'[^\d+]', '', telefono_raw)
-    if len(telefono_limpio) < 10:
+    if len(re.sub(r'[^\d]', '', telefono_limpio)) < 10:
         telefono_limpio = "+525512345678"
 
     payload = {
@@ -596,7 +665,6 @@ def _obtener_o_crear_cliente_conekta(user):
         "phone": telefono_limpio
     }
 
-    # 3. Crear cliente en Conekta
     res = requests.post('https://api.conekta.io/customers', auth=auth, headers=headers, json=payload)
     if res.status_code in (200, 201):
         cust_data = res.json()
@@ -604,7 +672,7 @@ def _obtener_o_crear_cliente_conekta(user):
         perfil.save(update_fields=['conekta_customer_id'])
         return cust_data
     else:
-        print(f"[CONEKTA ERROR {res.status_code}] {res.text}")
+        logger.error(f"[CONEKTA ERROR {res.status_code}] {res.text}")
         return None
 
 
@@ -644,7 +712,8 @@ def agregar_metodo_pago(request):
             return JsonResponse({'status': 'error', 'mensaje': msg}, status=400)
 
     except Exception as e:
-        return JsonResponse({'status': 'error', 'mensaje': str(e)}, status=500)
+        logger.error(f"Error al agregar método de pago: {str(e)}", exc_info=True)
+        return JsonResponse({'status': 'error', 'mensaje': 'Ocurrió un error al vincular el método de pago.'}, status=500)
 
 
 @login_required
@@ -681,4 +750,54 @@ def eliminar_metodo_pago(request):
             return JsonResponse({'status': 'error', 'mensaje': msg}, status=400)
 
     except Exception as e:
-        return JsonResponse({'status': 'error', 'mensaje': f'Error interno: {str(e)}'}, status=500)
+        logger.error(f"Error al eliminar método de pago: {str(e)}", exc_info=True)
+        return JsonResponse({'status': 'error', 'mensaje': 'Ocurrió un error al eliminar el método de pago.'}, status=500)
+
+
+@csrf_exempt
+def conekta_webhook(request):
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'mensaje': 'Método no permitido'}, status=405)
+    
+    try:
+        payload = json.loads(request.body)
+        event_type = payload.get('type', '')
+
+        if event_type == 'order.paid':
+            order_data = payload.get('data', {}).get('object', {})
+            conekta_order_id = order_data.get('id')
+
+            if conekta_order_id:
+                pedido = Pedido.objects.filter(conekta_order_id=conekta_order_id).first()
+                if pedido:
+                    pedido.estado_pago = 'pagado'
+                    pedido.estatus = 'completado'
+                    pedido.save(update_fields=['estado_pago', 'estatus'])
+
+        return JsonResponse({'status': 'ok'})
+    except Exception as e:
+        logger.error(f"Error procesando Webhook Conekta: {str(e)}", exc_info=True)
+        return JsonResponse({'status': 'error', 'mensaje': 'Error procesando evento'}, status=400)
+
+
+@login_required
+@require_POST
+def actualizar_avatar(request):
+    try:
+        data = json.loads(request.body)
+        avatar_b64 = data.get('avatar_b64', '').strip()
+
+        if not avatar_b64 or not avatar_b64.startswith('data:image'):
+            return JsonResponse({'status': 'error', 'mensaje': 'Formato de imagen no válido.'}, status=400)
+
+        if len(avatar_b64) > 3 * 1024 * 1024:
+            return JsonResponse({'status': 'error', 'mensaje': 'La imagen excede el tamaño máximo permitido.'}, status=400)
+
+        perfil, _ = PerfilEmpresa.objects.get_or_create(user=request.user)
+        perfil.avatar_base64 = avatar_b64
+        perfil.save(update_fields=['avatar_base64'])
+
+        return JsonResponse({'status': 'ok', 'mensaje': 'Foto de perfil actualizada correctamente.'})
+    except Exception as e:
+        logger.error(f"Error al guardar avatar: {str(e)}", exc_info=True)
+        return JsonResponse({'status': 'error', 'mensaje': 'Ocurrió un error interno al guardar la foto de perfil.'}, status=500)

@@ -325,6 +325,8 @@ class PerfilEmpresa(models.Model):
     actualizado_en = models.DateTimeField(auto_now=True)
     moneda_defecto = models.CharField(max_length=3, default='MXN', choices=[('MXN', 'Peso Mexicano'),('USD', 'Dolar Americano')])
     idioma_panel = models.CharField(max_length=5, default='es', choices=[('es','Español'), ('en', 'Ingles')])
+    avatar_base64 = models.TextField(blank=True, null=True)
+
 
     class Meta:
         verbose_name = "Perfil de Empresa"

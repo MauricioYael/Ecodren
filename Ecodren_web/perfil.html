@@ -91,7 +91,7 @@
             
             <aside class="profile-sidebar">
                 <div class="profile-user-card">
-                    <div class="profile-avatar-wrapper">
+                    <div class="profile-avatar-wrapper" id="userAvatarContainer" data-avatar="{{ request.user.perfil_empresa.avatar_base64|default:'' }}">
                         <div class="profile-avatar-letters profile-avatar" id="userAvatar">
                             {{ request.user.first_name|slice:":1"|default:request.user.username|slice:":1"|upper }}
                         </div>

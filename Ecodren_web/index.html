@@ -70,7 +70,6 @@
                 </button>
                 <div class="profile-dropdown" id="profileDropdown">
                     {% if user.is_authenticated %}
-                        <!-- Estado: Sesión Activa -->
                         <div id="userState">
                             <div class="profile-header">
                                 <div class="profile-avatar" style="background: var(--eco-green); color: #fff; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">
@@ -97,14 +96,13 @@
                                     Cotizaciones guardadas
                                 </a>
                                 <div class="profile-divider"></div>
-                                <a href="{% url 'account_logout' %}" class="profile-item danger" style="text-decoration: none;">
+                                <a href="#" onclick="event.preventDefault(); logOut();" class="profile-item danger" style="text-decoration: none;">
                                     <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
                                     Cerrar sesión
                                 </a>
                             </div>
                         </div>
                     {% else %}
-                        <!-- Estado: Invitado sin sesión -->
                         <div id="guestState">
                             <div style="padding:1.25rem 1.25rem 0.5rem">
                                 <p style="font-size:0.9rem;font-weight:600;margin-bottom:0.25rem">Bienvenido a Ecodren</p>
@@ -636,10 +634,14 @@
                     <span style="font-size: 0.75rem; color: var(--eco-gray);"> o continua con</span>
                     <hr style="flex: 1; border: 0; border-top: 1px solid #e2e8f0;">
                 </div>
-                <a href="{% provider_login_url 'google' %}" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 0.65rem; border: 1px solid #e2e8f0; border-radius: 50px; background: #fff; color: #1a2226; text-decoration: none; font-weight: 600; font-size: 0.88rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: background 0.2s ease; ">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px; height: 18px;">
-                    Continuar con Google
-                </a>
+
+                <form method="post" action="{% provider_login_url 'google' %}">
+                    {% csrf_token %}
+                    <button type="submit" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 0.65rem; border: 1px solid #e2e8f0; border-radius: 50px; background: #fff; color: #1a2226; font-weight: 600; font-size: 0.88rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04); cursor: pointer; transition: background 0.2s ease;">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px; height: 18px;">
+                        Continuar con Google
+                    </button>
+                </form>
             </div>
 
             <div class="modal-panel" id="panel-forget">
@@ -780,11 +782,10 @@ function googleTranslateElementInit() {
 </script>
 <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>    
 
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script type ="text/javascript" src="https://cdn.conekta.io/js/latest/conekta.js" ></script>
+    <script type="text/javascript" src="https://cdn.conekta.io/js/latest/conekta.js"></script>
     
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/shop.js' %}"></script>

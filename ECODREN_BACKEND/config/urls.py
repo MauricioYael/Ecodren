@@ -21,8 +21,11 @@ urlpatterns = [
     path('api/crear-pedido/', views.registrar_pedido_checkout, name='crear_pedido'),
     path('api/preferencias/localizacion/', views.api_actualizar_localizacion, name='api_localizacion'),
     path('api/calendario-cursos/', views.api_calendario_cursos, name='api_calendario_cursos'),
+    path('api/cambiar-password/', views.cambiar_password, name='cambiar_password'),
     path('api/metodos-pago/agregar/', views.agregar_metodo_pago, name='agregar_metodo_pago'),
     path('api/metodos-pago/eliminar/', views.eliminar_metodo_pago, name='eliminar_metodo_pago'),
+    path('api/conekta-webhook/', views.conekta_webhook, name='conekta_webhook'),
+    path('api/perfil/avatar/', views.actualizar_avatar, name='actualizar_avatar'),
 
     #endpoint de cotizacion
     path('api/enviar-cotizacion/', views.enviar_cotizacion, name='enviar_cotizacion'),
