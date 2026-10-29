@@ -20,7 +20,6 @@
 <body class="{% if tema_preferido == 'oscuro' %}dark-theme{% endif %}"
       data-user-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}">
 
-<!-- Capa Semántica para Motores de Búsqueda y Crawlers (SEO) -->
 <section class="seo-crawler-content" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;" aria-hidden="true">
     {% for maquina in maquinas %}
     <article itemscope itemtype="https://schema.org/Product">
@@ -87,12 +86,12 @@
         </button>
 
         <div class="profile-wrap" id="profileWrap">
-                <button class="profile-btn" id="profileBtn" aria-label="Perfil de usuario" style="overflow: hidden; padding: 0; display: flex; align-items: center; justify-content: center;">
-                    <svg id="navProfileSvg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 18px; height: 18px;">
-                        <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
-                    </svg>
-                    <img id="navProfileImg" src="" alt="Perfil" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                </button>
+            <button class="profile-btn" id="profileBtn" aria-label="Perfil de usuario" style="overflow: hidden; padding: 0; display: flex; align-items: center; justify-content: center;">
+                <svg id="navProfileSvg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 18px; height: 18px;">
+                    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                </svg>
+                <img id="navProfileImg" src="" alt="Perfil" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            </button>
             
             <div class="profile-dropdown" id="profileDropdown">
                 {% if user.is_authenticated %}
@@ -122,7 +121,7 @@
                                 Cotizaciones guardadas
                             </a>
                             <div class="profile-divider"></div>
-                            <a href="{% url 'account_logout' %}" class="profile-item danger" style="text-decoration: none;">
+                            <a href="#" onclick="event.preventDefault(); logOut();" class="profile-item danger" style="text-decoration: none;">
                                 <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
                                 Cerrar sesión
                             </a>
@@ -217,7 +216,6 @@
         </div>
         
         <div id="configurator-main-view">
-            <!-- Columna Izquierda: Encabezado y Visor -->
             <div class="radical-left-column">
                 <div class="radical-viewer-header">
                     <span class="machine-category-radical">Serie Industrial</span>
@@ -272,7 +270,6 @@
                 </div>
             </div>
 
-            <!-- Columna Derecha: Panel de Configuración -->
             <div class="radical-control-column">
                 <div class="radical-customization-card">
                     <div class="radical-tabs-pill" id="tabsPill">
@@ -307,7 +304,6 @@
                 </div>
             </div>
 
-            <!-- Tira de Especificaciones -->
             <div class="radical-spec-strip-container">
                 <div class="strip-spec-item">
                     <div class="strip-icon-box"><i class="fa-solid fa-cube"></i></div>
@@ -426,7 +422,6 @@
     </div>
 </footer>
 
-<!-- SIDEBAR DEL CARRITO GLOBAL -->
 <div class="cart-overlay" id="cartOverlay"></div>
 <div class="cart-sidebar" id="cartSidebar">
     <div class="cart-head">
@@ -449,7 +444,6 @@
     </div>
 </div>
 
-<!-- MODAL GLOBAL (LOGIN / REGISTER / FORGET / CHECKOUT) -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal-box" style="max-width: 420px; width: 90%;">
         <button class="modal-close" onclick="closeModal()">×</button>
@@ -481,10 +475,14 @@
                 <span style="font-size: 0.75rem; color: var(--eco-gray);"> o continua con</span>
                 <hr style="flex: 1; border: 0; border-top: 1px solid #e2e8f0;">
             </div>
-            <a href="{% provider_login_url 'google' %}" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 0.65rem; border: 1px solid #e2e8f0; border-radius: 50px; background: #fff; color: #1a2226; text-decoration: none; font-weight: 600; font-size: 0.88rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: background 0.2s ease;">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px; height: 18px;">
-                Continuar con Google
-            </a>
+
+            <form method="post" action="{% provider_login_url 'google' %}">
+                {% csrf_token %}
+                <button type="submit" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 0.65rem; border: 1px solid #e2e8f0; border-radius: 50px; background: #fff; color: #1a2226; font-weight: 600; font-size: 0.88rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04); cursor: pointer; transition: background 0.2s ease;">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px; height: 18px;">
+                    Continuar con Google
+                </button>
+            </form>
         </div>
 
         <div class="modal-panel" id="panel-forget">

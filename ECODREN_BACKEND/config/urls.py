@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path, include  # 👈 include importado
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from core import views
@@ -26,6 +26,12 @@ urlpatterns = [
     path('api/metodos-pago/eliminar/', views.eliminar_metodo_pago, name='eliminar_metodo_pago'),
     path('api/conekta-webhook/', views.conekta_webhook, name='conekta_webhook'),
     path('api/perfil/avatar/', views.actualizar_avatar, name='actualizar_avatar'),
+    path('api/login/', views.api_login, name='api_login'),
+    path('api/register/', views.api_register, name='api_register'),
+    path('api/recuperar-password/', views.api_forget_password, name='api_forget_password'),
+    path('api/logout/', views.api_logout, name='api_logout'),
+    path('api/direccion/guardar/', views.guardar_direccion, name='guardar_direccion'),
+    path('api/direccion/eliminar/', views.eliminar_direccion, name='eliminar_direccion'),
 
     #endpoint de cotizacion
     path('api/enviar-cotizacion/', views.enviar_cotizacion, name='enviar_cotizacion'),

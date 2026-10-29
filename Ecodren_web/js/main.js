@@ -1,3 +1,23 @@
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function getCsrfToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+           getCookie('csrftoken') || '';
+}
+
 function actualizarContadorCarritoGlobal() {
     let carrito = [];
     try { 
@@ -89,61 +109,178 @@ window.openForgetPanel = function() {
     document.getElementById('panel-forget')?.classList.add('active');
 };
 
-window.handleForgetPassword = function(event) {
-    event.preventDefault();
-    const email = document.getElementById('forgetEmail')?.value.trim();
-    showToast(`Enlace enviado a: ${email}`, 'success');
-    switchTab('login');
-};
-
 const modalOverlay = document.getElementById('modalOverlay');
 if (modalOverlay) {
     modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
 }
  
 window.handleLogin = async function(e) {
-    e.preventDefault();
-    const email    = document.getElementById('loginEmail')?.value.trim().toLowerCase() ?? '';
-    const password = document.getElementById('loginPassword')?.value ?? '';
-    const btn      = document.querySelector('#panel-login .mform-submit');
- 
-    if (!email || !password) { showToast('Completa todos los campos.', 'error'); return; }
- 
-    const users = JSON.parse(localStorage.getItem('ecodren_users') ?? '[]');
-    const hash  = await hashPassword(password);
-    const found = users.find(u => u.email === email && u.password === hash);
- 
-    if (!found) {
-        if (btn) { btn.textContent = '⚠️ Datos incorrectos'; setTimeout(() => { btn.textContent = 'Iniciar sesión'; }, 2200); }
+    if (e) e.preventDefault();
+    const email = document.getElementById('loginEmail')?.value.trim();
+    const password = document.getElementById('loginPassword')?.value;
+    const btn = e?.target?.querySelector('button[type="submit"]');
+    const originalText = btn ? btn.innerHTML : '';
+
+    if (!email || !password) {
+        showToast('Por favor completa todos los campos.', 'error');
         return;
     }
-    closeModal();
-    showToast('Bienvenido, ' + found.name.split(' ')[0] + '.', 'success');
-    location.reload();
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Iniciando sesión...';
+    }
+
+    try {
+        const response = await fetch('/api/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'ok') {
+            localStorage.removeItem('ecodren_users');
+            window.location.reload();
+        } else {
+            showToast(data.mensaje || 'Error al iniciar sesión.', 'error');
+        }
+    } catch (err) {
+        showToast('Error de conexión al servidor.', 'error');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    }
 };
- 
-window.logOut = function() {
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/accounts/logout/';
-    
-    // Obtener el token CSRF disponible en el DOM o en la cookie
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                      document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '';
-    
-    const csrfInput = document.createElement('input');
-    csrfInput.type = 'hidden';
-    csrfInput.name = 'csrfmiddlewaretoken';
-    csrfInput.value = csrfToken;
-    
-    form.appendChild(csrfInput);
-    document.body.appendChild(form);
-    form.submit();
+
+window.handleForgetPassword = async function(event) {
+    if (event) event.preventDefault();
+    const email = document.getElementById('forgetEmail')?.value.trim();
+    const btn = event?.target?.querySelector('button[type="submit"]');
+    const originalText = btn ? btn.innerHTML : '';
+
+    if (!email) {
+        showToast('Por favor ingresa tu correo electrónico.', 'error');
+        return;
+    }
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+    }
+
+    try {
+        const response = await fetch('/api/recuperar-password/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'ok') {
+            showToast(data.mensaje, 'success');
+            switchTab('login');
+        } else {
+            showToast(data.mensaje || 'Error al procesar la solicitud.', 'error');
+        }
+    } catch (err) {
+        showToast('Error de conexión al servidor.', 'error');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    }
 };
-async function hashPassword(password) {
-    const buffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password));
-    return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
+
+window.handleRegister = async function(event) {
+    if (event) event.preventDefault();
+    const name            = document.getElementById('regName')?.value.trim() ?? '';
+    const company         = document.getElementById('regCompany')?.value.trim() ?? '';
+    const email           = document.getElementById('regEmail')?.value.trim().toLowerCase() ?? '';
+    const password        = document.getElementById('regPassword')?.value ?? '';
+    const confirmPassword = document.getElementById('regConfirmPassword')?.value ?? '';
+    const termsChecked    = document.getElementById('regTerms')?.checked ?? false;
+    const submitBtn       = document.getElementById('regSubmitBtn');
+
+    document.getElementById('registerErrorMsg') && (document.getElementById('registerErrorMsg').style.display = 'none');
+
+    if (!name || !email || !password || !confirmPassword) {
+        showRegisterStatus('Por favor completa los campos obligatorios.', true);
+        return;
+    }
+
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+        showRegisterStatus('Correo electrónico inválido.', true);
+        return;
+    }
+
+    if (password.length < 8) {
+        showRegisterStatus('Mínimo 8 caracteres.', true);
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        showRegisterStatus('Las contraseñas no coinciden.', true);
+        return;
+    }
+
+    if (!termsChecked) {
+        showRegisterStatus('Acepta los Términos y Condiciones.', true);
+        return;
+    }
+
+    const originalText = submitBtn ? submitBtn.innerHTML : '';
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creando cuenta...';
+    }
+
+    try {
+        const response = await fetch('/api/register/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({
+                nombre: name,
+                empresa: company,
+                email: email,
+                password: password
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'ok') {
+            showRegisterStatus('✔ Registro exitoso. Iniciando sesión...', false);
+            localStorage.removeItem('ecodren_users');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            showRegisterStatus(data.mensaje || 'Error al registrar la cuenta.', true);
+        }
+    } catch (err) {
+        showRegisterStatus('Error de conexión con el servidor.', true);
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    }
+};
 
 function showRegisterStatus(message, isError) {
     const el = document.getElementById('registerErrorMsg');
@@ -153,42 +290,31 @@ function showRegisterStatus(message, isError) {
     el.style.display = 'block';
 }
 
-window.handleRegister = function(event) {
-    event.preventDefault();
-    const name            = document.getElementById('regName')?.value.trim() ?? '';
-    const company         = document.getElementById('regCompany')?.value.trim() ?? '';
-    const email           = document.getElementById('regEmail')?.value.trim().toLowerCase() ?? '';
-    const password        = document.getElementById('regPassword')?.value ?? '';
-    const confirmPassword = document.getElementById('regConfirmPassword')?.value ?? '';
-    const termsChecked    = document.getElementById('regTerms')?.checked ?? false;
-    const submitBtn       = document.getElementById('regSubmitBtn');
- 
-    document.getElementById('registerErrorMsg') && (document.getElementById('registerErrorMsg').style.display = 'none');
- 
-    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) { showRegisterStatus('Correo inválido.', true); return; }
-    if (password.length < 8)            { showRegisterStatus('Mínimo 8 caracteres.', true); return; }
-    if (password !== confirmPassword)   { showRegisterStatus('Las contraseñas no coinciden.', true); return; }
-    if (!termsChecked)                  { showRegisterStatus('Acepta los Términos.', true); return; }
- 
-    const users = JSON.parse(localStorage.getItem('ecodren_users') ?? '[]');
-    if (users.some(u => u.email === email)) { showRegisterStatus('Correo ya registrado.', true); return; }
- 
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Procesando...'; }
- 
-    hashPassword(password).then(hash => {
-        users.push({ id: 'usr_' + Date.now(), name, company: company || 'No especificada', email, password: hash, createdAt: new Date().toISOString() });
-        localStorage.setItem('ecodren_users', JSON.stringify(users));
-        showRegisterStatus('✔ Registro exitoso. Revisa tu correo.', false);
-        setTimeout(() => {
-            showToast(`Enlace de confirmación enviado a: ${email}`, 'success');
-            document.getElementById('registerForm')?.reset();
-            switchTab('login');
-            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Crear cuenta'; }
-        }, 1800);
-    }).catch(() => {
-        showRegisterStatus('Error interno. Inténtalo de nuevo.', true);
-        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Crear cuenta'; }
-    });
+window.logOut = async function() {
+    try {
+        await fetch('/api/logout/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken()
+            }
+        });
+        localStorage.removeItem('ecodren_users');
+        localStorage.removeItem('ecodren_user');
+        window.location.reload();
+    } catch (e) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/accounts/logout/';
+        
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = getCsrfToken();
+        
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
 };
 
 function obtenerPrecioNumerico(val) {
@@ -395,7 +521,7 @@ async function enviarOrdenBackend(payload, btn) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken') || document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                'X-CSRFToken': getCsrfToken()
             },
             body: JSON.stringify(payload)
         });
@@ -635,28 +761,12 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarAvatarGlobal();
 });
 
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
 async function enviarPeticionSegura(url, data, metodo = 'POST') {
-    const csrftoken = getCookie('csrftoken');
     return await fetch(url, {
         method: metodo,
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken
+            'X-CSRFToken': getCsrfToken()
         },
         body: JSON.stringify(data)
     });
@@ -675,7 +785,7 @@ window.toggleGlobalTheme = async function() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                'X-CSRFToken': getCsrfToken()
             },
             body: JSON.stringify({ tema: nuevoTema })
         });
@@ -729,7 +839,6 @@ window.actualizarDivisaGlobal = async function(moneda) {
 
     localStorage.setItem('ecodren_moneda', moneda);
 
-    // Refrescar la vista lateral del carrito con la moneda seleccionada
     if (typeof renderCartGlobal === 'function') {
         renderCartGlobal();
     }

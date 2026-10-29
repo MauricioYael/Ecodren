@@ -92,7 +92,7 @@
                                     Cotizaciones guardadas
                                 </a>
                                 <div class="profile-divider"></div>
-                                <a href="{% url 'account_logout' %}" class="profile-item danger" style="text-decoration: none;">
+                                <a href="#" onclick="event.preventDefault(); logOut();" class="profile-item danger" style="text-decoration: none;">
                                     <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
                                     Cerrar sesión
                                 </a>
@@ -185,11 +185,9 @@
                         <i class="fa-solid fa-chevron-left"></i>
                     </button>
                     <div class="radical-carousel-track" id="videos-carousel-grid">
-                        
                         {% for video in videos %}
                         <div class="radical-resource-card">
                             <img class="resource-card-bg-image" src="{% if video.imagen_portada %}{{ video.imagen_portada.url }}{% else %}{% static 'Assets/header-recursos.webp' %}{% endif %}" alt="{{ video.titulo }}">
-                            
                             <div class="resource-card-overlay-content">
                                 <span class="resource-card-badge-pill">
                                     <span class="badge-pill-dot" style="background: #10b981; box-shadow: 0 0 8px #10b981;"></span> 
@@ -229,7 +227,6 @@
                             </div>
                         </div>
                         {% endfor %}
-
                     </div>
                     <button class="carousel-nav-next-btn" onclick="scrollVideoDerecha()" aria-label="Siguiente video">
                         <i class="fa-solid fa-chevron-right"></i>
@@ -245,17 +242,14 @@
                     <h2><i class="fa-solid fa-square-poll-horizontal icon-heading-lime"></i> Noticias Recientes</h2>
                     <a href="{% url 'publicaciones' %}?cat=noticia" class="view-all-link">Ver todas las noticias <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
-                
                 <div class="carousel-relative-container">
                     <button class="carousel-nav-prev-btn" onclick="scrollNoticiasIzquierda()" aria-label="Noticia anterior">
                         <i class="fa-solid fa-chevron-left"></i>
                     </button>
                     <div class="radical-carousel-track" id="noticias-carousel-grid">
-                        
                         {% for noticia in noticias %}
                         <div class="radical-resource-card">
                             <img class="resource-card-bg-image" src="{% if noticia.imagen_portada %}{{ noticia.imagen_portada.url }}{% else %}{% static 'Assets/header-recursos_1.webp' %}{% endif %}" alt="{{ noticia.titulo }}">
-                            
                             <div class="resource-card-overlay-content">
                                 <span class="resource-card-badge-pill">
                                     <span class="badge-pill-dot" style="background: #10b981; box-shadow: 0 0 8px #10b981;"></span> 
@@ -302,7 +296,6 @@
                             </div>
                         </div>
                         {% endfor %}
-
                     </div>
                     <button class="carousel-nav-next-btn" onclick="scrollNoticiasDerecha()" aria-label="Siguiente noticia">
                         <i class="fa-solid fa-chevron-right"></i>
@@ -340,7 +333,6 @@
                 {% for post in comunidad_bento %}
                 <a href="{% if post.url_destino %}{{ post.url_destino }}{% else %}#{% endif %}" target="_blank" class="bento-card {% if post.destacado %}card-featured{% endif %}">
                     <img class="bento-card-img" src="{% if post.imagen_portada %}{{ post.imagen_portada.url }}{% else %}{% static 'Assets/ecodren17.webp' %}{% endif %}" alt="{{ post.titulo }}">
-                    
                     <div class="bento-badges-row">
                         {% if post.destacado %}
                         <span class="bento-badge-pill badge-tag-destacado">
@@ -351,14 +343,12 @@
                             <i class="fa-brands fa-{{ post.red_social|default:'facebook' }}"></i> {{ post.get_red_social_display }}
                         </span>
                     </div>
-
                     <div class="bento-card-content">
                         {% if post.etiqueta_badge %}
                         <span class="bento-category-label">{{ post.etiqueta_badge }}</span>
                         {% endif %}
                         <h3 class="bento-card-title">{{ post.titulo }}</h3>
                         <p class="bento-card-text">{{ post.descripcion_larga|default:post.descripcion_corta }}</p>
-
                         <div class="bento-meta-row">
                             <span><i class="fa-regular fa-calendar"></i>{{ post.duracion_o_fecha|default:post.creado_en|date:'d M Y' }}</span>
                         </div>
@@ -368,18 +358,15 @@
                 {% empty %}
                 <a href="https://www.facebook.com/people/Equipos-MC/100054393135080/" target="_blank" class="bento-card card-featured">
                     <img class="bento-card-img" src="{% static 'Assets/ecodren17.webp' %}" alt="ED-17 Guadalajara">
-                    
                     <div class="bento-badges-row">
                         <span class="bento-badge-pill badge-tag-destacado">
                             <i class="fa-solid fa-star"></i> Destacado
                         </span>
                     </div>
-
                     <div class="bento-card-content">
                         <span class="bento-category-label">Noticias</span>
                         <h3 class="bento-card-title">{{ post.titulo|default:'ED-17 operación en acción en Guadalajara' }}</h3>
                         <p class="bento-card-text">Conoce cómo nuestro equipo ED-17 realizó operaciones de desazolve de alto rendimiento en líneas de alta presión en Guadalajara, Jal.</p>
-
                         <div class="bento-meta-row">
                             <span><i class="fa-regular fa-calendar"></i>15 de mayo, 2026</span>
                             <span><i class="fa-regular fa-clock"></i>6 min de lectura</span>
@@ -396,7 +383,6 @@
                 </a>
             </div>
         </section>
-
     </main>
 
     <footer>
@@ -520,10 +506,14 @@
                     <span style="font-size: 0.75rem; color: var(--eco-gray);"> o continua con</span>
                     <hr style="flex: 1; border: 0; border-top: 1px solid #e2e8f0;">
                 </div>
-                <a href="{% provider_login_url 'google' %}" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 0.65rem; border: 1px solid #e2e8f0; border-radius: 50px; background: #fff; color: #1a2226; text-decoration: none; font-weight: 600; font-size: 0.88rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: background 0.2s ease;">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px; height: 18px;">
-                    Continuar con Google
-                </a>
+
+                <form method="post" action="{% provider_login_url 'google' %}">
+                    {% csrf_token %}
+                    <button type="submit" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 0.65rem; border: 1px solid #e2e8f0; border-radius: 50px; background: #fff; color: #1a2226; font-weight: 600; font-size: 0.88rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04); cursor: pointer; transition: background 0.2s ease;">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px; height: 18px;">
+                        Continuar con Google
+                    </button>
+                </form>
             </div>
 
             <div class="modal-panel" id="panel-forget">
@@ -813,15 +803,15 @@
     <script src="{% static 'js/recursos.js' %}"></script> 
 
     <div id="google_translate_element" style="position: absolute; left: -9999px; top: -9999px;"></div>
-<script type="text/javascript">
-function googleTranslateElementInit() {
-    new google.translate.TranslateElement({
-        pageLanguage: 'es',
-        includedLanguages: 'es,en',
-        autoDisplay: false
-    }, 'google_translate_element');
-}
-</script>
-<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'es',
+            includedLanguages: 'es,en',
+            autoDisplay: false
+        }, 'google_translate_element');
+    }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>

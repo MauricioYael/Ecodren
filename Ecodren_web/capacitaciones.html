@@ -15,7 +15,6 @@
 
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/capacitaciones.css' %}">
-    
 </head>
 <body class="{% if tema_preferido == 'oscuro' %}dark-theme{% endif %}"
       data-user-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}">
@@ -95,7 +94,7 @@
                                     Cotizaciones guardadas
                                 </a>
                                 <div class="profile-divider"></div>
-                                <a href="{% url 'account_logout' %}" class="profile-item danger" style="text-decoration: none;">
+                                <a href="#" onclick="event.preventDefault(); logOut();" class="profile-item danger" style="text-decoration: none;">
                                     <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
                                     Cerrar sesión
                                 </a>
@@ -217,7 +216,7 @@
                             </h2>
                             <p class="cap-subtitle">Cursos que ya hemos impartido.</p>
                         </div>
-                        <a href="javascript:void(0);" onclick="switchCapTab('experiencia', document.query.Selector('.cap-tab-btn'))" class="cap-view-all">Ver todos <i class="fa-solid fa-arrow-right"></i></a>
+                        <a href="javascript:void(0);" onclick="switchCapTab('experiencia', document.querySelector('.cap-tab-btn'))" class="cap-view-all">Ver todos <i class="fa-solid fa-arrow-right"></i></a>
                     </div>
 
                     <div class="cap-carousel-wrapper">
@@ -366,7 +365,7 @@
                             <a href="{% static 'Assets/ecodren-5/Ecodren ED-5.webp' %}" download class="cap-btn-download-glow">
                                 <i class="fa-solid fa-download"></i> Descargar diploma
                             </a>
-                            <a href="{% url 'perfil'% }?tab=pedidos" class="cap-btn-history-outline">
+                            <a href="{% url 'perfil' %}?tab=pedidos" class="cap-btn-history-outline">
                                 <i class="fa-regular fa-folder-closed"></i> Historial de constancias
                             </a>
                         </div>
@@ -410,8 +409,8 @@
                 <p>Maquinaria y refacciones especializadas para desazolvadores. Soluciones confiables para profesionales del drenaje.</p>
             </div>
             <div><h4>Tienda</h4><ul><li><a href="{% url 'tienda' %}">Equipos</a></li><li><a href="{% url 'tienda' %}">Refacciones</a></li><li><a href="{% url 'home' %}#contacto">Servicio técnico</a></li></ul></div>
-            <div><h4>Empresa</h4><ul><li><a href="{% url 'home' %}#por-que">Quiénes somos</a></li><li><a href="{% url 'home' %}#por-que">Ventajas</a></li><li><a href="{% url 'home'%}#contacto">Trabaja con nosotros</a></li></ul></div>
-            <div><h4>Contacto</h4><ul><li><a href="{% url 'home' %}#contacto">Solicitar cotización</a></li><li><a href="tel:+525512345678">+52 (55) 1234-5678</a></li><li><a href="mailto:ventas@gmail.com">ventas@ecodren.com</a></li></ul></div>
+            <div><h4>Empresa</h4><ul><li><a href="{% url 'home' %}#por-que">Quiénes somos</a></li><li><a href="{% url 'home' %}#por-que">Ventajas</a></li><li><a href="{% url 'home' %}#contacto">Trabaja con nosotros</a></li></ul></div>
+            <div><h4>Contacto</h4><ul><li><a href="{% url 'home' %}#contacto">Solicitar cotización</a></li><li><a href="tel:+525512345678">+52 (55) 1234-5678</a></li><li><a href="mailto:ventas@ecodren.com">ventas@ecodren.com</a></li></ul></div>
         </div>
         <div class="footer-corporate-brands">
             <span class="corporate-title">Una empresa de Equipos Hidromecánicos MC</span>
@@ -498,10 +497,14 @@
                     <span style="font-size: 0.75rem; color: var(--eco-gray);"> o continua con</span>
                     <hr style="flex: 1; border: 0; border-top: 1px solid #e2e8f0;">
                 </div>
-                <a href="{% provider_login_url 'google' %}" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 0.65rem; border: 1px solid #e2e8f0; border-radius: 50px; background: #fff; color: #1a2226; text-decoration: none; font-weight: 600; font-size: 0.88rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: background 0.2s ease;">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px; height: 18px;">
-                    Continuar con Google
-                </a>
+
+                <form method="post" action="{% provider_login_url 'google' %}">
+                    {% csrf_token %}
+                    <button type="submit" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 0.65rem; border: 1px solid #e2e8f0; border-radius: 50px; background: #fff; color: #1a2226; font-weight: 600; font-size: 0.88rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04); cursor: pointer; transition: background 0.2s ease;">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px; height: 18px;">
+                        Continuar con Google
+                    </button>
+                </form>
             </div>
 
             <div class="modal-panel" id="panel-forget">
@@ -644,10 +647,8 @@
     </div>    
 
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-
     <script src="{% static 'js/main.js' %}"></script>
-    <script src="{% static 'js/capacitaciones.js' %}"></script> 
-    
+    <script src="{% static 'js/capacitaciones.js' %}"></script>
 
     <div id="google_translate_element" style="position: absolute; left: -9999px; top: -9999px;"></div>
     <script type="text/javascript">
