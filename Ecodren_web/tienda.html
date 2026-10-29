@@ -136,164 +136,184 @@
         <a href="{% url 'home' %}#contacto" class="mobile-link" style="color: var(--eco-green); font-weight: 600;">Cotizar →</a>
     </div>
 
-    <main class="tienda-main-content">
-        <section class="tienda-hero-section">
-            <div class="tienda-hero-container">
-                <div class="tienda-hero-text">
-                    <span class="tienda-tag">CATÁLOGO DE REFACCIONES</span>
-                    <h1>Refacciones y componentes originales</h1>
-                    <p>Encuentra toberas, bombas, mangueras y refacciones de grado industrial con envío inmediato a todo México.</p>
-                    <div class="tienda-search-wrapper">
-                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                        <input type="text" id="tiendaSearchInput" placeholder="Buscar por código, modelo o nombre de pieza...">
-                    </div>
+    <!-- SECCIÓN HERO -->
+    <section class="tienda-hero">
+        <div class="tienda-hero-bg"></div>
+        <div class="tienda-hero-content shop-hero-master-wrap">
+            <div class="shop-corporate-badge-pill">
+                <span class="badge-pill-line"></span> CATÁLOGO DE REFACCIONES
+            </div>
+            <h1 class="shop-main-title">Refacciones y <em>componentes originales</em></h1>
+            <p class="shop-hero-description">Encuentra toberas, bombas, mangueras y refacciones de grado industrial con envío inmediato a todo México.</p>
+        </div>
+    </section>
+
+    <!-- LAYOUT PRINCIPAL CON SIDEBAR Y GRID -->
+    <div class="tienda-layout">
+        <!-- BARRA LATERAL DE FILTROS -->
+        <aside class="tienda-sidebar" id="tiendaSidebar">
+            <button class="close-sidebar-btn" onclick="toggleMobileSidebar()">×</button>
+            <div class="sidebar-header">
+                <h3>Filtros</h3>
+                <button class="clear-filters-btn" onclick="limpiarFiltros()">Limpiar todo</button>
+            </div>
+
+            <div class="filter-group">
+                <span class="filter-label">Buscar refacción</span>
+                <div class="search-input-wrap">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="tiendaSearchInput" placeholder="Código, modelo o pieza...">
                 </div>
             </div>
-        </section>
 
-        <section class="tienda-filter-bar-section">
-            <div class="tienda-filter-container">
-                <div class="filter-tabs-wrapper" id="storeCategoryTabs">
-                    <button class="filter-tab active" data-category="todas">
-                        <i class="fa-solid fa-border-all"></i> Todas
-                    </button>
-                    <button class="filter-tab" data-category="toberas">
+            <div class="filter-group">
+                <span class="filter-label">Categorías</span>
+                <div class="filter-options" id="storeCategoryTabs">
+                    <label class="filter-check active-check" data-category="todas">
+                        <i class="fa-solid fa-border-all"></i> Todas las piezas
+                    </label>
+                    <label class="filter-check" data-category="toberas">
                         <i class="fa-solid fa-bullseye"></i> Toberas
-                    </button>
-                    <button class="filter-tab" data-category="bombas">
+                    </label>
+                    <label class="filter-check" data-category="bombas">
                         <i class="fa-solid fa-gears"></i> Bombas y Pistones
-                    </button>
-                    <button class="filter-tab" data-category="mangueras">
+                    </label>
+                    <label class="filter-check" data-category="mangueras">
                         <i class="fa-solid fa-hose"></i> Mangueras
-                    </button>
-                    <button class="filter-tab" data-category="valvulas">
+                    </label>
+                    <label class="filter-check" data-category="valvulas">
                         <i class="fa-solid fa-sliders"></i> Válvulas
-                    </button>
-                    <button class="filter-tab" data-category="accesorios">
+                    </label>
+                    <label class="filter-check" data-category="accesorios">
                         <i class="fa-solid fa-wrench"></i> Accesorios
-                    </button>
+                    </label>
                 </div>
-                <div class="filter-sort-wrapper">
-                    <select class="filter-select-sort" id="storeSortSelect">
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL Y GRILLA DE PRODUCTOS -->
+        <main class="tienda-main">
+            <div class="tienda-toolbar">
+                <div class="results-count">
+                    Mostrando <span id="displayedProductsCount">{{ productos|length }}</span> refacciones
+                </div>
+                <div class="toolbar-right">
+                    <button class="filter-toggle-btn" onclick="toggleMobileSidebar()">
+                        <i class="fa-solid fa-filter"></i> Filtros
+                    </button>
+                    <select class="sort-select" id="storeSortSelect">
                         <option value="relevancia">Más relevantes</option>
                         <option value="precio-bajo">Precio: Menor a Mayor</option>
                         <option value="precio-alto">Precio: Mayor a Menor</option>
                     </select>
                 </div>
             </div>
-        </section>
 
-        <section class="tienda-products-section">
-            <div class="tienda-products-container">
-                <div class="products-grid" id="productsGrid">
-                    {% for producto in productos %}
-                    <div class="product-card" data-category="{{ producto.categoria_slug }}" data-price="{{ producto.precio }}">
-                        <div class="product-img-wrap">
-                            <img src="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'Assets/logo_web_ecodren.png' %}{% endif %}" alt="{{ producto.nombre }}">
-                            {% if producto.en_oferta %}
-                            <span class="product-badge offer">Oferta</span>
-                            {% elif producto.destacado %}
-                            <span class="product-badge featured">Destacado</span>
-                            {% endif %}
-                        </div>
-                        <div class="product-info">
-                            <span class="product-sku">SKU: {{ producto.sku|default:"ECO-REF-01" }}</span>
-                            <h3 class="product-title">{{ producto.nombre }}</h3>
-                            <p class="product-desc">{{ producto.descripcion_corta|truncatechars:90 }}</p>
-                            <div class="product-footer">
-                                <div class="product-price-box">
-                                    <span class="product-price">${{ producto.precio|floatformat:2 }} MXN</span>
-                                </div>
-                                <button type="button" class="btn-add-cart" 
-                                        data-id="{{ producto.id }}"
-                                        data-nombre="{{ producto.nombre }}"
-                                        data-precio="{{ producto.precio }}"
-                                        data-imagen="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'Assets/logo_web_ecodren.png' %}{% endif %}"
-                                        onclick="addToCartFromBtn(this)">
-                                    <i class="fa-solid fa-cart-plus"></i> Agregar
-                                </button>
-                            </div>
-                        </div>
+            <div class="shop-grid" id="productsGrid">
+                {% for producto in productos %}
+                <div class="product-card" data-category="{{ producto.categoria.nombre|slugify }}" data-price="{{ producto.precio_base }}">
+                    <div class="product-card-img">
+                        <span class="badge-sku">SKU: {{ producto.codigo_sku|default:"ECO-REF-01" }}</span>
+                        {% if producto.etiqueta == 'oferta' %}
+                        <span class="product-badge badge-oferta"><i class="fa-solid fa-tag"></i> Oferta</span>
+                        {% elif producto.etiqueta == 'destacado' %}
+                        <span class="product-badge badge-destacado"><i class="fa-solid fa-star"></i> Destacado</span>
+                        {% endif %}
+                        <img src="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'Assets/logo_web_ecodren.png' %}{% endif %}" alt="{{ producto.nombre }}">
                     </div>
-                    {% empty %}
-                    <div class="product-card" data-category="toberas" data-price="4500">
-                        <div class="product-img-wrap">
-                            <img src="{% static 'Assets/logo_web_ecodren.png' %}" alt="Tobera Granada HD 1 pulgada">
-                            <span class="product-badge featured">Destacado</span>
+                    <div class="product-card-body">
+                        <span class="product-cat-name">{{ producto.categoria.nombre|default:"Refacciones" }}</span>
+                        <h3 class="product-title">{{ producto.nombre }}</h3>
+                        <p class="product-desc">{{ producto.descripcion|truncatechars:90 }}</p>
+                        <div class="product-price-row">
+                            <span class="price-amount" data-precio-base="{{ producto.precio_base }}">${{ producto.precio_base|floatformat:2 }} MXN</span>
                         </div>
-                        <div class="product-info">
-                            <span class="product-sku">SKU: ECO-TOB-01</span>
-                            <h3 class="product-title">Tobera Granada HD 1"</h3>
-                            <p class="product-desc">Diseñada para remoción pesada de gravas y lodos en tuberías principales.</p>
-                            <div class="product-footer">
-                                <div class="product-price-box">
-                                    <span class="product-price">$4,500.00 MXN</span>
-                                </div>
-                                <button type="button" class="btn-add-cart" 
-                                        data-id="demo-1" 
-                                        data-nombre="Tobera Granada HD 1 Pulgada" 
-                                        data-precio="4500" 
-                                        data-imagen="{% static 'Assets/logo_web_ecodren.png' %}" 
-                                        onclick="addToCartFromBtn(this)">
-                                    <i class="fa-solid fa-cart-plus"></i> Agregar
-                                </button>
-                            </div>
-                        </div>
+                        <button type="button" class="btn-add-cart" 
+                                data-id="{{ producto.id }}"
+                                data-nombre="{{ producto.nombre }}"
+                                data-precio="{{ producto.precio_base }}"
+                                data-imagen="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'Assets/logo_web_ecodren.png' %}{% endif %}"
+                                onclick="addToCartFromBtn(this)">
+                            <i class="fa-solid fa-cart-plus"></i> Agregar
+                        </button>
                     </div>
-
-                    <div class="product-card" data-category="mangueras" data-price="12800">
-                        <div class="product-img-wrap">
-                            <img src="{% static 'Assets/logo_web_ecodren.png' %}" alt="Manguera de Alta Presión">
-                        </div>
-                        <div class="product-info">
-                            <span class="product-sku">SKU: ECO-MAN-12</span>
-                            <h3 class="product-title">Manguera de Alta Presión 1" (120m)</h3>
-                            <p class="product-desc">Construcción de termoplástico reforzado resistente a la abrasión continua.</p>
-                            <div class="product-footer">
-                                <div class="product-price-box">
-                                    <span class="product-price">$12,800.00 MXN</span>
-                                </div>
-                                <button type="button" class="btn-add-cart" 
-                                        data-id="demo-2" 
-                                        data-nombre="Manguera de Alta Presión 1 Pulgada (120m)" 
-                                        data-precio="12800" 
-                                        data-imagen="{% static 'Assets/logo_web_ecodren.png' %}" 
-                                        onclick="addToCartFromBtn(this)">
-                                    <i class="fa-solid fa-cart-plus"></i> Agregar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="product-card" data-category="bombas" data-price="38500">
-                        <div class="product-img-wrap">
-                            <img src="{% static 'Assets/logo_web_ecodren.png' %}" alt="Bomba de Pistones">
-                            <span class="product-badge offer">Garantía MC</span>
-                        </div>
-                        <div class="product-info">
-                            <span class="product-sku">SKU: ECO-BOM-80</span>
-                            <h3 class="product-title">Bomba Triplex de Pistones 80 GPM</h3>
-                            <p class="product-desc">Bomba de desplazamiento positivo para sistemas hidroneumáticos industriales.</p>
-                            <div class="product-footer">
-                                <div class="product-price-box">
-                                    <span class="product-price">$38,500.00 MXN</span>
-                                </div>
-                                <button type="button" class="btn-add-cart" 
-                                        data-id="demo-3" 
-                                        data-nombre="Bomba Triplex de Pistones 80 GPM" 
-                                        data-precio="38500" 
-                                        data-imagen="{% static 'Assets/logo_web_ecodren.png' %}" 
-                                        onclick="addToCartFromBtn(this)">
-                                    <i class="fa-solid fa-cart-plus"></i> Agregar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
                 </div>
+                {% empty %}
+                <!-- Demos si la BD aún no tiene productos -->
+                <div class="product-card" data-category="toberas" data-price="4500">
+                    <div class="product-card-img">
+                        <span class="badge-sku">SKU: ECO-TOB-01</span>
+                        <span class="product-badge badge-destacado"><i class="fa-solid fa-star"></i> Destacado</span>
+                        <img src="{% static 'Assets/logo_web_ecodren.png' %}" alt="Tobera Granada HD">
+                    </div>
+                    <div class="product-card-body">
+                        <span class="product-cat-name">Toberas</span>
+                        <h3 class="product-title">Tobera Granada HD 1"</h3>
+                        <p class="product-desc">Diseñada para remoción pesada de gravas y lodos en tuberías principales.</p>
+                        <div class="product-price-row">
+                            <span class="price-amount" data-precio-base="4500">$4,500.00 MXN</span>
+                        </div>
+                        <button type="button" class="btn-add-cart" 
+                                data-id="demo-1" 
+                                data-nombre="Tobera Granada HD 1 Pulgada" 
+                                data-precio="4500" 
+                                data-imagen="{% static 'Assets/logo_web_ecodren.png' %}" 
+                                onclick="addToCartFromBtn(this)">
+                            <i class="fa-solid fa-cart-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="product-card" data-category="mangueras" data-price="12800">
+                    <div class="product-card-img">
+                        <span class="badge-sku">SKU: ECO-MAN-12</span>
+                        <img src="{% static 'Assets/logo_web_ecodren.png' %}" alt="Manguera Alta Presión">
+                    </div>
+                    <div class="product-card-body">
+                        <span class="product-cat-name">Mangueras</span>
+                        <h3 class="product-title">Manguera de Alta Presión 1" (120m)</h3>
+                        <p class="product-desc">Construcción de termoplástico reforzado resistente a la abrasión continua.</p>
+                        <div class="product-price-row">
+                            <span class="price-amount" data-precio-base="12800">$12,800.00 MXN</span>
+                        </div>
+                        <button type="button" class="btn-add-cart" 
+                                data-id="demo-2" 
+                                data-nombre="Manguera de Alta Presión 1 Pulgada (120m)" 
+                                data-precio="12800" 
+                                data-imagen="{% static 'Assets/logo_web_ecodren.png' %}" 
+                                onclick="addToCartFromBtn(this)">
+                            <i class="fa-solid fa-cart-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="product-card" data-category="bombas" data-price="38500">
+                    <div class="product-card-img">
+                        <span class="badge-sku">SKU: ECO-BOM-80</span>
+                        <span class="product-badge badge-oferta"><i class="fa-solid fa-tag"></i> Oferta</span>
+                        <img src="{% static 'Assets/logo_web_ecodren.png' %}" alt="Bomba Triplex">
+                    </div>
+                    <div class="product-card-body">
+                        <span class="product-cat-name">Bombas y Pistones</span>
+                        <h3 class="product-title">Bomba Triplex de Pistones 80 GPM</h3>
+                        <p class="product-desc">Bomba de desplazamiento positivo para sistemas hidroneumáticos industriales.</p>
+                        <div class="product-price-row">
+                            <span class="price-amount" data-precio-base="38500">$38,500.00 MXN</span>
+                        </div>
+                        <button type="button" class="btn-add-cart" 
+                                data-id="demo-3" 
+                                data-nombre="Bomba Triplex de Pistones 80 GPM" 
+                                data-precio="38500" 
+                                data-imagen="{% static 'Assets/logo_web_ecodren.png' %}" 
+                                onclick="addToCartFromBtn(this)">
+                            <i class="fa-solid fa-cart-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
-        </section>
-    </main>
+        </main>
+    </div>
 
     <footer>
         <div class="footer-container">
@@ -339,15 +359,15 @@
         </div>
 
         <div class="social-pills-container">
-            <a href="https://www.facebook.com/people/Equipos-MC/100054393135080/" target="_blank" class="social-pill facebook">
+            <a href="https://www.facebook.com/people/Equipos-MC/100054393135080/" target="_blank" rel="noopener noreferrer" class="social-pill facebook">
                 <div class="icon-circle"><i class="fab fa-facebook-f"></i></div>
                 <span class="social-text">Ecodren Oficial</span>
             </a>
-            <a href="https://x.com/equipos_mc" target="_blank" class="social-pill instagram">
+            <a href="https://x.com/equipos_mc" target="_blank" rel="noopener noreferrer" class="social-pill instagram">
                 <div class="icon-circle"><i class="fab fa-x-twitter"></i></div>
                 <span class="social-text">@ecodren</span>
             </a>
-            <a href="https://www.linkedin.com/in/equipos-mc-770731114/" target="_blank" class="social-pill linkedin">
+            <a href="https://www.linkedin.com/in/equipos-mc-770731114/" target="_blank" rel="noopener noreferrer" class="social-pill linkedin">
                 <div class="icon-circle"><i class="fab fa-linkedin-in"></i></div>
                 <span class="social-text">Ecodren México</span>
             </a>
@@ -363,6 +383,7 @@
         </div>
     </footer>
 
+    <!-- CARRITO Y MODALES -->
     <div class="cart-overlay" id="cartOverlay"></div>
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-head">
@@ -388,7 +409,6 @@
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-box" style="max-width: 420px; width: 90%;">
             <button class="modal-close" onclick="closeModal()">×</button>
-            
             <div class="modal-tabs">
                 <button class="modal-tab active" onclick="switchTab('login')">Iniciar sesión</button>
                 <button class="modal-tab" onclick="switchTab('register')">Crear cuenta</button>
@@ -419,144 +439,21 @@
 
                 <form method="post" action="{% provider_login_url 'google' %}">
                     {% csrf_token %}
-                    <button type="submit" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 0.65rem; border: 1px solid #e2e8f0; border-radius: 50px; background: #fff; color: #1a2226; font-weight: 600; font-size: 0.88rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04); cursor: pointer; transition: background 0.2s ease;">
+                    <button type="submit" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 0.65rem; border: 1px solid #e2e8f0; border-radius: 50px; background: #fff; color: #1a2226; font-weight: 600; font-size: 0.88rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04); cursor: pointer;">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px; height: 18px;">
                         Continuar con Google
                     </button>
                 </form>
             </div>
-
-            <div class="modal-panel" id="panel-forget">
-                <h3>¿Olvidaste tu contraseña?</h3>
-                <p style="font-size:.88rem; color:var(--eco-gray); margin-bottom: 1.5rem; line-height: 1.4;">
-                    Ingresa tu correo electrónico registrado y te enviaremos las instrucciones para restablecerla.
-                </p>
-                <form id="forgetForm" onsubmit="handleForgetPassword(event)">
-                    <div class="mform-group">
-                        <label>Correo electrónico corporativo</label>
-                        <input type="email" id="forgetEmail" placeholder="correo@empresa.com" required style="width: 100%; box-sizing: border-box;">
-                    </div>
-                    <button type="submit" class="mform-submit">Enviar enlace de recuperación</button>
-                    <p style="text-align:center; margin-top:.8rem; margin-bottom:0; font-size:.8rem">
-                        <a href="#" onclick="event.preventDefault(); switchTab('login');" style="color:var(--eco-green); text-decoration: none; font-weight: 600;">
-                            ← Volver al inicio de sesión
-                        </a>
-                    </p>
-                </form>
-            </div>
-
-            <div class="modal-panel" id="panel-register">
-                <h3>Crea tu cuenta</h3>
-                <form id="registerForm" onsubmit="handleRegister(event)">
-                    <div class="mform-group">
-                        <label>Nombre completo *</label>
-                        <input type="text" id="regName" placeholder="Juan Díaz" required style="width: 100%; box-sizing: border-box;">
-                    </div>
-                    <div class="mform-group">
-                        <label>Empresa</label>
-                        <input type="text" id="regCompany" placeholder="Nombre de empresa" style="width: 100%; box-sizing: border-box;">
-                    </div>
-                    <div class="mform-group">
-                        <label>Correo electrónico *</label>
-                        <input type="email" id="regEmail" placeholder="correo@empresa.com" required style="width: 100%; box-sizing: border-box;">
-                    </div>
-                    <div class="mform-group">
-                        <label>Contraseña *</label>
-                        <input type="password" id="regPassword" placeholder="Mínimo 8 caracteres" required style="width: 100%; box-sizing: border-box;">
-                    </div>
-                    <div class="mform-group">
-                        <label>Confirmar contraseña *</label>
-                        <input type="password" id="regConfirmPassword" placeholder="Repite tu contraseña" required style="width: 100%; box-sizing: border-box;">
-                    </div>
-                    <div style="display: flex; gap: 0.4rem; align-items: flex-start; margin: 0.6rem 0;">
-                        <input type="checkbox" id="regTerms" required style="cursor: pointer; margin-top:2px;">
-                        <label for="regTerms" style="font-size: 0.75rem; color: var(--eco-gray); line-height: 1.2; cursor: pointer;">
-                            Acepto los <a href="#" style="color: var(--eco-green); text-decoration: none; font-weight: 600;">Términos y Privacidad</a>.
-                        </label>
-                    </div>
-                    <div id="registerErrorMsg" style="color: #c0392b; font-size: 0.78rem; margin-bottom: 0.5rem; display: none; font-weight: 500;"></div>
-                    <button type="submit" class="mform-submit" id="regSubmitBtn">Crear cuenta</button>
-                </form>
-            </div>
-
-            <div class="modal-panel" id="panel-checkout">
-                <div style="text-align:center; margin-bottom: 1rem;">
-                    <h3 style="margin-bottom:0.2rem; font-size: 1.3rem;">Finalizar Compra</h3>
-                    <p style="font-size:0.8rem; color:var(--eco-gray); margin-bottom: 0;">Elige un método de pago corporativo seguro</p>
-                </div>
-                
-                <div style="background: rgba(255,255,255,0.03); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); padding: 0.8rem; border-radius: 8px; margin-bottom: 1rem;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
-                        <span style="font-size:0.85rem; color:var(--eco-gray);">Total a pagar:</span>
-                        <strong style="font-size:1.05rem; color:var(--eco-green);" id="checkoutTotalDisplay">$0 MXN</strong>
-                    </div>
-                    <div style="font-size:0.7rem; color:var(--eco-gray);"><i class="fas fa-shield-alt"></i> Transacción cifrada SSL (256-bit)</div>
-                </div>
-
-                <form id="checkoutForm" onsubmit="processSimulatedPayment(event)">
-                    <div style="display:flex; gap:0.5rem; margin-bottom: 1rem;" id="paymentMethodSelectors">
-                        <label class="payment-method-option active-method" style="flex:1; text-align:center; padding:0.6rem; border:1.5px solid var(--eco-green); background: rgba(191, 253, 0, 0.05); border-radius:8px; cursor:pointer; transition:all 0.3s;">
-                            <input type="radio" name="payMethod" value="card" checked style="display:none;">
-                            <i class="fas fa-credit-card" style="font-size:1.2rem; margin-bottom:0.3rem; display:block;"></i>
-                            <span style="font-size:0.75rem; font-weight:600;">Tarjeta</span>
-                        </label>
-                        <label class="payment-method-option" style="flex:1; text-align:center; padding:0.6rem; border:1px solid #ddd; border-radius:8px; cursor:pointer; transition:all 0.3s;">
-                            <input type="radio" name="payMethod" value="transfer" style="display:none;">
-                            <i class="fas fa-university" style="font-size:1.2rem; margin-bottom:0.3rem; display:block; color:var(--eco-gray);"></i>
-                            <span style="font-size:0.75rem; font-weight:600; color:var(--eco-gray);">SPEI</span>
-                        </label>
-                    </div>
-
-                    <div id="cardDetailsForm">
-                        <div class="mform-group" style="margin-bottom: 0.8rem;">
-                            <label style="font-size: 0.8rem; margin-bottom: 0.2rem;">Titular de la tarjeta</label>
-                            <input type="text" placeholder="Nombre como aparece en la tarjeta" required style="width: 100%; box-sizing: border-box; padding: 0.55rem; font-size: 0.85rem;">
-                        </div>
-                        <div class="mform-group" style="margin-bottom: 0.8rem;">
-                            <label style="font-size: 0.8rem; margin-bottom: 0.2rem;">Número de tarjeta</label>
-                            <input type="text" placeholder="0000 0000 0000 0000" maxlength="19" required style="width: 100%; box-sizing: border-box; padding: 0.55rem; font-size: 0.85rem;">
-                        </div>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
-                            <div class="mform-group" style="margin-bottom: 0;">
-                                <label style="font-size: 0.8rem; margin-bottom: 0.2rem;">Vencimiento</label>
-                                <input type="text" placeholder="MM/AA" maxlength="5" required style="width: 100%; box-sizing: border-box; padding: 0.55rem; font-size: 0.85rem;">
-                            </div>
-                            <div class="mform-group" style="margin-bottom: 0;">
-                                <label style="font-size: 0.8rem; margin-bottom: 0.2rem;">CVC / CVV</label>
-                                <input type="password" placeholder="123" maxlength="4" required style="width: 100%; box-sizing: border-box; padding: 0.55rem; font-size: 0.85rem;">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="speiDetailsInfo" style="display: none; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
-                        <p style="margin: 0 0 0.5rem; font-size: 0.85rem; font-weight: 600; color: #1e293b;">Datos para transferencia SPEI:</p>
-                        <div style="font-size: 0.8rem; color: #475569; line-height: 1.6;">
-                            <div><strong>Banco:</strong> BBVA México</div>
-                            <div><strong>Beneficiario:</strong> Equipos Hidromecánicos MC</div>
-                            <div><strong>CLABE Interbancaria:</strong> 012180001234567890</div>
-                            <div><strong>Concepto:</strong> <span style="color: var(--eco-green); font-weight: 600;">COMPRA-ECODREN</span></div>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="mform-submit" style="margin-top:1rem; padding: 0.6rem; font-size: 0.9rem; width: 100%;">
-                        <i class="fas fa-lock"></i> Confirmar y Pagar
-                    </button>
-                    <p style="text-align:center; margin-top:0.8rem; margin-bottom:0; font-size:0.75rem">
-                        <a href="#" onclick="event.preventDefault(); closeModal();" style="color:var(--eco-gray); text-decoration: none; font-weight: 600;">
-                            Cancelar y seguir comprando
-                        </a>
-                    </p>
-                </form>
-            </div>
         </div>
     </div>
 
-    <form id="logout-form" action="{% url 'account_logout' %}" method="post" style="display: none;">
-        {% csrf_token %}
-    </form>
-
     <script>
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('tiendaSidebar');
+            if (sidebar) sidebar.classList.toggle('sidebar-open');
+        }
+
         function addToCartFromBtn(btn) {
             const id = btn.getAttribute('data-id');
             const nombre = btn.getAttribute('data-nombre');
@@ -564,23 +461,22 @@
             const imagen = btn.getAttribute('data-imagen');
             if (typeof addToCart === 'function') {
                 addToCart(id, nombre, precio, imagen);
+            } else if (typeof changeGlobalQty === 'function') {
+                let carrito = JSON.parse(localStorage.getItem('ecodren_cart') || '[]');
+                const existe = carrito.find(i => String(i.id) === String(id));
+                if (existe) {
+                    existe.qty = (parseInt(existe.qty || 1, 10)) + 1;
+                } else {
+                    carrito.push({ id, nombre, precio, imagen, qty: 1 });
+                }
+                localStorage.setItem('ecodren_cart', JSON.stringify(carrito));
+                if (typeof renderCartGlobal === 'function') renderCartGlobal();
+                if (typeof showToast === 'function') showToast('Producto agregado al carrito', 'success');
             }
         }
     </script>
 
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/tienda.js' %}"></script>
-
-    <div id="google_translate_element" style="position: absolute; left: -9999px; top: -9999px;"></div>
-    <script type="text/javascript">
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-            pageLanguage: 'es',
-            includedLanguages: 'es,en',
-            autoDisplay: false
-        }, 'google_translate_element');
-    }
-    </script>
-    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>

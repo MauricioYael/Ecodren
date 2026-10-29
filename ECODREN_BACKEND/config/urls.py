@@ -1,12 +1,15 @@
+
+import os
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from core import views
 
+ADMIN_PATH = os.getenv('ADMIN_URL', 'panel-gestion-ecodren-mc/')
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('ADMIN_PATH', admin.site.urls),
 
     # Vistas Principales (SSR)
     path('', views.index, name='home'),
@@ -33,14 +36,14 @@ urlpatterns = [
     path('api/direccion/guardar/', views.guardar_direccion, name='guardar_direccion'),
     path('api/direccion/eliminar/', views.eliminar_direccion, name='eliminar_direccion'),
 
-    #endpoint de cotizacion
+    # Endpoint de cotización
     path('api/enviar-cotizacion/', views.enviar_cotizacion, name='enviar_cotizacion'),
     
     # Rutas de autenticación (allauth)
     path('accounts/', include('allauth.urls')),
 ]
 
-# Servir archivos subidos por el usuario en desarrollo
+# Servir archivos subidos y estáticos en desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])

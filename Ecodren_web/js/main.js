@@ -18,6 +18,21 @@ function getCsrfToken() {
            getCookie('csrftoken') || '';
 }
 
+function escapeHTML(str) {
+    return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function protegerEnlacesExternos() {
+    document.querySelectorAll('a[target="_blank"]').forEach(link => {
+        link.setAttribute('rel', 'noopener noreferrer');
+    });
+}
+
 function actualizarContadorCarritoGlobal() {
     let carrito = [];
     try { 
@@ -357,21 +372,25 @@ window.renderCartGlobal = function() {
                 ? `$${precioCalculado.toFixed(2)} USD` 
                 : `$${precioMXN.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})} MXN`;
 
+            const nombreLimpio = escapeHTML(item.nombre || item.name || 'Producto');
+            const imgLimpia = escapeHTML(item.imagen || item.img || '/static/Assets/logo_web_ecodren.png');
+            const idLimpio = escapeHTML(String(item.id));
+
             html += `
             <div class="cart-item" style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid #eee">
                 <div style="background:#f8f9fa;width:50px;height:50px;display:flex;align-items:center;justify-content:center;border-radius:8px;flex-shrink:0;overflow:hidden;">
-                    <img src="${item.imagen || item.img || '/static/Assets/logo_web_ecodren.png'}" alt="${item.nombre || item.name || 'Producto'}" style="width:100%; height:100%; object-fit:contain; padding:4px;">
+                    <img src="${imgLimpia}" alt="${nombreLimpio}" style="width:100%; height:100%; object-fit:contain; padding:4px;">
                 </div>
                 <div style="flex:1;min-width:0">
-                    <h4 style="margin:0;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.nombre || item.name || 'Producto'}</h4>
+                    <h4 style="margin:0;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${nombreLimpio}</h4>
                     <div style="color:var(--eco-green);font-weight:600;font-size:.88rem">${textoPrecio}</div>
                     <div style="display:flex;align-items:center;gap:.4rem;margin-top:.35rem">
-                        <button onclick="changeGlobalQty('${item.id}',-1)" class="qty-btn">−</button>
+                        <button onclick="changeGlobalQty('${idLimpio}',-1)" class="qty-btn">−</button>
                         <span style="font-size:.85rem;min-width:20px;text-align:center">${cantidadNum}</span>
-                        <button onclick="changeGlobalQty('${item.id}',1)" class="qty-btn">+</button>
+                        <button onclick="changeGlobalQty('${idLimpio}',1)" class="qty-btn">+</button>
                     </div>
                 </div>
-                <button onclick="removeGlobalItem('${item.id}')" style="background:none;border:none;color:#c0392b;cursor:pointer;font-size:1.4rem;padding:0 .3rem;flex-shrink:0">×</button>
+                <button onclick="removeGlobalItem('${idLimpio}')" style="background:none;border:none;color:#c0392b;cursor:pointer;font-size:1.4rem;padding:0 .3rem;flex-shrink:0">×</button>
             </div>`;
         });
         container.innerHTML = html;
@@ -534,6 +553,10 @@ async function enviarOrdenBackend(payload, btn) {
             const modalBox = document.querySelector('#modalOverlay .modal-box');
             if (modalBox) {
                 const esSpei = payload.metodo === 'spei';
+                const codigoEscapado = escapeHTML(data.codigo_pedido);
+                const totalEscapado = escapeHTML(data.total);
+                const clabeEscapada = escapeHTML(data.clabe);
+
                 modalBox.innerHTML = `
                     <div class="checkout-success-wrapper">
                         <div class="success-icon-animated">
@@ -545,16 +568,16 @@ async function enviarOrdenBackend(payload, btn) {
                         <div class="order-meta-box">
                             <div class="order-meta-row">
                                 <span>No. Pedido:</span>
-                                <strong>${data.codigo_pedido}</strong>
+                                <strong>${codigoEscapado}</strong>
                             </div>
                             <div class="order-meta-row">
                                 <span>Total:</span>
-                                <strong>$${data.total}</strong>
+                                <strong>$${totalEscapado}</strong>
                             </div>
-                            ${esSpei && data.clabe ? `
+                            ${esSpei && clabeEscapada ? `
                             <div class="order-meta-row">
                                 <span>CLABE SPEI Conekta:</span>
-                                <strong style="color: #0f5429;">${data.clabe}</strong>
+                                <strong style="color: #0f5429;">${clabeEscapada}</strong>
                             </div>` : ''}
                         </div>
 
@@ -715,10 +738,12 @@ window.showToast = function(mensaje, tipo = 'info') {
     toast.className = `toast ${tipo}`;
     const icon = tipo === 'success' ? 'fa-circle-check' : tipo === 'error' ? 'fa-circle-xmark' : 'fa-circle-info';
     
+    const mensajeEscapado = escapeHTML(mensaje);
+
     toast.innerHTML = `
         <i class="fa-solid ${icon}"></i>
         <div class="toast-content">
-            <div class="toast-message">${mensaje}</div>
+            <div class="toast-message">${mensajeEscapado}</div>
         </div>
         ${tipo === 'success' ? `<button class="toast-action-btn" onclick="if(typeof openCart === 'function') { openCart(); } else { document.getElementById('cartNavBtn')?.click(); }">Ver Carrito</button>` : ''}
     `;
@@ -735,6 +760,8 @@ function cargarAvatarGlobal() {
     const savedAvatar = localStorage.getItem('ecodren_user_avatar');
     if (!savedAvatar) return;
 
+    if (!savedAvatar.startsWith('data:image/') && !savedAvatar.startsWith('http')) return;
+
     const navSvg = document.getElementById('navProfileSvg');
     const navImg = document.getElementById('navProfileImg');
     const navBtn = document.getElementById('profileBtn') || document.getElementById('navProfileBtn');
@@ -748,7 +775,11 @@ function cargarAvatarGlobal() {
     }
 
     if (dropdownAvatar) {
-        dropdownAvatar.innerHTML = `<img src="${savedAvatar}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+        const img = document.createElement('img');
+        img.src = savedAvatar;
+        img.alt = 'Avatar';
+        img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; border-radius: 50%;';
+        dropdownAvatar.replaceChildren(img);
         dropdownAvatar.style.background = 'transparent';
         dropdownAvatar.style.overflow = 'hidden';
     }
@@ -759,6 +790,7 @@ document.addEventListener('DOMContentLoaded', () => {
     inicializarInteraccionCarrito();
     actualizarContadorCarritoGlobal();
     cargarAvatarGlobal();
+    protegerEnlacesExternos();
 });
 
 async function enviarPeticionSegura(url, data, metodo = 'POST') {

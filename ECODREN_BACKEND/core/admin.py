@@ -4,7 +4,7 @@ from .models import (
     Equipamento, AccesorioExtra, PuntoDestacado, PublicacionRecurso,
     DocumentoTecnico, CapacitacionImpartida, CursoDisponible,
     PerfilEmpresa, DireccionEntrega, Pedido, CotizacionGuardada,
-    SolicitudCotizacion, ChasisOption
+    SolicitudCotizacion, ChasisOption, ItemPedido
 )
 
 # ── INLINES DE MAQUINARIA ───────────────────────────────────────────
@@ -130,3 +130,41 @@ class ChasisOptionAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'marca', 'tipo_cabina', 'libra_minimas', 'activo')
     list_filter = ('marca', 'tipo_cabina', 'activo')
     search_fields = ('nombre',)
+
+class ItemPedidoInline(admin.TabularInline):
+    model = ItemPedido
+    extra = 0
+    # Evita que soporte modifique los items o precios del pedido
+    def has_change_permission(self, request, obj=None):
+        if request.user.groups.filter(name='Soporte').exists() and not request.user.is_superuser:
+            return False
+        return super().has_change_permission(request, obj)
+
+@admin.register(Pedido)
+class PedidoAdmin(admin.ModelAdmin):
+    list_display = ('codigo_pedido', 'usuario', 'total', 'estatus', 'estado_pago', 'metodo_pago', 'fecha_operacion')
+    list_filter = ('estatus', 'estado_pago', 'metodo_pago', 'fecha_operacion')
+    search_fields = ('codigo_pedido', 'usuario__email', 'usuario__username', 'conekta_order_id')
+    inlines = [ItemPedidoInline]
+
+    def get_readonly_fields(self, request, obj=None):
+        # Si el usuario pertenece al grupo 'Soporte' y no es superusuario
+        if not request.user.is_superuser and request.user.groups.filter(name='Soporte').exists():
+            # Bloquear todos los campos sensibles a modo solo lectura
+            return (
+                'codigo_pedido', 
+                'usuario', 
+                'equipo_insumo', 
+                'total', 
+                'estado_pago', 
+                'conekta_order_id', 
+                'metodo_pago', 
+                'fecha_operacion'
+            )
+        return super().get_readonly_fields(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        # Impedir que el rol Soporte elimine registros de pedidos
+        if not request.user.is_superuser and request.user.groups.filter(name='Soporte').exists():
+            return False
+        return super().has_delete_permission(request, obj)
